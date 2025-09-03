@@ -5,6 +5,7 @@ import { BavariaLogo, JHLogo, FDALogo } from "@/assets";
 import { Routes } from "@/router";
 import { useAuthStore } from "@/stores";
 import { computed } from "vue";
+import Sidebar from "./Sidebar.vue";
 
 const auth = useAuthStore()
 
@@ -21,7 +22,12 @@ const currentLogo = computed(() => {
 </script>
 
 <template>
-    <header class="w-full flex justify-end">
-        <img v-if="currentLogo" class="w-80 px-10 py-3 fixed" :src="currentLogo"></img>
+    <header class="w-full flex">
+        <div class="justify-start">
+            <Sidebar />
+        </div>
+        <div class="justify-center">
+            <img v-if="currentLogo" class="w-80 px-10 py-3 fixed top-0 right-0" :src="currentLogo" />
+        </div>    
     </header>
 </template>
