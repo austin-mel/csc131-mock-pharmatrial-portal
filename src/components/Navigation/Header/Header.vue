@@ -24,7 +24,7 @@ const currentLogo = computed(() => {
 <template>
     <header class="w-full flex">
         <div class="justify-start">
-            <Sidebar />
+            <Sidebar v-if="auth.isLoggedIn" />
         </div>
         <div class="justify-center">
             <img v-if="currentLogo" class="w-80 px-10 py-3 fixed top-0 right-0" :src="currentLogo" />
