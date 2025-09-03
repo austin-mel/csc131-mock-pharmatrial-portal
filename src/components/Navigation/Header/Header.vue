@@ -3,11 +3,25 @@ import { BavariaLogo, JHLogo, FDALogo } from "@/assets";
 
 
 import { Routes } from "@/router";
-import { ref } from "vue";
+import { useAuthStore } from "@/stores";
+import { computed } from "vue";
+
+const auth = useAuthStore()
+
+const logoMap: Record<string, string> = {
+  bavaria: BavariaLogo,
+  jh: JHLogo,
+  fda: FDALogo,
+};
+
+const currentLogo = computed(() => {
+  if (!auth.isLoggedIn || !auth.accountType) return 'guest';
+  return logoMap[auth.accountType];
+});
 </script>
 
 <template>
     <header class="w-full flex justify-end">
-        <img class="w-80 px-10 py-3 fixed" :src="JHLogo"></img>
+        <img v-if="auth.isLoggedIn" class="w-80 px-10 py-3 fixed" :src="currentLogo"></img>
     </header>
 </template>

@@ -13,7 +13,7 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: "/dashboard/:account",
+    path: "/dashboard",
     name: Routes.DASHBOARD,
     component: DashboardView,
     meta: {
