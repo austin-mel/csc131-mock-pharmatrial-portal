@@ -7,6 +7,9 @@ import MailIcon from "./MailIcon.vue";
 import MoonIcon from "./MoonIcon.vue";
 import SunIcon from "./SunIcon.vue";
 import userIcon from "./user.icon.vue";
+import WebIcon from "./WebIcon.vue";
+import GithubIcon from "./GithubIcon.vue";
+
 
 export {
     crossIcon,
@@ -17,5 +20,7 @@ export {
     MailIcon,
     MoonIcon,
     SunIcon,
-    userIcon,    
+    userIcon,   
+    WebIcon,
+    GithubIcon,
 }

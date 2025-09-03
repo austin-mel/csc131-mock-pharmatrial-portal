@@ -1,5 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+
+</script>
 
 <template>
-  <h1>Login Page</h1>
+  <div class="w-full flex justify-center">
+    login
+  </div>
 </template>

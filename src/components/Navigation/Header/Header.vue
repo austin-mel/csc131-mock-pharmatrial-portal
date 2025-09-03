@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { BavariaLogo } from "@/assets";
+import { BavariaLogo, JHLogo, FDALogo } from "@/assets";
+
+
 import { Routes } from "@/router";
 import { ref } from "vue";
 </script>
 
 <template>
-    <header class="w-full flex px-6 py-4 bg-primary-400 shadow-md dark:bg-primary-900">
-        <img class="w-24 justify-end" :src="BavariaLogo"></img>
+    <header class="w-full flex justify-end">
+        <img class="w-80 px-10 py-3 fixed" :src="JHLogo"></img>
     </header>
 </template>
