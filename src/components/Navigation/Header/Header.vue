@@ -15,13 +15,13 @@ const logoMap: Record<string, string> = {
 };
 
 const currentLogo = computed(() => {
-  if (!auth.isLoggedIn || !auth.accountType) return 'guest';
-  return logoMap[auth.accountType];
+  if (!auth.isLoggedIn || !auth.accountType) return '';
+    return logoMap[auth.accountType];
 });
 </script>
 
 <template>
     <header class="w-full flex justify-end">
-        <img v-if="auth.isLoggedIn" class="w-80 px-10 py-3 fixed" :src="currentLogo"></img>
+        <img v-if="currentLogo" class="w-80 px-10 py-3 fixed" :src="currentLogo"></img>
     </header>
 </template>
