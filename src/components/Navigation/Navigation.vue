@@ -2,6 +2,7 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { onMounted } from "vue";
+
 </script>
 
 <template>
