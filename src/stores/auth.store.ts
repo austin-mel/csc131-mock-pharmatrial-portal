@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import type { UserRole } from '@/types'
+import type { UserRole, UserInformation } from '@/types'
 
 export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false)
   const accountType = ref<UserRole>('')
 
-  function login(type: UserRole) {
+  function login(role: UserRole) {
     isLoggedIn.value = true
-    accountType.value = type
+    accountType.value = role
   }
 
   function logout() {

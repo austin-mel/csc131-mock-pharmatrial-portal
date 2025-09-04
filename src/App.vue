@@ -7,9 +7,7 @@ import { Navigation } from "@/components";
 
 <template>
   <Navigation >
-    <main
-      class="flex flex-col justify-center p-2 overflow-hidden grow sm:p-3 gap-2"
-    >
+    <main class="bg-stone-100">
       <RouterView />
     </main>
   </Navigation>

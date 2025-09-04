@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import AccountToggle from './AccountToggle.vue';
 
 </script>
 
 <template>
-    test
+    <div class="w-[18rem]">
+        <AccountToggle />
+    </div>
 </template>

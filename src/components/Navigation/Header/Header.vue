@@ -10,9 +10,9 @@ import { Sidebar } from "@/components/Sidebar";
 const auth = useAuthStore()
 
 const logoMap: Record<string, string> = {
-  bavaria: BavariaLogo,
-  jh: JHLogo,
-  fda: FDALogo,
+  Bavaria: BavariaLogo,
+  JaneHopkins: JHLogo,
+  FDA: FDALogo,
 };
 
 const currentLogo = computed(() => {
@@ -22,12 +22,9 @@ const currentLogo = computed(() => {
 </script>
 
 <template>
-    <header class="w-full flex">
+    <header class="flex">
         <div class="justify-start">
-            <Sidebar v-if="auth.isLoggedIn" />
-        </div>
-        <div class="justify-center">
-            <img v-if="currentLogo" class="w-80 px-10 py-3 fixed top-0 right-0" :src="currentLogo" />
+            <img v-if="currentLogo" class="absolute w-80 px-10 py-3 top-0 right-0" :src="currentLogo" />
         </div>    
     </header>
 </template>

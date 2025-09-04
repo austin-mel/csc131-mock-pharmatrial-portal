@@ -7,7 +7,7 @@ import { onMounted } from "vue";
 
 <template>
   <div
-    class="flex flex-col min-h-screen transition-colors duration-300 bg-gray-100 dark:bg-gray-900 dark:text-white text-primary"
+    class="flex flex-col min-h-screen transition-colors duration-300 bg-gray-100"
   >
     <Header />
 

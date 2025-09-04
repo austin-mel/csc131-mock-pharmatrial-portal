@@ -28,17 +28,17 @@ async function handle_login()
         // TODO: Remove Mock Up Logic
     if (email.value === 'bavaria@gmail.com' && password.value === 'bavaria') {
       success.value = true;
-      auth.login('bavaria');
+      auth.login('Bavaria');
       router.push({ name: Routes.DASHBOARD });
     }
     else if (email.value === 'jh@gmail.com' && password.value === 'jh') {
       success.value = true;
-      auth.login('jh');
+      auth.login('JaneHopkins');
       router.push({ name: Routes.DASHBOARD });
     }
     else if (email.value === 'fda@gmail.com' && password.value === 'fda') {
       success.value = true;
-      auth.login('fda');
+      auth.login('FDA');
       router.push({ name: Routes.DASHBOARD });
     }
         else
