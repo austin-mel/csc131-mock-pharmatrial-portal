@@ -9,10 +9,10 @@ export interface UserContactInfo {
 
 
 export const UserRoles = [
-    'User',
-    'Manager',
-    'Representative',
-    'Admin'
+    '',
+    'Bavaria',
+    'JaneHopkins',
+    'FDA',
 ] as const;
 
 export type UserRole = typeof UserRoles[number];
