@@ -7,19 +7,15 @@ const collapsed = ref(true);
 
 <template>
   <div
-    class="h-[85vh] flex flex-col absolute sm:h-screen sm: w-16 sm:w-16 sm:hover:w-72 transition-all duration-300 overflow-hidden bg-white shadow-lg"
+    class="fixed top-0 left-0 flex flex-col w-16 sm:w-16 sm:hover:w-72 h-screen transition-all duration-300 bg-white shadow-lg overflow-hidden z-50"
     @mouseenter="collapsed = false"
-    @mouseleave="collapsed = true"
-  >
-    <!-- Top section (Account) hidden on mobile -->
+    @mouseleave="collapsed = true">
     <div class="flex-col px-2 hidden sm:flex">
       <Account :collapsed="collapsed" />
     </div>
 
-    <!-- Account buttons -->
     <AccountSwap :collapsed="collapsed" class="flex-1" />
 
-    <!-- Logout button hidden on mobile -->
     <div class="px-2 mt-auto">
       <Logout :collapsed="collapsed" />
     </div>
