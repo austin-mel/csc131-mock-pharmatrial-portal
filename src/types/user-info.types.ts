@@ -11,7 +11,8 @@ export interface UserContactInfo {
 export const UserRoles = [
     '',
     'Bavaria',
-    'JaneHopkins',
+    'JHDoctor',
+    'JHAdmin',
     'FDA',
 ] as const;
 

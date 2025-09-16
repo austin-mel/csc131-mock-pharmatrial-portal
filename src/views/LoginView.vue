@@ -25,7 +25,7 @@ async function handle_login()
         // TODO: Mock Up Request
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // TODO: Remove Mock Up Logic
+    // TODO: Remove Mock Up Logic
     if (email.value === 'bavaria@gmail.com' && password.value === 'bavaria') {
       success.value = true;
       auth.login('Bavaria');
@@ -33,7 +33,12 @@ async function handle_login()
     }
     else if (email.value === 'jh@gmail.com' && password.value === 'jh') {
       success.value = true;
-      auth.login('JaneHopkins');
+      auth.login('JHDoctor');
+      router.push({ name: Routes.DASHBOARD });
+    }
+        else if (email.value === 'jhadmin@gmail.com' && password.value === 'jh') {
+      success.value = true;
+      auth.login('JHAdmin');
       router.push({ name: Routes.DASHBOARD });
     }
     else if (email.value === 'fda@gmail.com' && password.value === 'fda') {

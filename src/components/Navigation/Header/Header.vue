@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { BavariaLogo, JHLogo, FDALogo } from "@/assets";
 
-
-import { Routes } from "@/router";
 import { useAuthStore } from "@/stores";
 import { computed } from "vue";
-import { Sidebar } from "@/components/Sidebar";
 
 const auth = useAuthStore()
 
 const logoMap: Record<string, string> = {
   Bavaria: BavariaLogo,
-  JaneHopkins: JHLogo,
+  JHDoctor: JHLogo,
+  JHAdmin: JHLogo,
   FDA: FDALogo,
 };
 
