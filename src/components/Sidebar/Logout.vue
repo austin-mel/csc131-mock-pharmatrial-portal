@@ -22,7 +22,7 @@ defineProps<{
             <LogoutIcon
         :class="[
           'transition-all duration-300',
-          collapsed ? 'w-10 h-10 mx-auto text-red-600' : 'w-8 h-8 ml-auto text-red-600'
+          collapsed ? 'w-14 h-14 mx-auto text-red-600' : 'w-10 h-10 ml-auto text-red-600'
         ]"
       />
     </button>

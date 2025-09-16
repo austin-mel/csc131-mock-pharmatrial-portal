@@ -24,27 +24,32 @@ const accounts = [
 </script>
 
 <template>
-  <div class="flex flex-col mt-4">
+  <div class="flex flex-col">
     <div
       v-for="({ label, icon, role }, index) in accounts"
       :key="index"
-      class="border-b mb-2 border-stone-300 w-full">
+      class="border-b h-[7rem] border-stone-300 w-full"
+    >
       <button
         :disabled="currentAccount === role"
-        class="relative flex items-center w-full h-16 px-4 rounded transition-all duration-300 hover:bg-stone-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-400">
+        class="relative flex items-center w-full h-full px-4 rounded transition-all duration-300 hover:bg-stone-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-400"
+      >
+        <!-- Text container -->
         <span
           class="text-2xl font-bold transition-all duration-300 whitespace-nowrap absolute left-4"
           :class="{
             'opacity-0 -translate-x-2 pointer-events-none': collapsed,
             'opacity-100 translate-x-0 pointer-events-auto': !collapsed
-          }">
+          }"
+        >
           {{ label }}
         </span>
 
+        <!-- Icon container -->
         <component
           :is="icon"
           class="transition-all duration-300"
-          :class="collapsed ? 'w-10 h-10 mx-auto' : 'w-8 h-8 ml-auto'"
+          :class="collapsed ? 'w-14 h-14 mx-auto' : 'w-10 h-10 ml-auto'"
         />
       </button>
     </div>

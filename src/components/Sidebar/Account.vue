@@ -25,15 +25,15 @@ const roleLogo = computed(() => logoMap[currentRole.value] || BavariaLogo);
 </script>
 
 <template>
-  <div class="border-b mb-2 mt-2 pb-4 border-stone-300">
+  <div class="border-b h-[10rem] mb-2 mt-2 pb-4 border-stone-300">
     <button
-      class="relative flex w-full h-20 items-center rounded transition-all duration-300 hover:bg-stone-200"
+      class="relative flex w-full h-full items-center rounded transition-all duration-300 hover:bg-stone-200"
       :class="collapsed ? 'justify-center' : 'justify-start'">
       <img
         :src="roleLogo"
         alt="avatar"
         class="transition-all duration-300 rounded shrink-0 shadow-lg"
-        :class="collapsed ? 'w-16 h-16' : 'w-8 h-8'"/>
+        :class="collapsed ? 'w-20 h-20' : 'w-12 h-12'"/>
 
       <div
         class="absolute left-16 transition-all duration-300"
