@@ -20,9 +20,9 @@ const currentLogo = computed(() => {
 </script>
 
 <template>
-    <header class="flex">
+    <header class="hidden sm:flex">
         <div class="justify-start">
-            <img v-if="currentLogo" class="absolute w-80 px-10 py-3 top-0 right-0" :src="currentLogo" />
+            <img v-if="currentLogo" class="felx absolute w-80 px-10 py-3 top-0 right-0" :src="currentLogo" />
         </div>    
     </header>
 </template>

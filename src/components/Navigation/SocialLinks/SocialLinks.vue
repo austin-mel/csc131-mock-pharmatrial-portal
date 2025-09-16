@@ -9,7 +9,7 @@ import { links } from './links.data';
         :href="link.href"
         target="_blank"
         class="p-5">        
-        <component :is="link.icon" class="w-5 h-5" />
+        <component :is="link.icon" class="w-8 h-8" />
             <span class="sr-only">{{ link.name }}</span>
     </a>
 </template>

@@ -13,6 +13,7 @@ import AdminIcon from "./AdminIcon.vue";
 import DoctorIcon from "./DoctorIcon.vue";
 import JHAdminIcon from "./JHAdminIcon.vue";
 import PharmaIcon from "./PharmaIcon.vue";
+import EducIcon from "./EducIcon.vue";
 
 export {
     crossIcon,
@@ -30,4 +31,5 @@ export {
     DoctorIcon,
     JHAdminIcon,
     PharmaIcon,
+    EducIcon,
 }

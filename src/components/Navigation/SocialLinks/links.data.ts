@@ -1,6 +1,6 @@
 import { type Component } from "vue";
 
-import { LinkedInIcon, GithubIcon, WebIcon  } from "@/assets";
+import { LinkedInIcon, GithubIcon, WebIcon, EducIcon  } from "@/assets";
 
 
 interface SocialMediaLink
@@ -30,7 +30,7 @@ export const links: SocialMediaLink[] = [
         name: "LinkedIn"
     },
             {
-        icon: GithubIcon,
+        icon: EducIcon,
         href: "https://github.com/austin-mel-edu",
         name: "edu GitHub"
     },

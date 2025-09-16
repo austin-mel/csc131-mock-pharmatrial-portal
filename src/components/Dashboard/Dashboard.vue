@@ -9,7 +9,7 @@ const auth = useAuthStore()
     <div class="flex justify-start">
             <Sidebar v-if="auth.isLoggedIn" />
         </div>
-    <div class="bg-white rounded-lg mx-[8rem] mt-[16rem] h-[calc(100vh-375px)] pb-4 shadow p-4">
+    <div class="bg-white rounded-lg ml-[4rem] sm:mx-[8rem] my-[8rem] sm:mt-[16rem] sm:h-[calc(100vh-375px)] pb-4 shadow p-4">
         Dashboard
     </div>
 </template>
