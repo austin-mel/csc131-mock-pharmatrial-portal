@@ -9,7 +9,10 @@ import SunIcon from "./SunIcon.vue";
 import userIcon from "./user.icon.vue";
 import WebIcon from "./WebIcon.vue";
 import GithubIcon from "./GithubIcon.vue";
-
+import AdminIcon from "./AdminIcon.vue";
+import DoctorIcon from "./DoctorIcon.vue";
+import JHAdminIcon from "./JHAdminIcon.vue";
+import PharmaIcon from "./PharmaIcon.vue";
 
 export {
     crossIcon,
@@ -23,4 +26,8 @@ export {
     userIcon,   
     WebIcon,
     GithubIcon,
+    AdminIcon,
+    DoctorIcon,
+    JHAdminIcon,
+    PharmaIcon,
 }
