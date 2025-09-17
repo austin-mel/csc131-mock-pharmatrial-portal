@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores";
-import { Sidebar, NewStudy, SortTabs, DataTable } from "@/components";
-const auth = useAuthStore()
+import { Sidebar, NewStudy, SortTabs, StudyTable, PatientTable } from "@/components";
 
+const auth = useAuthStore()
 </script>
 
 <template>
@@ -14,9 +14,10 @@ const auth = useAuthStore()
         <NewStudy />
         <SortTabs />
       </div>
-      <div class="flex">
-        <DataTable />
-      </div>
+<div class="flex">
+  <PatientTable v-if="['JHAdmin', 'JHDoctor'].includes(auth.accountType)" />
+  <StudyTable v-else />
+</div>
     </div>
   </div>
 </template>
