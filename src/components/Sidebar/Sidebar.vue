@@ -14,7 +14,7 @@ const collapsed = ref(true);
       <Account :collapsed="collapsed" />
     </div>
 
-    <AccountSwap :collapsed="collapsed" class="flex-1" />
+    <AccountSwap v-model:collapsed="collapsed"  class="flex-1" />
 
     <div class="px-2 mt-auto">
       <Logout :collapsed="collapsed" />

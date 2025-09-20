@@ -8,6 +8,8 @@ defineProps<{
   collapsed: boolean
 }>();
 
+const emit = defineEmits(['update:collapsed', 'force-collapse']);
+
 const auth = useAuthStore();
 
 const currentAccount = computed<UserRole | ''>(() => {
@@ -26,19 +28,22 @@ const accounts: { label: string; icon: any; role: UserRole }[] = [
 <template>
   <div class="flex flex-col">
     <div
-      v-for="({ label, icon, role }, index) in accounts"
-      :key="index"
-      class="border-b h-[7rem] border-stone-300 w-full">
+      v-for="({ label, icon, role }) in accounts"
+      :key="role"
+      class="border-b h-[7rem] border-stone-300 w-full"
+    >
       <button
-       @click="auth.login(role)"
+        @click="auth.login(role);"
         :disabled="currentAccount === role"
-        class="relative flex items-center w-full h-full px-4 rounded transition-all duration-300 hover:bg-stone-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-400">
+        class="relative flex items-center w-full h-full px-4 rounded transition-all duration-300 hover:bg-stone-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-400"
+      >
         <span
           class="text-2xl font-bold transition-all duration-300 whitespace-nowrap absolute left-4"
           :class="{
             'opacity-0 -translate-x-2 pointer-events-none': collapsed,
             'opacity-100 translate-x-0 pointer-events-auto': !collapsed
-          }">
+          }"
+        >
           {{ label }}
         </span>
 
