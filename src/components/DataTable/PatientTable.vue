@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores';
+import { ViewButton } from '@/components';
 
 // Mock data
 const trials = ref([
-  { name: 'Trial A', id: '001', status: '1' },
-  { name: 'Trial B', id: '002', status: '4' },
-  { name: 'Trial C', id: '003', status: '5' },
+  { name: 'Jane Doe', id: '00af1', status: '1' },
+  { name: 'Josh Allen', id: '00eaga2', status: '4' },
+  { name: 'Lighnting McQueen', id: '00313513', status: '5' },
 ])
 
 const auth = useAuthStore();
@@ -41,7 +42,9 @@ const currentRole = computed(() => {
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             {{ trial.status }}
           </td>
-          <td class="px-6 py-4 hidden md:table-cell">View</td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell">
+            <ViewButton />
+          </td>
           <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">Eligibility</td>
 
           <!-- Mobile -->
@@ -57,7 +60,7 @@ const currentRole = computed(() => {
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
-              <button class="text-sm font-medium">View</button>
+              <ViewButton />
               <div class="text-sm font-medium">{{ trial.status }}</div>
             </div>
           </td>

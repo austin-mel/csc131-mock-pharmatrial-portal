@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { ApproveButton, DrugsButton, RejectButton, ReportButton, ViewButton } from '@/components';
 
 // Mock data
 const trials = ref([
@@ -33,8 +34,12 @@ const trials = ref([
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             {{ trial.status }}
           </td>
-          <td class="px-6 py-4 hidden md:table-cell">View</td>
-          <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">Actions</td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell">
+            <ViewButton />
+          </td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell">
+            <ApproveButton />
+          </td>
 
           <!-- Mobile -->
           <td colspan="5" class="block md:hidden px-6 py-4">
@@ -49,8 +54,8 @@ const trials = ref([
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
-              <button class="text-sm font-medium">View</button>
-              <button class="text-sm font-medium">Actions</button>
+              <ViewButton />
+              <RejectButton />
             </div>
           </td>
         </tr>
