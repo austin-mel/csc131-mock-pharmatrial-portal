@@ -14,4 +14,6 @@ export interface Appointment {
     hiv:  number;
 
     notes: Notes[];
+
+    doctor: string;
 }

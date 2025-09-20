@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ApproveButton, DrugsButton, RejectButton, ReportButton, ViewButton, Badges } from '@/components';
+import type { Trial } from '@/types';
 
 // Mock data
-const trials = ref([
-  { name: 'Trial A', id: '001', status: 'Active' },
-  { name: 'Trial B', id: '002', status: 'Pending' },
-  { name: 'Trial C', id: '003', status: 'Completed' },
-])
+const trials = ref<Trial[]>([
+  { name: 'Trial A', id: '001', status: 'active' },
+  { name: 'Trial B', id: '002', status: 'completed' },
+  { name: 'Trial C', id: '003', status: 'rejected' },
+]);
+
 </script>
 
 <template>
@@ -32,7 +34,7 @@ const trials = ref([
             {{ trial.id }}
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
-            <Badge :status="trial.status" />
+            <Badges :status="trial.status" />
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <ViewButton />
@@ -49,7 +51,7 @@ const trials = ref([
                 <p class="text-xs text-gray-500">ID: {{ trial.id }}</p>
               </div>
               <div class="text-sm font-medium text-gray-700">
-                {{ trial.status }}
+                <Badges :status="trial.status" />
               </div>
             </div>
 

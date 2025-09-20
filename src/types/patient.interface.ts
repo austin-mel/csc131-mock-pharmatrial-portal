@@ -1,4 +1,4 @@
-import { type PersonName } from "./person-name.interface";
+import type { Appointment, PersonName } from ".";
 
 export interface PatientContactInfo {
     phone_number: string;
@@ -28,6 +28,9 @@ export interface ICDCodes {
 export interface PatientInformation {
     name:    PersonName;
 
+    id: string;
+
+
     contact: PatientContactInfo;
 
     dob: string;
@@ -53,5 +56,11 @@ export interface PatientInformation {
     history: History[];
 
     icdcodes: ICDCodes[];
+
+    eligibility: boolean;
+
+    stage: number;
+    
+    appointments: Appointment[];
 }
 

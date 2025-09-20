@@ -1,1 +1,8 @@
-export type BadgeStatus = 'active' | 'pending' | 'completed';
+export const BadgeStatus = [
+    'active',
+    'pending',
+    'completed',
+    'rejected',
+] as const;
+
+export type BadgeStatus = typeof BadgeStatus[number];
