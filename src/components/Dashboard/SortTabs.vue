@@ -1,14 +1,18 @@
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+const props = defineProps<{ activeTab: string }>();
+const emit = defineEmits(['update:activeTab']);
 
 const tabs = [
   { label: 'All', value: 'all' },
   { label: 'Pending', value: 'pending' },
   { label: 'Active', value: 'active' },
-  { label: 'Completed', value: 'completed' },
-]
+  { label: 'Completed', value: 'complete' },
+  { label: 'Rejected', value: 'reject' },
+];
 
-const activeTab = ref('all')
+function setTab(value: string) {
+  emit('update:activeTab', value);
+}
 </script>
 
 <template>
@@ -16,10 +20,10 @@ const activeTab = ref('all')
     <button
       v-for="tab in tabs"
       :key="tab.value"
-      @click="activeTab = tab.value"
+      @click="setTab(tab.value)"
       class="flex-1 text-center py-2 -mb-px mx-4 font-medium transition-colors"
-      :class="activeTab === tab.value 
-        ? 'text-gray-600 border-b-2 border-gray-600' 
+      :class="activeTab === tab.value
+        ? 'text-gray-600 border-b-2 border-gray-600'
         : 'text-gray-400 hover:text-gray-600'"
     >
       {{ tab.label }}

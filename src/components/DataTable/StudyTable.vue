@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ApproveButton, DrugsButton, RejectButton, ReportButton, ViewButton, Badges } from '@/components';
+import { computed, defineProps } from 'vue';
+import { ApproveButton, RejectButton, ViewButton, Badges } from '@/components';
 import type { Trial } from '@/types';
 
-// Mock data
-const trials = ref<Trial[]>([
-  { name: 'Trial A', id: '001', status: 'active' },
-  { name: 'Trial B', id: '002', status: 'completed' },
-  { name: 'Trial C', id: '003', status: 'rejected' },
-]);
+const props = defineProps<{
+  trials: Trial[];
+  filterStatus: string;
+}>();
 
+const filteredTrials = computed(() => {
+  if (props.filterStatus === 'all') return props.trials;
+
+  return props.trials.filter(
+    (trial) => trial.status.toLowerCase() === props.filterStatus.toLowerCase()
+  );
+});
 </script>
 
 <template>
@@ -26,22 +31,12 @@ const trials = ref<Trial[]>([
       </thead>
 
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="trial in trials" :key="trial.id" class="block md:table-row">
-          <td class="px-6 py-4 text-sm font-medium text-gray-900 hidden md:table-cell">
-            {{ trial.name }}
-          </td>
-          <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
-            {{ trial.id }}
-          </td>
-          <td class="px-6 py-4 text-sm hidden md:table-cell">
-            <Badges :status="trial.status" />
-          </td>
-          <td class="px-6 py-4 text-sm hidden md:table-cell">
-            <ViewButton />
-          </td>
-          <td class="px-6 py-4 text-sm hidden md:table-cell">
-            <ApproveButton />
-          </td>
+        <tr v-for="trial in filteredTrials" :key="trial.id" class="block md:table-row">
+          <td class="px-6 py-4 text-sm font-medium text-gray-900 hidden md:table-cell">{{ trial.name }}</td>
+          <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">{{ trial.id }}</td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell"><Badges :status="trial.status" /></td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell"><ViewButton /></td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell"><ApproveButton /></td>
 
           <!-- Mobile -->
           <td colspan="5" class="block md:hidden px-6 py-4">
