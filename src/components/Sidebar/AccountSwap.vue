@@ -15,7 +15,7 @@ const currentAccount = computed<UserRole | ''>(() => {
   return auth.accountType as UserRole;
 });
 
-const accounts = [
+const accounts: { label: string; icon: any; role: UserRole }[] = [
   { label: 'JH Doctor', icon: DoctorIcon, role: 'JHDoctor' },
   { label: 'JH Admin', icon: JHAdminIcon, role: 'JHAdmin' },
   { label: 'FDA Admin', icon: AdminIcon, role: 'FDA' },
@@ -30,6 +30,7 @@ const accounts = [
       :key="index"
       class="border-b h-[7rem] border-stone-300 w-full">
       <button
+       @click="auth.login(role)"
         :disabled="currentAccount === role"
         class="relative flex items-center w-full h-full px-4 rounded transition-all duration-300 hover:bg-stone-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-400">
         <span

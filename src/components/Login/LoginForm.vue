@@ -22,7 +22,21 @@ async function handle_login() {
     // Mock request API
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Mock auth logic
+    if (email.value === "user@test.com" && password.value === "password") {
+      success.value = true;
+      auth.login("JHDoctor");
+      router.push({ name: Routes.DASHBOARD });
+    } else {
+      throw new Error("Invalid Email or Password");
+    }
+  } catch (error) {
+    error_message.value =
+      error instanceof Error ? error.message : "Uncaught Exception";
+  } finally {
+    is_loading.value = false;
+  }
+
+    /* // Mock auth logic
     if (email.value === "bavaria@gmail.com" && password.value === "bavaria") {
       success.value = true;
       auth.login("Bavaria");
@@ -47,7 +61,7 @@ async function handle_login() {
       error instanceof Error ? error.message : "Uncaught Exception";
   } finally {
     is_loading.value = false;
-  }
+  } */
 }
 </script>
 
