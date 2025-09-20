@@ -6,8 +6,8 @@ const tabs = [
   { label: 'All', value: 'all' },
   { label: 'Pending', value: 'pending' },
   { label: 'Active', value: 'active' },
-  { label: 'Completed', value: 'complete' },
-  { label: 'Rejected', value: 'reject' },
+  { label: 'Completed', value: 'completed' },
+  { label: 'Rejected', value: 'rejected' },
 ];
 
 function setTab(value: string) {

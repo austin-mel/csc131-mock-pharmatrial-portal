@@ -14,8 +14,8 @@ const props = defineProps({
   <span
     :class="[
       'inline-block px-4 py-2 rounded-full font-bold text-center capitalize',
-      status === 'active' ? 'bg-yellow-400' : '',
-      status === 'pending' ? 'bg-gray-400' : '',
+      status === 'active' ? 'bg-yellow-300' : '',
+      status === 'pending' ? 'bg-gray-300' : '',
       status === 'completed' ? 'bg-green-400' : '',
       status === 'rejected' ? 'bg-red-400' : ''
     ]"

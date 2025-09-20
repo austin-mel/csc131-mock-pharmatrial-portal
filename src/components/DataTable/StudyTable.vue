@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, defineProps } from 'vue';
-import { ApproveButton, RejectButton, ViewButton, Badges } from '@/components';
+import { ApproveButton, RejectButton, ViewButton, Badges, DrugsButton, ReportButton } from '@/components';
 import type { Trial } from '@/types';
+import { useAuthStore } from '@/stores';
 
 const props = defineProps<{
   trials: Trial[];
@@ -14,6 +15,22 @@ const filteredTrials = computed(() => {
   return props.trials.filter(
     (trial) => trial.status.toLowerCase() === props.filterStatus.toLowerCase()
   );
+});
+
+const auth = useAuthStore();
+
+const userRoleKey = computed(() => {
+  switch (auth.accountType) {
+    case 'JHAdmin':
+    case 'JHDoctor':
+      return 'jh';
+    case 'FDA':
+      return 'fda';
+    case 'Bavaria':
+      return 'bav';
+    default:
+      return '';
+  }
 });
 </script>
 
@@ -36,7 +53,27 @@ const filteredTrials = computed(() => {
           <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">{{ trial.id }}</td>
           <td class="px-6 py-4 text-sm hidden md:table-cell"><Badges :status="trial.status" /></td>
           <td class="px-6 py-4 text-sm hidden md:table-cell"><ViewButton /></td>
-          <td class="px-6 py-4 text-sm hidden md:table-cell"><ApproveButton /></td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell">
+  <template v-if="!trial.rejected">
+    <ReportButton
+      v-if="trial.completed === true"
+      :trial="trial"
+      :userRoleKey="userRoleKey"
+    />
+    <div
+      v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
+      class="flex gap-2"
+    >
+      <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
+      <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
+    </div>
+    <DrugsButton
+      v-else-if="Object.values(trial.approvals).every(v => v === true)"
+      :trial="trial"
+      :userRoleKey="userRoleKey"
+    />
+  </template>
+</td>
 
           <!-- Mobile -->
           <td colspan="5" class="block md:hidden px-6 py-4">
@@ -51,8 +88,26 @@ const filteredTrials = computed(() => {
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
-              <ViewButton />
-              <RejectButton />
+              <ViewButton class="mr-2"/>
+  <template v-if="!trial.rejected">
+    <ReportButton
+      v-if="trial.completed === true"
+      :trial="trial"
+      :userRoleKey="userRoleKey"
+    />
+    <div
+      v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
+      class="flex gap-2"
+    >
+      <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
+      <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
+    </div>
+    <DrugsButton
+      v-else-if="Object.values(trial.approvals).every(v => v === true)"
+      :trial="trial"
+      :userRoleKey="userRoleKey"
+    />
+  </template>
             </div>
           </td>
         </tr>
