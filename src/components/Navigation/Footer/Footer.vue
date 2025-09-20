@@ -11,7 +11,7 @@ const current_year = ref(new Date().getFullYear());
             <div class="mb-4 ml-12 text-xs sm:text-sm sm:mb-0">
                 &copy; {{ current_year }} Austin Melendez. All Rights Reserved.
             </div>
-            <div class="flex space-x-4">
+            <div class="flex sm:space-x-4">
                 <SocialLinks />
             </div>
         </div>

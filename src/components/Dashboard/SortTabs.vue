@@ -12,7 +12,7 @@ const activeTab = ref('all')
 </script>
 
 <template>
-  <div class="flex border-b border-gray-300">
+  <div class="hidden sm:flex border-b border-gray-300">
     <button
       v-for="tab in tabs"
       :key="tab.value"
