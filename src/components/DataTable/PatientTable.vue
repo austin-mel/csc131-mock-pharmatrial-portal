@@ -2,12 +2,13 @@
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores';
 import { ViewButton } from '@/components';
+import { CheckIcon, RejectIcon } from '@/assets';
 
 // Mock data
-const trials = ref([
-  { name: 'Jane Doe', id: '00af1', status: '1' },
-  { name: 'Josh Allen', id: '00eaga2', status: '4' },
-  { name: 'Lighnting McQueen', id: '00313513', status: '5' },
+const patients = ref([
+  { name: 'Jane Doe', id: '00af1', status: '1', eligibility: true, },
+  { name: 'Josh Allen', id: '00eaga2', status: '4', eligibility: true, },
+  { name: 'Lighnting McQueen', id: '00313513', status: '5', eligibility: false, },
 ])
 
 const auth = useAuthStore();
@@ -32,36 +33,40 @@ const currentRole = computed(() => {
       </thead>
 
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="trial in trials" :key="trial.id" class="block md:table-row">
+        <tr v-for="patient in patients" :key="patient.id" class="block md:table-row">
           <td class="px-6 py-4 text-sm font-medium text-gray-900 hidden md:table-cell">
-            {{ trial.name }}
+            {{ patient.name }}
           </td>
           <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
-            {{ trial.id }}
+            {{ patient.id }}
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
-            {{ trial.status }}
+            {{ patient.status }}
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <ViewButton />
           </td>
-          <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">Eligibility</td>
+          <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 hidden md:table-cell"> 
+            <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" /> 
+            <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span> 
+          </td>
 
           <!-- Mobile -->
           <td colspan="5" class="block md:hidden px-6 py-4">
             <div class="flex justify-between items-start">
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ trial.name }}</p>
-                <p class="text-xs text-gray-500">ID: {{ trial.id }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ patient.name }}</p>
+                <p class="text-xs text-gray-500">ID: {{ patient.id }}</p>
               </div>
-              <div v-if="currentRole === 'JHAdmin'" class="text-sm font-medium text-gray-700">
-                Eligibility
+              <div v-if="currentRole === 'JHAdmin'"> 
+                <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" /> 
+                <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span> 
               </div>
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
               <ViewButton />
-              <div class="text-sm font-medium">{{ trial.status }}</div>
+              <div class="text-sm font-medium">{{ patient.status }}</div>
             </div>
           </td>
         </tr>
