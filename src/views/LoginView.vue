@@ -9,7 +9,7 @@ import Postit from "@/assets/postit.png";
       <img
         :src="Postit"
         alt="Postit"
-        class="w-65 h-auto mb-4 relative sm:absolute sm:top-10 sm:-right-100 sm:w-150"
+        class="w-65 h-auto mb-4 relative sm:absolute top-10 sm:-right-100 sm:w-150 -rotate-15"
       />
 
       <h1 class="hidden sm:flex mb-8 text-4xl font-extrabold text-center">

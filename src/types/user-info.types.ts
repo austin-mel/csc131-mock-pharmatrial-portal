@@ -9,7 +9,6 @@ export interface UserContactInfo {
 
 
 export const UserRoles = [
-    '',
     'Bavaria',
     'JHDoctor',
     'JHAdmin',
@@ -26,6 +25,5 @@ export interface UserInformation {
 
     role:    UserRole;
 
-    date_of_hire: string;
-
+    date: Date;
 }

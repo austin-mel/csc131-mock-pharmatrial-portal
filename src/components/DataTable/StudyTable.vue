@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ApproveButton, DrugsButton, RejectButton, ReportButton, ViewButton } from '@/components';
+import { ApproveButton, DrugsButton, RejectButton, ReportButton, ViewButton, Badges } from '@/components';
 
 // Mock data
 const trials = ref([
@@ -32,7 +32,7 @@ const trials = ref([
             {{ trial.id }}
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
-            {{ trial.status }}
+            <Badge :status="trial.status" />
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <ViewButton />

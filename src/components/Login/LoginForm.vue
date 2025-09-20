@@ -35,33 +35,6 @@ async function handle_login() {
   } finally {
     is_loading.value = false;
   }
-
-    /* // Mock auth logic
-    if (email.value === "bavaria@gmail.com" && password.value === "bavaria") {
-      success.value = true;
-      auth.login("Bavaria");
-      router.push({ name: Routes.DASHBOARD });
-    } else if (email.value === "jh@gmail.com" && password.value === "jh") {
-      success.value = true;
-      auth.login("JHDoctor");
-      router.push({ name: Routes.DASHBOARD });
-    } else if (email.value === "jhadmin@gmail.com" && password.value === "jh") {
-      success.value = true;
-      auth.login("JHAdmin");
-      router.push({ name: Routes.DASHBOARD });
-    } else if (email.value === "fda@gmail.com" && password.value === "fda") {
-      success.value = true;
-      auth.login("FDA");
-      router.push({ name: Routes.DASHBOARD });
-    } else {
-      throw new Error("Invalid Email or Password");
-    }
-  } catch (error) {
-    error_message.value =
-      error instanceof Error ? error.message : "Uncaught Exception";
-  } finally {
-    is_loading.value = false;
-  } */
 }
 </script>
 
