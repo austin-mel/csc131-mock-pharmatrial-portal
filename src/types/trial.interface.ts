@@ -1,9 +1,11 @@
-import type { BadgeStatus } from "./badges.types";
+import type { BadgeStatus, PatientInformation } from "@/types";
 
 export interface Trial {
     name: string;
 
     id: string;
+
+    drug_id: PatientInformation['id'];
     
     status: BadgeStatus;
 

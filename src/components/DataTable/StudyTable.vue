@@ -41,9 +41,9 @@ const userRoleKey = computed(() => {
         <tr>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Trial Name</th>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Trial ID</th>
-          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase">Status</th>
-          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase">View</th>
-          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase">Actions</th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">View</th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Actions</th>
         </tr>
       </thead>
 
@@ -51,29 +51,31 @@ const userRoleKey = computed(() => {
         <tr v-for="trial in filteredTrials" :key="trial.id" class="block md:table-row">
           <td class="px-6 py-4 text-sm font-medium text-gray-900 hidden md:table-cell">{{ trial.name }}</td>
           <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">{{ trial.id }}</td>
-          <td class="px-6 py-4 text-sm hidden md:table-cell"><Badges :status="trial.status" /></td>
-          <td class="px-6 py-4 text-sm hidden md:table-cell"><ViewButton /></td>
+          <td class="px-6 py-4 text-center text-sm hidden md:table-cell">
+            <Badges :status="trial.status" />
+          </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
-  <template v-if="!trial.rejected">
-    <ReportButton
-      v-if="trial.completed === true"
-      :trial="trial"
-      :userRoleKey="userRoleKey"
-    />
-    <div
-      v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
-      class="flex gap-2"
-    >
-      <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
-      <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
-    </div>
-    <DrugsButton
-      v-else-if="Object.values(trial.approvals).every(v => v === true)"
-      :trial="trial"
-      :userRoleKey="userRoleKey"
-    />
-  </template>
-</td>
+            <div class="flex justify-center">
+              <ViewButton />
+            </div>
+          </td>
+          <td class="px-6 py-4 text-sm hidden md:table-cell">
+            <template v-if="!trial.rejected">
+              <div v-if="trial.completed === true" class="flex justify-center">
+                <ReportButton :trial="trial" :userRoleKey="userRoleKey" />
+              </div>
+
+              <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
+                class="flex justify-center gap-2">
+                <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
+                <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
+              </div>
+
+              <div v-else-if="Object.values(trial.approvals).every(v => v === true)" class="flex justify-center">
+                <DrugsButton :trial="trial" :userRoleKey="userRoleKey" />
+              </div>
+            </template>
+          </td>
 
           <!-- Mobile -->
           <td colspan="5" class="block md:hidden px-6 py-4">
@@ -88,26 +90,17 @@ const userRoleKey = computed(() => {
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
-              <ViewButton class="mr-2"/>
-  <template v-if="!trial.rejected">
-    <ReportButton
-      v-if="trial.completed === true"
-      :trial="trial"
-      :userRoleKey="userRoleKey"
-    />
-    <div
-      v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
-      class="flex gap-2"
-    >
-      <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
-      <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
-    </div>
-    <DrugsButton
-      v-else-if="Object.values(trial.approvals).every(v => v === true)"
-      :trial="trial"
-      :userRoleKey="userRoleKey"
-    />
-  </template>
+              <ViewButton class="mr-2" />
+              <template v-if="!trial.rejected">
+                <ReportButton v-if="trial.completed === true" :trial="trial" :userRoleKey="userRoleKey" />
+                <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
+                  class="flex gap-2">
+                  <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
+                  <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
+                </div>
+                <DrugsButton v-else-if="Object.values(trial.approvals).every(v => v === true)" :trial="trial"
+                  :userRoleKey="userRoleKey" />
+              </template>
             </div>
           </td>
         </tr>

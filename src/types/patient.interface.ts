@@ -1,4 +1,4 @@
-import type { Appointment, PersonName } from ".";
+import type { Appointment, PersonName, Trial } from "@/types";
 
 export interface PatientContactInfo {
     phone_number: string;
@@ -30,6 +30,9 @@ export interface PatientInformation {
 
     id: string;
 
+    study_id: Trial['id'];
+
+    drug_id: Trial['drug_id'];
 
     contact: PatientContactInfo;
 
@@ -59,7 +62,7 @@ export interface PatientInformation {
 
     eligibility: boolean;
 
-    stage: number;
+    dose: number;
     
     appointments: Appointment[];
 }

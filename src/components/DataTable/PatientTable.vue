@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores';
 import { ViewButton } from '@/components';
 import { CheckIcon, RejectIcon } from '@/assets';
 import type { PatientInformation, Appointment } from '@/types';
+import { ProgressBar } from '../ProgressBar';
 
 // Mock data
 const sampleAppointments: Appointment[] = [
@@ -56,9 +57,11 @@ const patients = ref<PatientInformation[]>([
     icdcodes: [
       { code: 'I10' },
     ],
-    stage: 1,
+    dose: 1,
     eligibility: true,
     appointments: sampleAppointments,
+    study_id: '',
+    drug_id: ''
   },
   {
     name: { first: 'Josh', last: 'Allen' },
@@ -79,9 +82,11 @@ const patients = ref<PatientInformation[]>([
     medications: [],
     history: [],
     icdcodes: [],
-    stage: 4,
+    dose: 4,
     eligibility: false,
     appointments: [],
+    study_id: '',
+    drug_id: ''
   },
   {
     name: { first: 'Lightning', last: 'McQueen' },
@@ -108,9 +113,11 @@ const patients = ref<PatientInformation[]>([
     icdcodes: [
       { code: 'Z99.89' },
     ],
-    stage: 5,
+    dose: 5,
     eligibility: true,
     appointments: [],
+    study_id: '',
+    drug_id: ''
   },
   {
     name: { first: 'Josh', last: 'Allen' },
@@ -131,9 +138,11 @@ const patients = ref<PatientInformation[]>([
     medications: [],
     history: [],
     icdcodes: [],
-    stage: 4,
+    dose: 4,
     eligibility: false,
     appointments: [],
+    study_id: '',
+    drug_id: ''
   },
   {
     name: { first: 'Josh', last: 'Allen' },
@@ -154,9 +163,11 @@ const patients = ref<PatientInformation[]>([
     medications: [],
     history: [],
     icdcodes: [],
-    stage: 4,
+    dose: 4,
     eligibility: false,
     appointments: [],
+    study_id: '',
+    drug_id: ''
   },
 ]);
 
@@ -175,9 +186,9 @@ const currentRole = computed(() => {
         <tr>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Patient ID</th>
-          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase">Stage</th>
-          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase">View</th>
-          <th v-if="currentRole === 'JHAdmin'" class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase">Eligibility</th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Stage</th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">View</th>
+          <th v-if="currentRole === 'JHAdmin'" class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Eligibility</th>
         </tr>
       </thead>
 
@@ -190,10 +201,12 @@ const currentRole = computed(() => {
             {{ patient.id }}
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
-            {{ patient.stage }}
+            <ProgressBar :currentStep=patient.dose />
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
-            <ViewButton />
+            <div class="flex justify-center">
+              <ViewButton />
+            </div>
           </td>
           <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 hidden md:table-cell"> 
             <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" /> 
@@ -215,7 +228,7 @@ const currentRole = computed(() => {
 
             <div class="flex justify-between items-center mt-3 pt-2">
               <ViewButton />
-              <div class="text-sm font-medium">{{ patient.stage }}</div>
+              <div class="text-md font-medium">Dose: {{ patient.dose }} / 5</div>
             </div>
           </td>
         </tr>

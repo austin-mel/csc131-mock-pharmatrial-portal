@@ -5,3 +5,4 @@ export * from "./Dashboard";
 export * from "./DataTable";
 export * from "./ActionButtons";
 export * from "./Badges";
+export * from "./ProgressBar";

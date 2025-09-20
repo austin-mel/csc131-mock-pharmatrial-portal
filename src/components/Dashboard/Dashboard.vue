@@ -19,7 +19,8 @@ const trials = ref<Trial[]>([
     },
     active: true,
     completed: false,
-    rejected: false
+    rejected: false,
+    drug_id: ''
   },
   {
     name: 'Trial B',
@@ -32,7 +33,8 @@ const trials = ref<Trial[]>([
     },
     active: false,
     completed: false,
-    rejected: false
+    rejected: false,
+    drug_id: ''
   },
   {
     name: 'Trial C',
@@ -45,7 +47,8 @@ const trials = ref<Trial[]>([
     },
     active: true,
     completed: true,
-    rejected: false
+    rejected: false,
+    drug_id: ''
   },
   {
     name: 'Trial D',
@@ -58,7 +61,8 @@ const trials = ref<Trial[]>([
     },
     active: false,
     completed: false,
-    rejected: true
+    rejected: true,
+    drug_id: ''
   }
 ]);
 
@@ -69,7 +73,7 @@ const userRole = computed(() => auth.accountType);
   <div class="flex">
     <Sidebar v-if="auth.isLoggedIn" />
 
-    <div class="bg-white w-screen rounded-lg ml-[4rem] sm:mx-[8rem] mt-[4rem] sm:mt-[16rem] sm:h-[100vh] shadow sm:p-4">
+    <div class="bg-white w-screen rounded-lg ml-[4rem] sm:mx-[8rem] mt-[4rem] sm:mt-[16rem] sm:h-[100vh] shadow p-4">
       <div class="flex justify-center sm:justify-between items-center mb-4">
         <NewStudy />
         <SortTabs v-model:activeTab="activeTab" />
