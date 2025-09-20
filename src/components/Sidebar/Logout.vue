@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { LogoutIcon } from '@/assets/icons'
+import { useAuthStore } from '@/stores';
+
+const auth = useAuthStore();
 
 defineProps<{
   collapsed: boolean
@@ -9,6 +12,7 @@ defineProps<{
 <template>
   <div class="w-full sm:border-t border-stone-300 mt-2">
     <button
+      @click="auth.logout"
       class="relative flex items-center w-full h-[5rem] px-4 rounded transition-all duration-300 hover:bg-stone-200"
       :class="collapsed ? 'justify-center' : 'justify-start'">
       <span
