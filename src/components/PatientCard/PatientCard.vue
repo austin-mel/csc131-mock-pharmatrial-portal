@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue'
+import { ref, watch, reactive, computed } from 'vue'
 import { Appointments, Drawer, NewAppointment } from '@/components'
 import { CheckIcon, CloseIcon, EditIcon, RejectIcon, SaveIcon, UserIcon } from '@/assets'
 import type { PatientInformation } from '@/types'
@@ -16,15 +16,17 @@ const isEditing = ref(false)
 const editablePatient = reactive({
   nameFirst: props.patient?.name.first || '',
   nameLast: props.patient?.name.last || '',
-  dob: props.patient?.dob || '',
+  dob: props.patient?.dob ? new Date(props.patient.dob) : new Date(),
   address: props.patient?.address || '',
   insurance_num: props.patient?.insurance_num || '',
   height: props.patient?.height || 0,
   weight: props.patient?.weight || 0,
-  blood: props.patient?.blood || ''
+  blood: props.patient?.blood || '',
+  employed: props.patient?.employed ?? false,
+  insured: props.patient?.insured ?? false
 })
 
-watch(() => props.modelValue, val => (showModal.value = val))
+watch(() => props.modelValue, val => showModal.value = val)
 watch(showModal, val => {
   emit('update:modelValue', val)
   if (!val) revertEdits()
@@ -34,12 +36,14 @@ function revertEdits() {
   if (!props.patient) return
   editablePatient.nameFirst = props.patient.name.first
   editablePatient.nameLast = props.patient.name.last
-  editablePatient.dob = props.patient.dob
+  editablePatient.dob = props.patient.dob ? new Date(props.patient.dob) : new Date()
   editablePatient.address = props.patient.address
   editablePatient.insurance_num = props.patient.insurance_num
   editablePatient.height = props.patient.height
   editablePatient.weight = props.patient.weight
   editablePatient.blood = props.patient.blood
+  editablePatient.employed = props.patient.employed
+  editablePatient.insured = props.patient.insured
   isEditing.value = false
 }
 
@@ -57,6 +61,8 @@ function saveChanges() {
   props.patient.height = editablePatient.height
   props.patient.weight = editablePatient.weight
   props.patient.blood = editablePatient.blood
+  props.patient.employed = editablePatient.employed
+  props.patient.insured = editablePatient.insured
   isEditing.value = false
 }
 
@@ -64,34 +70,44 @@ function close() {
   showModal.value = false
 }
 
-const displayObjects = <T>(list: T[] | null | undefined, formatter: (item: T) => string): string =>
-  list && list.length ? list.map(formatter).join(', ') : 'None'
+function displayObjects<T>(list: T[] | null | undefined, formatter: (item: T) => string): string {
+  return list && list.length ? list.map(formatter).join(', ') : 'None'
+}
+
+const formattedDob = computed(() => {
+  if (!props.patient?.dob) return ''
+  return props.patient.dob.toLocaleDateString('en-US')
+})
+
+function parseDateFromInput(value: string): Date {
+  const [year, month, day] = value.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
 </script>
 
 <template>
   <Drawer v-model="showModal" role="dialog" aria-modal="true" aria-label="Patient details">
-    <div v-if="props.patient" class="m-4 relative focus:outline-none">
+    <div v-if="props.patient" class="m-4">
 
       <div class="flex items-center gap-4 mb-4">
-        <UserIcon class="w-16 h-auto" />
-        <div>
+        <UserIcon v-if="!isEditing" class="w-16 h-auto" />
+        <div class="flex-1">
           <template v-if="!isEditing">
             <p class="font-semibold text-lg">{{ props.patient.name.first }} {{ props.patient.name.last }}</p>
-            <p class="text-sm text-gray-600">{{ props.patient.dob }}</p>
+            <p class="text-sm text-gray-600">{{ formattedDob }}</p>
           </template>
           <template v-else>
-            <div class="relative group">
-              <input v-model="editablePatient.nameFirst" class="border p-1 rounded w-full mb-1" placeholder="First Name" />
-              <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter first name</span>
-            </div>
-            <div class="relative group">
-              <input v-model="editablePatient.nameLast" class="border p-1 rounded w-full mb-1" placeholder="Last Name" />
-              <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter last name</span>
-            </div>
-            <div class="relative group">
-              <input v-model="editablePatient.dob" class="border p-1 rounded w-full" placeholder="DOB" />
-              <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter date of birth</span>
-            </div>
+            <input v-model="editablePatient.nameFirst" class="border p-1 rounded w-full mb-1" placeholder="First Name" />
+            <input v-model="editablePatient.nameLast" class="border p-1 rounded w-full mb-1" placeholder="Last Name" />
+            <input
+              type="date"
+              :value="editablePatient.dob.toISOString().substring(0,10)"
+              @input="(e: Event) => {
+                const target = e.target as HTMLInputElement
+                editablePatient.dob = parseDateFromInput(target.value)
+              }"
+              class="border p-1 rounded w-full"
+            />
           </template>
         </div>
       </div>
@@ -104,36 +120,21 @@ const displayObjects = <T>(list: T[] | null | undefined, formatter: (item: T) =>
           <p>{{ props.patient.insurance_num }}</p>
         </template>
         <template v-else>
-          <div class="relative group">
-            <input v-model="editablePatient.address" class="border p-1 rounded w-full" placeholder="Address" />
-            <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter address</span>
-          </div>
-          <div class="relative group">
-            <input v-model="editablePatient.insurance_num" class="border p-1 rounded w-full" placeholder="Insurance #" />
-            <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter insurance number</span>
-          </div>
+          <input v-model="editablePatient.address" class="border p-1 rounded w-full" placeholder="Address" />
+          <input v-model="editablePatient.insurance_num" class="border p-1 rounded w-full" placeholder="Insurance #" />
         </template>
       </div>
 
-      <div class="grid grid-cols-3 gap-4 text-sm text-center">
+      <div class="grid grid-cols-3 gap-4 text-sm text-center my-3">
         <template v-if="!isEditing">
           <p>{{ props.patient.height }} in</p>
           <p>{{ props.patient.weight }} lbs</p>
           <p>{{ props.patient.blood }}</p>
         </template>
         <template v-else>
-          <div class="relative group">
-            <input v-model.number="editablePatient.height" type="number" class="border p-1 rounded w-full" placeholder="Height" />
-            <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter height in inches</span>
-          </div>
-          <div class="relative group">
-            <input v-model.number="editablePatient.weight" type="number" class="border p-1 rounded w-full" placeholder="Weight" />
-            <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter weight in pounds</span>
-          </div>
-          <div class="relative group">
-            <input v-model="editablePatient.blood" class="border p-1 rounded w-full" placeholder="Blood Type" />
-            <span class="absolute left-0 -top-6 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full">Enter blood type</span>
-          </div>
+          <input v-model.number="editablePatient.height" type="number" class="border p-1 rounded w-full" placeholder="Height" />
+          <input v-model.number="editablePatient.weight" type="number" class="border p-1 rounded w-full" placeholder="Weight" />
+          <input v-model="editablePatient.blood" class="border p-1 rounded w-full" placeholder="Blood Type" />
         </template>
       </div>
 
@@ -142,13 +143,42 @@ const displayObjects = <T>(list: T[] | null | undefined, formatter: (item: T) =>
       <div class="my-3 text-sm grid grid-cols-2 text-center gap-4">
         <div>
           <span class="font-medium block mb-1">Employed?</span>
-          <component :is="props.patient.employed ? CheckIcon : RejectIcon" class="w-6 h-6 mx-auto" :class="props.patient.employed ? 'text-green-600' : 'text-red-600'" aria-hidden="true" />
-          <span class="sr-only">{{ props.patient.employed ? 'Employed' : 'Not employed' }}</span>
+          <template v-if="!isEditing">
+            <component :is="props.patient.employed ? CheckIcon : RejectIcon" class="w-6 h-6 mx-auto" :class="props.patient.employed ? 'text-green-600' : 'text-red-600'" />
+          </template>
+          <template v-else>
+            <button
+              type="button"
+              class="relative inline-flex items-center h-6 w-12 rounded-full transition-colors"
+              :class="editablePatient.employed ? 'bg-green-500' : 'bg-gray-300'"
+              @click="editablePatient.employed = !editablePatient.employed"
+            >
+              <span
+                class="inline-block w-5 h-5 transform bg-white rounded-full shadow transition-transform"
+                :class="editablePatient.employed ? 'translate-x-6' : 'translate-x-1'"
+              ></span>
+            </button>
+          </template>
         </div>
+
         <div>
           <span class="font-medium block mb-1">Insured?</span>
-          <component :is="props.patient.insured ? CheckIcon : RejectIcon" class="w-6 h-6 mx-auto" :class="props.patient.insured ? 'text-green-600' : 'text-red-600'" aria-hidden="true" />
-          <span class="sr-only">{{ props.patient.insured ? 'Insured' : 'Not insured' }}</span>
+          <template v-if="!isEditing">
+            <component :is="props.patient.insured ? CheckIcon : RejectIcon" class="w-6 h-6 mx-auto" :class="props.patient.insured ? 'text-green-600' : 'text-red-600'" />
+          </template>
+          <template v-else>
+            <button
+              type="button"
+              class="relative inline-flex items-center h-6 w-12 rounded-full transition-colors"
+              :class="editablePatient.insured ? 'bg-green-500' : 'bg-gray-300'"
+              @click="editablePatient.insured = !editablePatient.insured"
+            >
+              <span
+                class="inline-block w-5 h-5 transform bg-white rounded-full shadow transition-transform"
+                :class="editablePatient.insured ? 'translate-x-6' : 'translate-x-1'"
+              ></span>
+            </button>
+          </template>
         </div>
       </div>
 
@@ -172,10 +202,10 @@ const displayObjects = <T>(list: T[] | null | undefined, formatter: (item: T) =>
       </div>
 
       <div class="flex justify-between">
-        <button type="button" @click="toggleEdit" class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300">
+        <button type="button" @click="toggleEdit" class="flex items-center px-3 py-1 border rounded">
           <component :is="isEditing ? CloseIcon : EditIcon" class="w-6 h-6 pr-2" />{{ isEditing ? 'Cancel' : 'Edit' }}
         </button>
-        <button type="button" @click="isEditing ? saveChanges() : close()" class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300" :aria-label="isEditing ? 'Save patient changes' : 'Close patient details'">
+        <button type="button" @click="isEditing ? saveChanges() : close()" class="flex items-center px-3 py-1 border rounded">
           <component :is="isEditing ? SaveIcon : CloseIcon" class="w-6 h-6 pr-2" />{{ isEditing ? 'Save' : 'Close' }}
         </button>
       </div>
