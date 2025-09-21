@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { Sidebar, NewStudy, SortTabs, StudyTable, PatientTable } from '@/components'
+import { Sidebar, NewStudy, SortTabs, StudyTable, PatientTable, PatientCard } from '@/components'
 import { useAuthStore } from '@/stores'
 import type { Appointment, Trial, PatientInformation } from '@/types'
 
@@ -10,6 +10,7 @@ const activeTab = ref('all')
 const showPatientTable = ref(false)
 const selectedTrial = ref<Trial | null>(null)
 const selectedPatient = ref<PatientInformation | null>(null)
+const showPatientModal = ref(false)
 
 function handleViewTrial(trial: Trial) {
   console.log('Viewing trial:', trial)
@@ -20,7 +21,7 @@ function handleViewTrial(trial: Trial) {
 function handleViewPatient(patient: PatientInformation) {
   console.log('Viewing patient:', patient)
   selectedPatient.value = patient
-  showPatientTable.value = false
+  showPatientModal.value = true
 }
 
 function resetView() {
@@ -166,6 +167,13 @@ const trials = ref<Trial[]>([
       <div class="flex justify-center sm:justify-between items-center mb-4">
         <NewStudy v-if="!showPatientTable"/>
         <SortTabs v-if="!showPatientTable" v-model:activeTab="activeTab" />
+        <button
+    v-if="showPatientTable"
+    @click="resetView"
+    class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+  >
+    Back to Studies
+  </button>
       </div>
 
       <div class="flex">
@@ -181,6 +189,11 @@ const trials = ref<Trial[]>([
           :filterStatus="activeTab"
           @view="handleViewTrial"
         />
+
+        <PatientCard
+        :patient="selectedPatient"
+        v-model="showPatientModal"
+      />
       </div>
     </div>
   </div>

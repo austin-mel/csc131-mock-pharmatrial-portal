@@ -7,3 +7,4 @@ export * from "./ActionButtons";
 export * from "./Badges";
 export * from "./ProgressBar";
 export * from "./Drawer";
+export * from "./PatientCard";
