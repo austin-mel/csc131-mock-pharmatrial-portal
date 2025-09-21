@@ -6,7 +6,7 @@ const emit = defineEmits(['click']);
 <template>
     <button
       @click="$emit('click')"
-      class="relative flex items-center px-2 border-1 rounded border-stone-800 hover:bg-stone-700">
+      class="relative flex items-center px-2 border-1 rounded hover:bg-stone-300">
       <PlusIcon class="w-8 h-8 pr-2"/>
 
       New Appointment

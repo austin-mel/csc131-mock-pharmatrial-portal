@@ -192,17 +192,21 @@ const trials = ref<Trial[]>([
     <Sidebar v-if="auth.isLoggedIn" @reset-view="resetView" />
 
     <div class="bg-white w-screen rounded-lg ml-[4rem] sm:mx-[8rem] mt-[4rem] sm:mt-[16rem] sm:h-[100vh] shadow p-4">
-      <div class="flex justify-center sm:justify-between items-center mb-4">
-        <NewStudy v-if="!showPatientTable"/>
-        <SortTabs v-if="!showPatientTable" v-model:activeTab="activeTab" />
-        <button
+<div
+  class="flex items-center mb-4"
+  :class="showPatientTable ? 'justify-center' : 'justify-between'"
+>
+  <NewStudy v-if="!showPatientTable" />
+  <SortTabs v-if="!showPatientTable" v-model:activeTab="activeTab" />
+
+  <button
     v-if="showPatientTable"
     @click="resetView"
     class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
   >
     Back to Studies
   </button>
-      </div>
+</div>
 
       <div class="flex">
         <PatientTable
