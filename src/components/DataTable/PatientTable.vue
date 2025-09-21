@@ -3,173 +3,8 @@ import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores';
 import { ViewButton } from '@/components';
 import { CheckIcon, RejectIcon } from '@/assets';
-import type { PatientInformation, Appointment } from '@/types';
+import type { PatientInformation, Appointment, Trial } from '@/types';
 import { ProgressBar } from '../ProgressBar';
-
-// Mock data
-const sampleAppointments: Appointment[] = [
-  {
-    date: new Date('2025-09-01T10:00:00Z'),
-    o2: 97,
-    bp: '120/80',
-    temp: 98.6,
-    hiv: 0,
-    notes: [],
-    doctor: 'Dr. Smith',
-  },
-  {
-    date: new Date('2025-09-15T14:30:00Z'),
-    o2: 95,
-    bp: '118/76',
-    temp: 98.4,
-    hiv: 1,
-    notes: [{ notes: 'Patient reported mild headache.' }],
-    doctor: 'Dr. Adams',
-  },
-];
-
-// Mock patients data
-const patients = ref<PatientInformation[]>([
-  {
-    name: { first: 'Jane', last: 'Doe' },
-    id: '00af1',
-    contact: {
-      phone_number: '123-456-7890',
-      email: 'jane.doe@example.com',
-    },
-    dob: '1985-04-12',
-    address: '123 Main St, Springfield',
-    insurance_num: 'INS-001',
-    height: 165,
-    weight: 65,
-    blood: 'A+',
-    employed: true,
-    insured: true,
-    allergies: [
-      { name: 'Peanuts', reactions: 'Anaphylaxis' },
-    ],
-    medications: [
-      { name: 'Lisinopril', purpose: 'Blood pressure control' },
-    ],
-    history: [
-      { disease: 'Hypertension', carrier: 'Father' },
-    ],
-    icdcodes: [
-      { code: 'I10' },
-    ],
-    dose: 1,
-    eligibility: true,
-    appointments: sampleAppointments,
-    study_id: '',
-    drug_id: ''
-  },
-  {
-    name: { first: 'Josh', last: 'Allen' },
-    id: '00eaga2',
-    contact: {
-      phone_number: '555-123-4567',
-      email: 'josh.allen@example.com',
-    },
-    dob: '1990-09-20',
-    address: '456 Elm St, Buffalo',
-    insurance_num: 'INS-002',
-    height: 193,
-    weight: 98,
-    blood: 'O+',
-    employed: true,
-    insured: true,
-    allergies: [],
-    medications: [],
-    history: [],
-    icdcodes: [],
-    dose: 4,
-    eligibility: false,
-    appointments: [],
-    study_id: '',
-    drug_id: ''
-  },
-  {
-    name: { first: 'Lightning', last: 'McQueen' },
-    id: '00313513',
-    contact: {
-      phone_number: '999-888-7777',
-      email: 'kachow@racing.com',
-    },
-    dob: '2006-06-16',
-    address: 'Route 66, Radiator Springs',
-    insurance_num: 'INS-003',
-    height: 180,
-    weight: 75,
-    blood: 'B-',
-    employed: false,
-    insured: false,
-    allergies: [
-      { name: 'Oil', reactions: 'Overheating' },
-    ],
-    medications: [],
-    history: [
-      { disease: 'Engine failure', carrier: 'Unknown' },
-    ],
-    icdcodes: [
-      { code: 'Z99.89' },
-    ],
-    dose: 5,
-    eligibility: true,
-    appointments: [],
-    study_id: '',
-    drug_id: ''
-  },
-  {
-    name: { first: 'Josh', last: 'Allen' },
-    id: '00eaga2',
-    contact: {
-      phone_number: '555-123-4567',
-      email: 'josh.allen@example.com',
-    },
-    dob: '1990-09-20',
-    address: '456 Elm St, Buffalo',
-    insurance_num: 'INS-002',
-    height: 193,
-    weight: 98,
-    blood: 'O+',
-    employed: true,
-    insured: true,
-    allergies: [],
-    medications: [],
-    history: [],
-    icdcodes: [],
-    dose: 4,
-    eligibility: false,
-    appointments: [],
-    study_id: '',
-    drug_id: ''
-  },
-  {
-    name: { first: 'Josh', last: 'Allen' },
-    id: '00eaga2',
-    contact: {
-      phone_number: '555-123-4567',
-      email: 'josh.allen@example.com',
-    },
-    dob: '1990-09-20',
-    address: '456 Elm St, Buffalo',
-    insurance_num: 'INS-002',
-    height: 193,
-    weight: 98,
-    blood: 'O+',
-    employed: true,
-    insured: true,
-    allergies: [],
-    medications: [],
-    history: [],
-    icdcodes: [],
-    dose: 4,
-    eligibility: false,
-    appointments: [],
-    study_id: '',
-    drug_id: ''
-  },
-]);
 
 const auth = useAuthStore();
 
@@ -177,6 +12,10 @@ const currentRole = computed(() => {
   if (!auth.isLoggedIn || !auth.accountType) return '';
   return auth.accountType;
 });
+
+const props = defineProps<{
+  patients: PatientInformation[];
+}>();
 </script>
 
 <template>
@@ -193,7 +32,7 @@ const currentRole = computed(() => {
       </thead>
 
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="patient in patients" :key="patient.id" class="block md:table-row">
+        <tr v-for="patient in props.patients" :key="patient.id" class="block md:table-row">
           <td class="px-6 py-4 text-sm font-medium text-gray-900 hidden md:table-cell">
             {{ patient.name.first }} {{ patient.name.last }}
           </td>
@@ -205,7 +44,7 @@ const currentRole = computed(() => {
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <div class="flex justify-center">
-              <ViewButton />
+              <ViewButton @click="$emit('view', patient)" />
             </div>
           </td>
           <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 hidden md:table-cell"> 
@@ -227,7 +66,7 @@ const currentRole = computed(() => {
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
-              <ViewButton />
+              <ViewButton @click="$emit('view', patient)" />
               <div class="text-md font-medium">Dose: {{ patient.dose }} / 5</div>
             </div>
           </td>

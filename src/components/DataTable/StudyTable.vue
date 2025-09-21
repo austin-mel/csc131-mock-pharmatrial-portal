@@ -56,7 +56,7 @@ const userRoleKey = computed(() => {
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <div class="flex justify-center">
-              <ViewButton />
+              <ViewButton @click="$emit('view', trial)" />
             </div>
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
@@ -90,7 +90,7 @@ const userRoleKey = computed(() => {
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
-              <ViewButton class="mr-2" />
+              <ViewButton @click="$emit('view', trial)" class="mr-2"/>
               <template v-if="!trial.rejected">
                 <ReportButton v-if="trial.completed === true" :trial="trial" :userRoleKey="userRoleKey" />
                 <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
