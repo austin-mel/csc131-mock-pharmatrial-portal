@@ -36,7 +36,7 @@ export interface PatientInformation {
 
     contact: PatientContactInfo;
 
-    dob: string;
+    dob: Date;
 
     address: string;
 
