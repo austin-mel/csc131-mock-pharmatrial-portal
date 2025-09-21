@@ -1,47 +1,50 @@
 <script setup lang="ts">
-import { ref, defineProps } from 'vue'
-import { type DrawerProps } from './drawer.props';
+import { onMounted, onUnmounted } from 'vue'
+import { CloseIcon } from '@/assets'
 
+const props = defineProps<{
+  modelValue: boolean
+}>()
 
-defineProps < DrawerProps > ();
+const emit = defineEmits(['update:modelValue'])
 
-
-const is_open = ref(false)
-
-const toggle_drawer = () => {
-    is_open.value = !is_open.value
+function close() {
+  emit('update:modelValue', false)
 }
 
-const close_drawer = () => {
-    is_open.value = false
+function onEsc(e: KeyboardEvent) {
+  if (e.key === 'Escape') close()
 }
+
+onMounted(() => document.addEventListener('keydown', onEsc))
+onUnmounted(() => document.removeEventListener('keydown', onEsc))
 </script>
 
 <template>
-    <div>
-        <!-- Toggle button -->
-        <button @click="toggle_drawer"
-            class="fixed z-30 p-2 text-gray-800 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
-            <MenuIcon v-if="!is_open" class="w-6 h-6" />
-            <XIcon v-else class="w-6 h-6" />
+  <transition
+    enter-active-class="transition-opacity duration-300"
+    enter-from-class="opacity-0"
+    enter-to-class="opacity-100"
+    leave-active-class="transition-opacity duration-300"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div
+      v-if="modelValue"
+      class="fixed inset-0 z-40 flex items-center justify-center bg-black/50"
+      @click.self="close"
+    >
+      <div class="relative bg-white rounded-lg shadow-lg p-6 w-[30rem] z-50">
+        <!-- Close button -->
+        <button
+          @click="close"
+          class="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-200 transition"
+        >
+          <CloseIcon class="w-5 h-5 text-gray-600" />
         </button>
 
-        <!-- Backdrop -->
-        <div v-if="is_open" @click="close_drawer"
-            class="fixed inset-0 z-40 transition-opacity duration-300 bg-black bg-opacity-50"
-            :class="{ 'opacity-100': is_open, 'opacity-0': !is_open }"></div>
-
-        <!-- Drawer -->
-        <div class="fixed top-0 left-0 z-50 h-full transition-transform duration-300 ease-in-out transform bg-white shadow-lg dark:bg-gray-800"
-            :class="{
-                '-translate-x-full': !is_open,
-                'translate-x-0': is_open,
-                'w-64 sm:w-80': true
-            }">
-            <div class="p-4">
-                <h2 class="mb-4 text-2xl font-bold">{{ title }}</h2>
-                <slot></slot>
-            </div>
-        </div>
+        <slot />
+      </div>
     </div>
+  </transition>
 </template>

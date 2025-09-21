@@ -164,7 +164,7 @@ const trials = ref<Trial[]>([
 
     <div class="bg-white w-screen rounded-lg ml-[4rem] sm:mx-[8rem] mt-[4rem] sm:mt-[16rem] sm:h-[100vh] shadow p-4">
       <div class="flex justify-center sm:justify-between items-center mb-4">
-        <NewStudy />
+        <NewStudy v-if="!showPatientTable"/>
         <SortTabs v-if="!showPatientTable" v-model:activeTab="activeTab" />
       </div>
 
