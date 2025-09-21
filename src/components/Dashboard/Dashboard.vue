@@ -89,7 +89,7 @@ const patients = ref<PatientInformation[]>([
     icdcodes: [],
     eligibility: true,
     dose: 50,
-    appointments: []
+    appointments: sampleAppointments,
   },
   {
     name: { first: 'Jane', last: 'Smith' },
@@ -111,7 +111,35 @@ const patients = ref<PatientInformation[]>([
     icdcodes: [],
     eligibility: false,
     dose: 0,
-    appointments: []
+    appointments: [],
+  },
+  {
+  name: { first: 'Alice', last: 'Smith' },
+  id: 'p002',
+  study_id: '002',
+  drug_id: 'd002',
+  contact: { phone_number: '555-987-6543', email: 'alice.smith@example.com' },
+  dob: '1985-07-14',
+  address: '456 Oak Avenue',
+  insurance_num: '987654321',
+  height: 165,
+  weight: 68,
+  blood: 'A-',
+  employed: false,
+  insured: true,
+  allergies: [
+    { name: 'Peanuts', reactions: 'Anaphylaxis' },
+    { name: 'Penicillin', reactions: 'Rash and swelling' }
+  ],
+  medications: [],
+  history: [],
+  icdcodes: [
+    { code: 'J45' },
+    { code: 'E11' } 
+  ],
+  eligibility: true,
+  dose: 75,
+  appointments: sampleAppointments
   }
 ])
 
