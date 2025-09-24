@@ -13,19 +13,16 @@ const selectedPatient = ref<PatientInformation | null>(null)
 const showPatientModal = ref(false)
 
 function handleViewTrial(trial: Trial) {
-  console.log('Viewing trial:', trial)
   selectedTrial.value = trial
   showPatientTable.value = true
 }
 
 function handleViewPatient(patient: PatientInformation) {
-  console.log('Viewing patient:', patient)
   selectedPatient.value = patient
   showPatientModal.value = true
 }
 
 function resetView() {
-  console.log('Dashboard: resetView called — switching to StudyTable and resetting tabs')
   selectedTrial.value = null
   selectedPatient.value = null
   showPatientTable.value = false
@@ -36,7 +33,6 @@ watch(
   () => auth.accountType,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
-      console.log('Dashboard: auth.accountType changed:', oldVal, '->', newVal)
       resetView()
     }
   }
@@ -49,16 +45,16 @@ const filteredPatients = computed(() => {
 
 const sampleAppointments: Appointment[] = [
   {
-    date: new Date('2025-09-01T10:00:00Z'),
+    date: new Date('2025-09-01'),
     o2: 97,
     bp: '120/80',
     temp: 98.6,
     hiv: 0,
-    notes: [],
+    notes: [{ notes: 'Mild headache.'}, { notes: 'Nightly nosebleeds'}],
     doctor: 'Dr. Smith'
   },
   {
-    date: new Date('2025-09-15T14:30:00Z'),
+    date: new Date('2025-09-15'),
     o2: 95,
     bp: '118/76',
     temp: 98.4,
@@ -75,7 +71,7 @@ const patients = ref<PatientInformation[]>([
     study_id: '001',
     drug_id: 'd001',
     contact: { phone_number: '123', email: 'john@example.com' },
-    dob: '1990-01-01',
+    dob: new Date('1990-09-01'),
     address: '123 Main St',
     insurance_num: '123456789',
     height: 180,
@@ -97,7 +93,7 @@ const patients = ref<PatientInformation[]>([
     study_id: '002',
     drug_id: 'd002',
     contact: { phone_number: '456', email: 'jane@example.com' },
-    dob: '1985-06-10',
+    dob: new Date('1985-06-05'),
     address: '456 Park Ave',
     insurance_num: '987654321',
     height: 165,
@@ -119,7 +115,7 @@ const patients = ref<PatientInformation[]>([
   study_id: '002',
   drug_id: 'd002',
   contact: { phone_number: '555-987-6543', email: 'alice.smith@example.com' },
-  dob: '1985-07-14',
+  dob: new Date('1985-07-15'),
   address: '456 Oak Avenue',
   insurance_num: '987654321',
   height: 165,

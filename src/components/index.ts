@@ -8,3 +8,4 @@ export * from "./Badges";
 export * from "./ProgressBar";
 export * from "./Drawer";
 export * from "./PatientCard";
+export * from "./Pagination";
