@@ -16,7 +16,7 @@ const formattedDate = computed(() =>
 
 <template>
   <article
-    class="w-full bg-gray-200 rounded-xl p-4 shadow-md flex flex-col gap-3"
+    class="w-full max-w-md bg-gray-200 rounded-xl p-4 shadow-md flex flex-col gap-3"
     role="region"
     :aria-label="`Vitals for ${appointment.date.toDateString()}`"
   >
