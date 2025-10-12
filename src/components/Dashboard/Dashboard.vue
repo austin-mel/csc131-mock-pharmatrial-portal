@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { Sidebar, NewStudy, SortTabs, StudyTable, PatientTable, PatientCard } from '@/components'
+import { Sidebar, NewStudy, SortTabs, StudyTable, PatientTable, PatientCard, Pagination } from '@/components'
 import { useAuthStore } from '@/stores'
 import type { Appointment, Trial, PatientInformation } from '@/types'
 
@@ -15,6 +15,8 @@ const showPatientModal = ref(false)
 function handleViewTrial(trial: Trial) {
   selectedTrial.value = trial
   showPatientTable.value = true
+
+  currentPatientPage.value = 1
 }
 
 function handleViewPatient(patient: PatientInformation) {
@@ -27,6 +29,9 @@ function resetView() {
   selectedPatient.value = null
   showPatientTable.value = false
   activeTab.value = 'all'
+
+  currentTrialPage.value = 1
+  currentPatientPage.value = 1
 }
 
 watch(
@@ -38,9 +43,43 @@ watch(
   }
 )
 
+watch(activeTab, () => {
+  currentTrialPage.value = 1
+})
+
 const filteredPatients = computed(() => {
   if (!selectedTrial.value) return []
   return patients.value.filter(p => p.study_id === selectedTrial.value?.id)
+})
+
+const filteredTrials = computed(() => {
+  switch (activeTab.value) {
+    case 'pending':
+      return trials.value.filter(t => t.status === 'pending')
+    case 'active':
+      return trials.value.filter(t => t.status === 'active')
+    case 'completed':
+      return trials.value.filter(t => t.status === 'completed')
+    case 'rejected':
+      return trials.value.filter(t => t.status === 'rejected')
+    default:
+      return trials.value
+  }
+})
+
+const resultsPerPage = 10
+
+const currentTrialPage = ref(1)
+const currentPatientPage = ref(1)
+
+const paginatedTrials = computed(() => {
+  const start = (currentTrialPage.value - 1) * resultsPerPage
+  return filteredTrials.value.slice(start, start + resultsPerPage)
+})
+
+const paginatedPatients = computed(() => {
+  const start = (currentPatientPage.value - 1) * resultsPerPage
+  return filteredPatients.value.slice(start, start + resultsPerPage)
 })
 
 const sampleAppointments: Appointment[] = [
@@ -205,23 +244,38 @@ const trials = ref<Trial[]>([
 </div>
 
       <div class="flex">
-        <PatientTable
-          v-if="showPatientTable"
-          :patients="filteredPatients"
-          @view="handleViewPatient"
-        />
+<PatientTable
+  v-if="showPatientTable"
+  :patients="paginatedPatients"
+  @view="handleViewPatient"
+/>
 
         <StudyTable
-          v-else
-          :trials="trials"
-          :filterStatus="activeTab"
-          @view="handleViewTrial"
-        />
+  v-else
+  :trials="paginatedTrials"
+  :filterStatus="activeTab"
+  @view="handleViewTrial"
+/>
 
         <PatientCard
         :patient="selectedPatient"
         v-model="showPatientModal"
       />
+      </div>
+      <div class="flex justify-center">
+        <Pagination
+  v-if="showPatientTable"
+  v-model="currentPatientPage"
+  :totalItems="filteredPatients.length"
+  :itemsPerPage="resultsPerPage"
+/>
+
+<Pagination
+  v-if="!showPatientTable"
+  v-model="currentTrialPage"
+  :totalItems="filteredTrials.length"
+  :itemsPerPage="resultsPerPage"
+/>
       </div>
     </div>
   </div>

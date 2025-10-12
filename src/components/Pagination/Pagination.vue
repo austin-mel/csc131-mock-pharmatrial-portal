@@ -11,7 +11,7 @@ const emit = defineEmits<{
   (e: 'update:modelValue', page: number): void
 }>()
 
-const itemsPerPage = computed(() => props.itemsPerPage ?? 10)
+const itemsPerPage = computed(() => props.itemsPerPage ?? 15)
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(props.totalItems / itemsPerPage.value))
@@ -39,36 +39,41 @@ const pagesToShow = computed(() => {
 </script>
 
 <template>
-  <nav class="flex items-center justify-center gap-2 my-4" role="navigation" aria-label="Pagination">
-    <!-- Prev -->
-    <button
-      @click="goToPage(props.modelValue - 1)"
-      :disabled="props.modelValue === 1"
-      class="px-3 py-1 border rounded disabled:opacity-50"
-    >
-      Prev
-    </button>
+  <nav
+  v-if="totalPages > 1"
+  class="flex items-center justify-center gap-2 my-4"
+  role="navigation"
+  aria-label="Pagination"
+>
+  <!-- Prev -->
+<button
+  @click="goToPage(props.modelValue - 1)"
+  :disabled="props.modelValue === 1"
+  class="px-3 py-1 border rounded disabled:opacity-50"
+>
+  Prev
+</button>
 
-    <!-- Page numbers -->
-    <button
-      v-for="page in pagesToShow"
-      :key="page"
-      @click="goToPage(page)"
-      :class="[
-        'px-3 py-1 border rounded',
-        props.modelValue === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'
-      ]"
-    >
-      {{ page }}
-    </button>
+<!-- Page numbers -->
+<button
+  v-for="page in pagesToShow"
+  :key="page"
+  @click="goToPage(page)"
+  :class="[
+    'px-3 py-1 border rounded',
+    props.modelValue === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'
+  ]"
+>
+  {{ page }}
+</button>
 
-    <!-- Next -->
-    <button
-      @click="goToPage(props.modelValue + 1)"
-      :disabled="props.modelValue === totalPages"
-      class="px-3 py-1 border rounded disabled:opacity-50"
-    >
-      Next
-    </button>
+<!-- Next -->
+<button
+  @click="goToPage(props.modelValue + 1)"
+  :disabled="props.modelValue === totalPages"
+  class="px-3 py-1 border rounded disabled:opacity-50"
+>
+  Next
+</button>
   </nav>
 </template>
