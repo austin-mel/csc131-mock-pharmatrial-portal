@@ -23,7 +23,7 @@ function setTab(value: string) {
       @click="setTab(tab.value)"
       class="flex-1 text-center py-2 -mb-px mx-4 font-medium "
       :class="activeTab === tab.value
-        ? 'text-gray-600 border-b-2 border-gray-600'
+        ? 'text-blue-600 border-b-2 border-blue-600'
         : 'text-gray-400 hover:text-gray-600'"
     >
       {{ tab.label }}

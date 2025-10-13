@@ -25,7 +25,7 @@ const props = defineProps<{
         <tr>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Patient ID</th>
-          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Stage</th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Dose</th>
           <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">View</th>
           <th v-if="currentRole === 'JHAdmin'" class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Eligibility</th>
         </tr>

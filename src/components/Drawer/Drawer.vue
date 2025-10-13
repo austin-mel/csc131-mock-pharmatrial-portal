@@ -34,7 +34,7 @@ onUnmounted(() => document.removeEventListener('keydown', onEsc))
       class="fixed inset-0 z-40 flex items-center justify-center bg-black/50"
       @click.self="close"
     >
-      <div class="relative bg-white rounded-lg shadow-lg p-6 w-[30rem] z-50">
+      <div class="relative bg-white rounded-lg shadow-lg p-6 sm:w-[30vw] w-[30rem] z-50">
         <!-- Close button -->
         <button
           @click="close"

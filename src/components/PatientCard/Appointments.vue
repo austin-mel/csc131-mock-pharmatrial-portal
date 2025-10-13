@@ -5,6 +5,8 @@ import { computed, ref } from 'vue'
 
 const props = defineProps<{
   appointment: Appointment
+  currentPage: number
+  totalPages: number
 }>()
 
 const formattedDate = computed(() =>
@@ -13,21 +15,31 @@ const formattedDate = computed(() =>
     : new Date(props.appointment.date).toLocaleDateString()
 )
 
+const emit = defineEmits<{
+  (e: 'prev'): void
+  (e: 'next'): void
+}>()
 </script>
 
 <template>
-  <div>
+  <div class="container mx-auto p-4">
       <article
-    class="w-full max-w-md bg-gray-200 rounded-xl p-4 shadow-md flex flex-col gap-3"
+    class="w-full bg-gray-200 rounded-xl p-4 shadow-md flex flex-col gap-3"
   >
     <header class="flex items-center justify-between text-gray-800 font-medium">
-      <button>
-        <ArrowLeftIcon class="cursor-pointer"/>
-      </button>
-      <span class="text-xl">{{ formattedDate }}</span>
-      <button>
-        <ArrowRightIcon class="cursor-pointer"/>
-      </button>
+        <button v-if="props.currentPage > 1" @click="emit('prev')">
+          <ArrowLeftIcon class="cursor-pointer" />
+        </button>
+        <div v-else class="w-6"></div>
+
+        <span class="text-xl">
+          {{ formattedDate }}
+        </span>
+
+        <button v-if="props.currentPage < props.totalPages" @click="emit('next')">
+          <ArrowRightIcon class="cursor-pointer" />
+        </button>
+        <div v-else class="w-6"></div>
     </header>
 
     <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-lg text-gray-900">
@@ -46,6 +58,12 @@ const formattedDate = computed(() =>
     <footer v-if="appointment.doctor" class="mt-2 text-xs text-gray-500">
       Doctor: {{ appointment.doctor }}
     </footer>
+
+    <div class="flex justify-end">
+                <span class="text-gray-600">
+            ({{ props.currentPage }} / {{ props.totalPages }})
+          </span>
+    </div>
   </article>
 
   

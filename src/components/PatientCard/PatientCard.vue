@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, reactive, computed } from 'vue'
-import { Appointments, Drawer, NewAppointment } from '@/components'
+import { Appointments, Drawer, NewAppointment, ProgressBar } from '@/components'
 import { CheckIcon, CloseIcon, EditIcon, RejectIcon, SaveIcon, UserIcon } from '@/assets'
 import type { PatientInformation } from '@/types'
 
@@ -81,13 +81,34 @@ const formattedDate = computed(() => {
   const day = String(d.getDate()).padStart(2, '0')
   return `${month}/${day}/${year}`
 })
+
+const currentAppointmentPage = ref(1)
+
+const appointmentsPerPage = 1
+
+const paginatedAppointments = computed(() => {
+  if (!props.patient?.appointments) return []
+  const start = (currentAppointmentPage.value - 1) * appointmentsPerPage
+  return props.patient.appointments.slice(start, start + appointmentsPerPage)
+})
+
+const totalAppointmentPages = computed(() => {
+  return props.patient?.appointments
+    ? Math.ceil(props.patient.appointments.length / appointmentsPerPage)
+    : 1
+})
+
+function changeAppointmentPage(page: number) {
+  if (page < 1 || page > totalAppointmentPages.value) return
+  currentAppointmentPage.value = page
+}
 </script>
 
 <template>
   <Drawer v-model="showModal" role="dialog" aria-modal="true" aria-label="Patient details">
     <div v-if="props.patient" class="m-4 relative focus:outline-none">
 
-      <div class="flex items-center gap-4 mb-4">
+      <div class="flex items-center gap-4 mb-4 w-full">
         <UserIcon class="w-16 h-auto" />
         <div>
           <template v-if="!isEditing">
@@ -183,13 +204,23 @@ const formattedDate = computed(() => {
       </div>
 
       <hr class="my-3 border-gray-300" />
+        <p><strong>Dose:</strong></p>
+        <ProgressBar :currentStep=props.patient.dose />
 
+      <hr class="mt-8 mb-3 border-gray-300" />
+        
       <div class="flex justify-center mb-3">
         <NewAppointment />
       </div>
 
-<div class="flex flex-col gap-2 mb-3">
-
+<div class="flex justify-center gap-2 mb-3" v-if="props.patient?.appointments?.length">
+  <Appointments
+  :appointment="paginatedAppointments[0]"
+  :currentPage="currentAppointmentPage"
+  :totalPages="totalAppointmentPages"
+  @prev="changeAppointmentPage(currentAppointmentPage - 1)"
+  @next="changeAppointmentPage(currentAppointmentPage + 1)"
+/>
 </div>
 
       <div class="flex justify-between">
