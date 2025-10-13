@@ -23,10 +23,8 @@ const emit = defineEmits<{
 
 <template>
   <div class="container mx-auto p-4">
-      <article
-    class="w-full bg-gray-200 rounded-xl p-4 shadow-md flex flex-col gap-3"
-  >
-    <header class="flex items-center justify-between text-gray-800 font-medium">
+    <article class="w-full bg-gray-200 rounded-xl p-4 shadow-md flex flex-col gap-3">
+      <header class="flex items-center justify-between text-gray-800 font-medium">
         <button v-if="props.currentPage > 1" @click="emit('prev')">
           <ArrowLeftIcon class="cursor-pointer" />
         </button>
@@ -40,32 +38,33 @@ const emit = defineEmits<{
           <ArrowRightIcon class="cursor-pointer" />
         </button>
         <div v-else class="w-6"></div>
-    </header>
+      </header>
 
-    <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-lg text-gray-900">
-      <div>{{ appointment.o2 }}% SpO₂</div>
-      <div>{{ appointment.hiv.toLocaleString() }} cp/mL</div>
+      <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-lg text-gray-900">
+        <div>{{ appointment.o2 }}% SpO₂</div>
+        <div>{{ appointment.hiv.toLocaleString() }} cp/mL</div>
 
-      <div>{{ appointment.bp }} mmHg</div>
-      <div>{{ appointment.temp }} F°</div>
-    </div>
+        <div>{{ appointment.bp }} mmHg</div>
+        <div>{{ appointment.temp }} F°</div>
+      </div>
 
-    <div class="font-medium text-lg">Notes:</div>
-    <ul v-if="appointment.notes.length" class="mt-2 text- text-gray-700 list-disc list-inside">
-      <li v-for="(n, i) in appointment.notes" :key="i">{{ n.notes }}</li>
-    </ul>
+      <div class="font-medium text-lg">Notes:</div>
+      <ul v-if="appointment.notes.length" class="mt-2 text- text-gray-700 list-disc list-inside">
+        <li v-for="(n, i) in appointment.notes" :key="i">{{ n.notes }}</li>
+      </ul>
 
-    <footer v-if="appointment.doctor" class="mt-2 text-xs text-gray-500">
-      Doctor: {{ appointment.doctor }}
-    </footer>
-
-    <div class="flex justify-end">
-                <span class="text-gray-600">
-            ({{ props.currentPage }} / {{ props.totalPages }})
+      <footer v-if="appointment.doctor">
+        <div class="flex justify-between">
+          <span class="mt-2 text-xs text-gray-500">
+            Doctor: {{ appointment.doctor }}
           </span>
-    </div>
-  </article>
+          <span class="text-gray-600">
+            {{ props.currentPage }} / {{ props.totalPages }}
+          </span>
+        </div>
+      </footer>
+    </article>
 
-  
+
   </div>
 </template>

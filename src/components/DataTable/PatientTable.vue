@@ -27,7 +27,8 @@ const props = defineProps<{
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Patient ID</th>
           <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Dose</th>
           <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">View</th>
-          <th v-if="currentRole === 'JHAdmin'" class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Eligibility</th>
+          <th v-if="currentRole === 'JHAdmin'"
+            class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Eligibility</th>
         </tr>
       </thead>
 
@@ -47,9 +48,9 @@ const props = defineProps<{
               <ViewButton @click="$emit('view', patient)" />
             </div>
           </td>
-          <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 hidden md:table-cell"> 
-            <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" /> 
-            <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span> 
+          <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 hidden md:table-cell">
+            <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" />
+            <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span>
           </td>
 
           <!-- Mobile -->
@@ -59,9 +60,9 @@ const props = defineProps<{
                 <p class="text-sm font-medium text-gray-900">{{ patient.name.first }} {{ patient.name.last }}</p>
                 <p class="text-xs text-gray-500">ID: {{ patient.id }}</p>
               </div>
-              <div v-if="currentRole === 'JHAdmin'"> 
-                <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" /> 
-                <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span> 
+              <div v-if="currentRole === 'JHAdmin'">
+                <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" />
+                <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span>
               </div>
             </div>
 

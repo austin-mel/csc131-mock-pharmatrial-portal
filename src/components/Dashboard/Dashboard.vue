@@ -89,7 +89,7 @@ const sampleAppointments: Appointment[] = [
     bp: '120/80',
     temp: 98.6,
     hiv: 0,
-    notes: [{ notes: 'Mild headache.'}, { notes: 'Nightly nosebleeds'}],
+    notes: [{ notes: 'Mild headache.' }, { notes: 'Nightly nosebleeds' }],
     doctor: 'Dr. Smith'
   },
   {
@@ -149,32 +149,32 @@ const patients = ref<PatientInformation[]>([
     appointments: [],
   },
   {
-  name: { first: 'Alice', last: 'Smith' },
-  id: 'p002',
-  study_id: '002',
-  drug_id: 'd002',
-  contact: { phone_number: '555-987-6543', email: 'alice.smith@example.com' },
-  dob: new Date('1985-07-15'),
-  address: '456 Oak Avenue',
-  insurance_num: '987654321',
-  height: 165,
-  weight: 68,
-  blood: 'A-',
-  employed: false,
-  insured: true,
-  allergies: [
-    { name: 'Peanuts', reactions: 'Anaphylaxis' },
-    { name: 'Penicillin', reactions: 'Rash and swelling' }
-  ],
-  medications: [],
-  history: [],
-  icdcodes: [
-    { code: 'J45' },
-    { code: 'E11' } 
-  ],
-  eligibility: true,
-  dose: 75,
-  appointments: sampleAppointments
+    name: { first: 'Alice', last: 'Smith' },
+    id: 'p002',
+    study_id: '002',
+    drug_id: 'd002',
+    contact: { phone_number: '555-987-6543', email: 'alice.smith@example.com' },
+    dob: new Date('1985-07-15'),
+    address: '456 Oak Avenue',
+    insurance_num: '987654321',
+    height: 165,
+    weight: 68,
+    blood: 'A-',
+    employed: false,
+    insured: true,
+    allergies: [
+      { name: 'Peanuts', reactions: 'Anaphylaxis' },
+      { name: 'Penicillin', reactions: 'Rash and swelling' }
+    ],
+    medications: [],
+    history: [],
+    icdcodes: [
+      { code: 'J45' },
+      { code: 'E11' }
+    ],
+    eligibility: true,
+    dose: 75,
+    appointments: sampleAppointments
   }
 ])
 
@@ -227,55 +227,29 @@ const trials = ref<Trial[]>([
     <Sidebar v-if="auth.isLoggedIn" @reset-view="resetView" />
 
     <div class="bg-white w-screen rounded-lg ml-[4rem] sm:mx-[8rem] mt-[4rem] sm:mt-[16rem] sm:h-[100vh] shadow p-4">
-<div
-  class="flex items-center mb-4"
-  :class="showPatientTable ? 'justify-center' : 'justify-between'"
->
-  <NewStudy v-if="!showPatientTable" />
-  <SortTabs v-if="!showPatientTable" v-model:activeTab="activeTab" />
+      <div class="flex items-center mb-4" :class="showPatientTable ? 'justify-center' : 'justify-between'">
+        <NewStudy v-if="!showPatientTable" />
+        <SortTabs v-if="!showPatientTable" v-model:activeTab="activeTab" />
 
-  <button
-    v-if="showPatientTable"
-    @click="resetView"
-    class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-  >
-    Back to Studies
-  </button>
-</div>
+        <button v-if="showPatientTable" @click="resetView"
+          class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          Back to Studies
+        </button>
+      </div>
 
       <div class="flex">
-<PatientTable
-  v-if="showPatientTable"
-  :patients="paginatedPatients"
-  @view="handleViewPatient"
-/>
+        <PatientTable v-if="showPatientTable" :patients="paginatedPatients" @view="handleViewPatient" />
 
-        <StudyTable
-  v-else
-  :trials="paginatedTrials"
-  :filterStatus="activeTab"
-  @view="handleViewTrial"
-/>
+        <StudyTable v-else :trials="paginatedTrials" :filterStatus="activeTab" @view="handleViewTrial" />
 
-        <PatientCard
-        :patient="selectedPatient"
-        v-model="showPatientModal"
-      />
+        <PatientCard :patient="selectedPatient" v-model="showPatientModal" />
       </div>
       <div class="flex justify-center">
-        <Pagination
-  v-if="showPatientTable"
-  v-model="currentPatientPage"
-  :totalItems="filteredPatients.length"
-  :itemsPerPage="resultsPerPage"
-/>
+        <Pagination v-if="showPatientTable" v-model="currentPatientPage" :totalItems="filteredPatients.length"
+          :itemsPerPage="resultsPerPage" />
 
-<Pagination
-  v-if="!showPatientTable"
-  v-model="currentTrialPage"
-  :totalItems="filteredTrials.length"
-  :itemsPerPage="resultsPerPage"
-/>
+        <Pagination v-if="!showPatientTable" v-model="currentTrialPage" :totalItems="filteredTrials.length"
+          :itemsPerPage="resultsPerPage" />
       </div>
     </div>
   </div>
