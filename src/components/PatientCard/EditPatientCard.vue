@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { reactive, toRefs, computed } from 'vue'
+import { reactive, computed } from 'vue'
 import type { PatientInformation } from '@/types'
 import ListEditor from './ListEditor.vue'
-import { CloseIcon, SaveIcon } from '@/assets'
 
 const props = defineProps<{
   patient: PatientInformation
@@ -42,6 +41,8 @@ function onSave() {
 function onCancel() {
   emit('cancel')
 }
+
+defineExpose({ onSave, onCancel })
 </script>
 
 <template>
@@ -116,14 +117,5 @@ function onCancel() {
       :items.sync="local.icdcodes"
       :fields="['code']"
     />
-
-    <div class="flex justify-end gap-3 mt-4">
-      <button type="button" @click="onCancel" class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300">
-        <CloseIcon class="w-6 h-6 pr-2" /> Cancel
-      </button>
-      <button type="button" @click="onSave" class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300">
-        <SaveIcon class="w-6 h-6 pr-2" /> Save
-      </button>
-    </div>
   </div>
 </template>

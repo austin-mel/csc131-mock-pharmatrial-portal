@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineProps } from 'vue';
-import { ActionButton, ViewButton, Badges} from '@/components';
+import { ActionButton, ViewButton, Badges } from '@/components';
 import type { Trial } from '@/types';
 import { useAuthStore } from '@/stores';
 
@@ -62,33 +62,19 @@ const userRoleKey = computed(() => {
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <template v-if="!trial.rejected">
               <div v-if="trial.completed === true" class="flex justify-center">
-                <ActionButton
-    label="View Report"
-    :disabled="!userRoleKey || !trial.completed"
-    color="purple"
-  />
+                <ActionButton label="View Report" :disabled="!userRoleKey || !trial.completed" color="purple" />
               </div>
 
               <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
                 class="flex justify-center gap-2">
-  <ActionButton
-    label="Approve"
-    :disabled="!userRoleKey || trial.approvals[userRoleKey]"
-    color="green"
-  />
-  <ActionButton
-    label="Reject"
-    :disabled="!userRoleKey || trial.approvals[userRoleKey]"
-    color="red"
-  />
+                <ActionButton label="Approve" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="green" />
+                <ActionButton label="Reject" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="red" />
               </div>
 
               <div v-else-if="Object.values(trial.approvals).every(v => v === true)" class="flex justify-center">
-                  <ActionButton
-    label="Send Drugs"
-    :disabled="!userRoleKey || trial.active"
-    color="blue"
-  />
+                <ActionButton
+                  :label="userRoleKey === 'fda' ? 'Repackage Drugs' : userRoleKey === 'jh' ? 'Distribute Drugs' : 'Send Drugs'"
+                  :disabled="!userRoleKey || trial.distributed[userRoleKey]" color="blue" />
               </div>
             </template>
           </td>
@@ -106,7 +92,7 @@ const userRoleKey = computed(() => {
             </div>
 
             <div class="flex justify-between items-center mt-3 pt-2">
-              <ViewButton @click="$emit('view', trial)" class="mr-2"/>
+              <ViewButton @click="$emit('view', trial)" class="mr-2" />
               <template v-if="!trial.rejected">
                 <ReportButton v-if="trial.completed === true" :trial="trial" :userRoleKey="userRoleKey" />
                 <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"

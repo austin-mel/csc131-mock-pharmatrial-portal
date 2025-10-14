@@ -101,13 +101,15 @@ const formattedDate = computed(() => {
   const day = String(d.getDate()).padStart(2, '0')
   return `${month}/${day}/${year}`
 })
+
+const editRef = ref()
 </script>
 
 <template>
   <Drawer v-model="showModal" role="dialog" @closed="onDrawerClosed">
     <div v-if="patient" class="m-4 relative focus:outline-none max-h-[calc(100vh-12rem)] overflow-y-auto">
       <div :class="isEditing ? 'justify-center' : 'justify-start'" class="flex gap-4 mb-4 w-full">
-        <UserIcon class="w-16 h-auto" />
+        <UserIcon v-if="!isEditing" class="w-16 h-auto" />
         <div class="w-[24rem] flex flex-col">
           <template v-if="!isEditing">
             <p class="font-semibold text-3xl">{{ patient.name.first }} {{ patient.name.last }}</p>
@@ -116,6 +118,7 @@ const formattedDate = computed(() => {
 
           <template v-else>
             <EditPatientCard
+              ref="editRef"
               :patient="patient"
               @save="onSaveEdit"
               @cancel="onCancelEdit"
@@ -213,18 +216,40 @@ const formattedDate = computed(() => {
       </div>
 
       <div class="sticky bottom-0 bg-white border-t border-gray-300 p-4 flex justify-between z-10">
-        <button type="button" @click="onToggleEdit"
-          class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300">
-          <component :is="isEditing ? CloseIcon : EditIcon" class="w-6 h-6 pr-2" />
-          {{ isEditing ? 'Cancel' : 'Edit' }}
-        </button>
+  <button
+  v-if="!isEditing"
+  type="button"
+  @click="onToggleEdit"
+  class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300"
+>
+  <EditIcon class="w-6 h-6 pr-2" /> Edit
+</button>
+  <button
+  v-if="!isEditing"
+  type="button"
+  @click="onClose"
+  class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300"
+>
+  <CloseIcon class="w-6 h-6 pr-2" /> Close
+</button>
 
-        <button type="button" @click="onClose"
-          class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300"
-          :aria-label="isEditing ? 'Save patient changes' : 'Close patient details'">
-          <component :is="isEditing ? SaveIcon : CloseIcon" class="w-6 h-6 pr-2" />
-          {{ isEditing ? 'Save' : 'Close' }}
-        </button>
+  <button
+  v-if="isEditing"
+  type="button"
+  @click="editRef?.onCancel()"
+  class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300"
+>
+  <CloseIcon class="w-6 h-6 pr-2" /> Cancel
+</button>
+
+<button
+  v-if="isEditing"
+  type="button"
+  @click="editRef?.onSave()"
+  class="relative flex items-center px-3 py-1 border rounded hover:bg-stone-300"
+>
+  <SaveIcon class="w-6 h-6 pr-2" /> Save
+</button>
       </div>
     </div>
   </Drawer>

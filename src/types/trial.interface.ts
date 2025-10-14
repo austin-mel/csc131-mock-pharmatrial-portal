@@ -16,6 +16,13 @@ export interface Trial {
       [key: string]: boolean;
     };
 
+    distributed: {
+      jh: boolean;
+      fda: boolean;
+      bav: boolean;
+      [key: string]: boolean;
+    };
+
     active: boolean;
 
     completed: boolean;

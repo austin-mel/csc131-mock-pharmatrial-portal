@@ -9,7 +9,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:items'])
 
-const singularLabel = computed(() => props.label.replace(/s$/, ''))
 function placeholderFor(field: string) {
   return field.charAt(0).toUpperCase() + field.slice(1)
 }
@@ -34,7 +33,7 @@ function addItem() {
       </div>
     </div>
     <div class="flex justify-center">
-      <button type="button" @click="addItem" class="px-2 py-1 mt-1 border rounded hover:bg-gray-200 text-sm">+ Add {{ singularLabel }}</button>
+      <button type="button" @click="addItem" class="px-2 py-1 mt-1 border rounded hover:bg-gray-200 text-sm">+ Add {{ label }}</button>
     </div>
   </div>
 </template>
