@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores';
 const props = defineProps<{
   trials: Trial[];
   filterStatus: string;
+  userRoleKey: string;
 }>();
 
 const filteredTrials = computed(() => {
@@ -67,8 +68,11 @@ const userRoleKey = computed(() => {
 
               <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
                 class="flex justify-center gap-2">
-                <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
-                <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
+  <ActionButton
+    label="Approve"
+    :disabled="!userRoleKey || !trial.approvals[userRoleKey]"
+    color="green"
+  /><RejectButton :trial="trial" :userRoleKey="userRoleKey" />
               </div>
 
               <div v-else-if="Object.values(trial.approvals).every(v => v === true)" class="flex justify-center">

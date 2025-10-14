@@ -106,7 +106,6 @@ const formattedDate = computed(() => {
 <template>
   <Drawer v-model="showModal" role="dialog" @closed="onDrawerClosed">
     <div v-if="patient" class="m-4 relative focus:outline-none max-h-[calc(100vh-12rem)] overflow-y-auto">
-      <!-- Header -->
       <div :class="isEditing ? 'justify-center' : 'justify-start'" class="flex gap-4 mb-4 w-full">
         <UserIcon class="w-16 h-auto" />
         <div class="w-[24rem] flex flex-col">
