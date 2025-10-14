@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed, defineProps } from 'vue';
-import { ApproveButton, RejectButton, ViewButton, Badges, DrugsButton, ReportButton } from '@/components';
+import { ActionButton, ViewButton, Badges} from '@/components';
 import type { Trial } from '@/types';
 import { useAuthStore } from '@/stores';
 
 const props = defineProps<{
   trials: Trial[];
   filterStatus: string;
-  userRoleKey: string;
 }>();
 
 const filteredTrials = computed(() => {
@@ -63,20 +62,33 @@ const userRoleKey = computed(() => {
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <template v-if="!trial.rejected">
               <div v-if="trial.completed === true" class="flex justify-center">
-                <ReportButton :trial="trial" :userRoleKey="userRoleKey" />
+                <ActionButton
+    label="View Report"
+    :disabled="!userRoleKey || !trial.completed"
+    color="purple"
+  />
               </div>
 
               <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
                 class="flex justify-center gap-2">
   <ActionButton
     label="Approve"
-    :disabled="!userRoleKey || !trial.approvals[userRoleKey]"
+    :disabled="!userRoleKey || trial.approvals[userRoleKey]"
     color="green"
-  /><RejectButton :trial="trial" :userRoleKey="userRoleKey" />
+  />
+  <ActionButton
+    label="Reject"
+    :disabled="!userRoleKey || trial.approvals[userRoleKey]"
+    color="red"
+  />
               </div>
 
               <div v-else-if="Object.values(trial.approvals).every(v => v === true)" class="flex justify-center">
-                <DrugsButton :trial="trial" :userRoleKey="userRoleKey" />
+                  <ActionButton
+    label="Send Drugs"
+    :disabled="!userRoleKey || trial.active"
+    color="blue"
+  />
               </div>
             </template>
           </td>

@@ -204,7 +204,7 @@ const trials = ref<Trial[]>([
     id: '003',
     status: 'completed',
     approvals: { fda: true, jh: true, bav: true },
-    active: true,
+    active: false,
     completed: true,
     rejected: false,
     drug_id: ''
