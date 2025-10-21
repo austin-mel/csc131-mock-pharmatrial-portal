@@ -3,6 +3,7 @@ import { computed, defineProps } from 'vue';
 import { ActionButton, ViewButton, Badges } from '@/components';
 import type { Trial } from '@/types';
 import { useAuthStore } from '@/stores';
+import EyeIcon from '@/assets/icons/EyeIcon.vue';
 
 const props = defineProps<{
   trials: Trial[];
@@ -56,7 +57,7 @@ const userRoleKey = computed(() => {
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <div class="flex justify-center">
-              <ViewButton @click="$emit('view', trial)" />
+              <ViewButton @click="$emit('view', trial)" class="mr-2" />
             </div>
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
@@ -67,8 +68,8 @@ const userRoleKey = computed(() => {
 
               <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
                 class="flex justify-center gap-2">
-                <ActionButton label="Approve" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="green" />
-                <ActionButton label="Reject" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="red" />
+                <ActionButton label="Approve" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="green" @click="trial.approvals[userRoleKey] = true"/>
+                <ActionButton label="Reject" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="red" @click="trial.rejected = true"/>
               </div>
 
               <div v-else-if="Object.values(trial.approvals).every(v => v === true)" class="flex justify-center">
@@ -93,16 +94,24 @@ const userRoleKey = computed(() => {
 
             <div class="flex justify-between items-center mt-3 pt-2">
               <ViewButton @click="$emit('view', trial)" class="mr-2" />
+
               <template v-if="!trial.rejected">
-                <ReportButton v-if="trial.completed === true" :trial="trial" :userRoleKey="userRoleKey" />
-                <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
-                  class="flex gap-2">
-                  <ApproveButton :trial="trial" :userRoleKey="userRoleKey" />
-                  <RejectButton :trial="trial" :userRoleKey="userRoleKey" />
-                </div>
-                <DrugsButton v-else-if="Object.values(trial.approvals).every(v => v === true)" :trial="trial"
-                  :userRoleKey="userRoleKey" />
-              </template>
+              <div v-if="trial.completed === true" class="flex justify-center">
+                <ActionButton label="View Report" :disabled="!userRoleKey || !trial.completed" color="purple" />
+              </div>
+
+              <div v-else-if="Object.values(trial.approvals).some(v => v === false || v === undefined)"
+                class="flex justify-center gap-2">
+                <ActionButton label="Approve" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="green" @click="trial.approvals[userRoleKey] = true"/>
+                <ActionButton label="Reject" :disabled="!userRoleKey || trial.approvals[userRoleKey]" color="red" @click="trial.rejected = true"/>
+              </div>
+
+              <div v-else-if="Object.values(trial.approvals).every(v => v === true)" class="flex justify-center">
+                <ActionButton
+                  :label="userRoleKey === 'fda' ? 'Repackage Drugs' : userRoleKey === 'jh' ? 'Distribute Drugs' : 'Send Drugs'"
+                  :disabled="!userRoleKey || trial.distributed[userRoleKey]" color="blue" />
+              </div>
+            </template>
             </div>
           </td>
         </tr>
