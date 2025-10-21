@@ -33,9 +33,9 @@ out/
 *.local
 .yarn-integrity
 
-# Environment files
+# Keep environment variables out of version control
 .env
-.env.*
+*.env.*
 !*.example.*.env
 
 # Package managers & caches
