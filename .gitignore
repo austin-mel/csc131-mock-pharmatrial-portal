@@ -1,0 +1,324 @@
+node_modules/
+# Keep environment variables out of version control
+.env
+*.env.*
+!*.example.*.env
+
+/generated/prisma
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Package managers & caches
+.pnpm
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Scheme
+*.ss~
+*.ss#*
+.#*.ss
+*.scm~
+*.scm#*
+.#*.scm
+
+# TypeScript
+*.tsbuildinfo
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
+
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# ==========================
+# Editor / OS
+# ==========================
+
+### macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.vscode-test
+.history/
+
+# ==========================
+# Visual Studio / .NET
+# ==========================
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+mono_crash.* 
+*.env
+
+# Build results
+[Dd]ebug*/
+[Rr]elease*/
+bin/
+obj/
+[Ll]og/
+**/[Bb]in/*
+.vs/
+Generated\ Files/
+Generated_Code/
+_Pvt_Extensions
+.vshistory/
+.vspscc
+.vssscc
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+*.received.*
+
+# Profilers / coverage / benchmarking
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+BenchmarkDotNet.Artifacts/
+*.psess
+*.vsp
+*.vspx
+*.sap
+_NCrunch_*
+.NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+OpenCover/
+.axoCover/*
+!.axoCover/settings.json
+*.dotCover
+
+# Misc Visual Studio / .NET
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.idb
+*.ilk
+*.meta
+*_i.c
+*_p.c
+*_h.h
+*.rsp
+!Directory.Build.rsp
+*.mm.*
+AutoTest.Net/
+$tf/
+*.gpState
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+_TeamCity*
+FakesAssemblies/
+*.GhostDoc.xml
+.ntvs_analysis.dat
+*.plg
+*.opt
+*.vbw
+*.dsw
+*.dsp
+**/*.HTMLClient/GeneratedArtifacts
+**/*.DesktopClient/GeneratedArtifacts
+**/*.DesktopClient/ModelManifest.xml
+**/*.Server/GeneratedArtifacts
+**/*.Server/ModelManifest.xml
+**/.paket/paket.exe
+paket-files/
+**/.fake/
+**/.cr/personal
+**/__pycache__/
+*.pyc
+*.tss
+*.jmconfig
+*.btp.cs
+*.btm.cs
+*.odx.cs
+*.xsd.cs
+ASALocalRun/
+*.binlog
+MSBuild_Logs/
+.aws-sam
+*.nvuser
+**/.mfractor/
+healthchecksdb
+MigrationBackup/
+**/.ionide/
+FodyWeavers.xsd
+*.vsix
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# ==========================
+# Optional / Misc
+# ==========================
+*.bak
+*.swp
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+/vendor
+Gemfile.lock
+
+# Visual Studio cache files
+# files ending in .cache can be ignored
+*.[Cc]ache
+# but keep track of directories ending in .cache
+!*.[Cc]ache/
+
+# Others
+ClientBin/
+~$*
+*~
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+orleans.codegen.cs
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Business Intelligence projects
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+
+# Node.js Tools for Visual Studio
+.ntvs_analysis.dat
+
+# Typescript v1 declaration files
+typings/
+
+# Visual Studio 6 build log
+*.plg
+
+# Visual Studio 6 workspace options file
+*.opt
+
+# Visual Studio 6 auto-generated workspace file
+*.vbw
+
+# Visual Studio LightSwitch build output
+_Pvt_Extensions
+
+# Paket dependency manager
+.paket/paket.exe
+paket-files/
+
+# Local
+dist
+vendor
+.webpack
+.serverless/**/*.zip
+
+# Internal Data
+assets/*
+!assets/.gitkeep

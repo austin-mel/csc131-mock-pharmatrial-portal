@@ -1,0 +1,136 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// =========================================
+// =============== TRIAL ===================
+// =========================================
+model Trial {
+  id         String   @id @default(uuid())
+  name       String
+  drug_id    String
+  status     String   @defualt("pending")
+  active     Boolean  @default(false)
+  completed  Boolean  @default(false)
+  rejected   Boolean  @default(false)
+
+  // Approvals stored as JSON since dynamic keys (jh, fda, bav, etc.)
+  approvals  Json
+
+  // Relation to Patients in this trial
+  patients   Patient[]
+
+  @@index([id])
+}
+
+// =========================================
+// =============== PATIENT =================
+// =========================================
+model Patient {
+  id            String   @id @default(uuid())
+  first_name    String
+  last_name     String
+  study_id      String
+  drug_id       String
+  dob           DateTime
+  address       String
+  insurance_num String
+  height        Float
+  weight        Float
+  blood         String
+  employed      Boolean
+  insured       Boolean
+  eligibility   Boolean
+  dose          Float
+
+  phone_number  String
+  email         String
+
+  // Relations
+  trial         Trial    @relation(fields: [study_id], references: [id])
+  allergies     Allergy[]
+  medications   Medication[]
+  histories     History[]
+  icdcodes      ICDCode[]
+  appointments  Appointment[]
+
+  @@index([id])
+}
+
+// =========================================
+// ============= ALLERGY ===================
+// =========================================
+model Allergy {
+  id         Int      @id @default(autoincrement())
+  name       String
+  reactions  String
+  patient_id String
+  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+}
+
+// =========================================
+// =========== MEDICATION ==================
+// =========================================
+model Medication {
+  id         Int      @id @default(autoincrement())
+  name       String
+  purpose    String
+  patient_id String
+  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+}
+
+// =========================================
+// ============== HISTORY ==================
+// =========================================
+model History {
+  id         Int      @id @default(autoincrement())
+  disease    String
+  carrier    String
+  patient_id String
+  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+}
+
+// =========================================
+// ============== ICD CODES ================
+// =========================================
+model ICDCode {
+  id         Int      @id @default(autoincrement())
+  code       String
+  patient_id String
+  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+}
+
+// =========================================
+// ============= APPOINTMENT ===============
+// =========================================
+model Appointment {
+  id         Int       @id @default(autoincrement())
+  date       DateTime
+  o2         Int
+  bp         String
+  temp       Float
+  hiv        Int
+  doctor     String
+  notes      Json       // store array of note objects as JSON
+  patient_id String
+  patient    Patient    @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+}
+
+// =========================================
+// ================ USER ===================
+// =========================================
+model User {
+  id           String   @id @default(uuid())
+  first_name   String
+  last_name    String
+  phone_number String
+  email        String
+  role         String
+  created_at   DateTime @default(now())
+}
