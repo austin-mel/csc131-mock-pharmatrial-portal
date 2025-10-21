@@ -5,7 +5,7 @@ export interface Trial {
 
     id: string;
 
-    drug_id: PatientInformation['id'];
+    drug_id: string;
     
     status: BadgeStatus;
 
