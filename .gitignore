@@ -136,7 +136,6 @@ Desktop.ini
 *.sln.docstates
 *.userprefs
 mono_crash.* 
-*.env
 
 # Build results
 [Dd]ebug*/
