@@ -1,7 +1,7 @@
 // prisma/schema.prisma
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("BACK_END_HOST")
 }
 
 generator client {
@@ -15,15 +15,12 @@ model Trial {
   id         String   @id @default(uuid())
   name       String
   drug_id    String
-  status     String   @defualt("pending")
+  status     String   @default("pending")
   active     Boolean  @default(false)
   completed  Boolean  @default(false)
   rejected   Boolean  @default(false)
 
-  // Approvals stored as JSON since dynamic keys (jh, fda, bav, etc.)
   approvals  Json
-
-  // Relation to Patients in this trial
   patients   Patient[]
 
   @@index([id])
@@ -48,12 +45,11 @@ model Patient {
   insured       Boolean
   eligibility   Boolean
   dose          Float
-
   phone_number  String
   email         String
 
   // Relations
-  trial         Trial    @relation(fields: [study_id], references: [id])
+  trial         Trial       @relation(fields: [study_id], references: [id])
   allergies     Allergy[]
   medications   Medication[]
   histories     History[]
@@ -117,7 +113,7 @@ model Appointment {
   temp       Float
   hiv        Int
   doctor     String
-  notes      Json       // store array of note objects as JSON
+  notes      Json
   patient_id String
   patient    Patient    @relation(fields: [patient_id], references: [id], onDelete: Cascade)
 }
