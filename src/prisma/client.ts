@@ -1,9 +1,16 @@
-// src/prisma/client.ts
-import { PrismaClient } from '@prisma/client';
+import dotenv from 'dotenv';
+import path from 'path';
+import pkg from '@prisma/client';
 
-export const prisma = new PrismaClient();
+// Load custom env file
+dotenv.config({ path: path.resolve('environment/back-end.env') });
 
-process.on('SIGINT', async () => {
-  await prisma.$disconnect();
-  process.exit(0);
+const { PrismaClient } = pkg;
+
+export const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.BACK_END_HOST,
+    },
+  },
 });

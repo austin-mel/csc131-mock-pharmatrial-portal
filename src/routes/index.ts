@@ -1,9 +1,9 @@
+// src/routes/index.ts
 import { Router } from 'express';
+import patientRoutes from './patients';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.json({ message: 'Hello from ESM backend!' });
-});
+router.use('/patients', patientRoutes);
 
-export { router };
+export default router;

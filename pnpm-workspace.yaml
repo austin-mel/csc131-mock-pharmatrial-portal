@@ -1,3 +1,0 @@
-packages:
-  - "apps/*"
-  - "packages/*" # optional for shared code
