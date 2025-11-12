@@ -1,30 +1,265 @@
+# ==========================
+# Node.js / Vue / Frontend
+# ==========================
+
+# Node modules
+node_modules/
+
+# Dependency directories
+jspm_packages/
+bower_components/
+web_modules/
+
+# Build outputs
+dist/
+build/
+out/
+.next
+.nuxt
+.output
+.vuepress/dist
+.temp
+.svelte-kit/
+**/.vitepress/dist
+**/.vitepress/cache
+.docusaurus
+.serverless/
+.fusebox/
+.dynamodb/
+.firebase/
+.cache
+.parcel-cache
+.vite/
+*.local
+.yarn-integrity
+
+# Environment files
+.env
+*.env
+!*.example.*.env
+
+# Package managers & caches
+.pnpm
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# TypeScript
+*.tsbuildinfo
+
 # Logs
 logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Grunt / Parcel / Misc
+.grunt
+.stylelintcache
+.node_repl_history
+*.tgz
+
+# Scheme
+*.ss~
+*.ss#*
+.#*.ss
+*.scm~
+*.scm#*
+.#*.scm
+
+# Vite files
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# ==========================
+# Editor / OS
+# ==========================
+
+# macOS
 .DS_Store
-dist
-dist-ssr
-coverage
-*.local
+.AppleDouble
+.LSOverride
 
-/cypress/videos/
-/cypress/screenshots/
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# Editor directories and files
-.vscode/*
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 !.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+!.vscode/*.code-snippets
+.vscode-test
+.history/
 
-*.tsbuildinfo
+# JetBrains IDEs
+.idea/
+
+# ==========================
+# Visual Studio / .NET
+# ==========================
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+mono_crash.*
+
+# Build results
+[Dd]ebug*/
+[Rr]elease*/
+bin/
+obj/
+[Ll]og/
+**/[Bb]in/*
+.vs/
+Generated\ Files/
+Generated_Code/
+_Pvt_Extensions
+.vshistory/
+.vspscc
+.vssscc
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+*.received.*
+
+# Profilers / coverage / benchmarking
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+BenchmarkDotNet.Artifacts/
+*.psess
+*.vsp
+*.vspx
+*.sap
+_NCrunch_*
+.NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+OpenCover/
+.axoCover/*
+!.axoCover/settings.json
+*.dotCover
+
+# Misc Visual Studio / .NET
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.idb
+*.ilk
+*.meta
+*_i.c
+*_p.c
+*_h.h
+*.rsp
+!Directory.Build.rsp
+*.mm.*
+AutoTest.Net/
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+$tf/
+*.gpState
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+_TeamCity*
+FakesAssemblies/
+*.GhostDoc.xml
+.ntvs_analysis.dat
+*.plg
+*.opt
+*.vbw
+*.dsw
+*.dsp
+**/*.HTMLClient/GeneratedArtifacts
+**/*.DesktopClient/GeneratedArtifacts
+**/*.DesktopClient/ModelManifest.xml
+**/*.Server/GeneratedArtifacts
+**/*.Server/ModelManifest.xml
+**/.paket/paket.exe
+paket-files/
+**/.fake/
+**/.cr/personal
+**/__pycache__/
+*.pyc
+*.tss
+*.jmconfig
+*.btp.cs
+*.btm.cs
+*.odx.cs
+*.xsd.cs
+ASALocalRun/
+*.binlog
+MSBuild_Logs/
+.aws-sam
+*.nvuser
+**/.mfractor/
+healthchecksdb
+MigrationBackup/
+**/.ionide/
+FodyWeavers.xsd
+*.vsix
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# ==========================
+# Optional / Misc
+# ==========================
+*.bak
+*.swp
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+/vendor
+Gemfile.lock
