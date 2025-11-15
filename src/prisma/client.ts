@@ -3,9 +3,11 @@ import path from 'path';
 import pkg from '@prisma/client';
 
 // Load custom env file
-dotenv.config({ path: path.resolve('environment/back-end.env') });
+dotenv.config({ path: path.resolve('environment/.back-end.env') });
 
 const { PrismaClient } = pkg;
+
+console.log('Loaded BACK_END_HOST');
 
 export const prisma = new PrismaClient({
   datasources: {
