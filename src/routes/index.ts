@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import patientRoutes from './patients.routes';
+import patientRoutes from './patient.routes';
 import trialRoutes from './trial.routes';
 
 const router = Router();
