@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 datasource db {
   provider = "postgresql"
   url      = env("BACK_END_HOST")
@@ -12,18 +11,19 @@ generator client {
 // =============== TRIAL ===================
 // =========================================
 model Trial {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   name       String
   drug_id    String
-  status     String   @default("pending")
-  active     Boolean  @default(false)
-  completed  Boolean  @default(false)
-  rejected   Boolean  @default(false)
+  status     String    @default("pending")
+  active     Boolean   @default(false)
+  completed  Boolean   @default(false)
+  rejected   Boolean   @default(false)
 
   approvals  Json
   patients   Patient[]
 
   @@index([id])
+  @@map("trials") // map to lowercase table
 }
 
 // =========================================
@@ -48,19 +48,19 @@ model Patient {
   phone_number  String
   email         String
 
-  // Relations
   trial         Trial       @relation(fields: [study_id], references: [id])
   allergies     Allergy[]
   medications   Medication[]
-  histories     History[]
-  icdcodes      ICDCode[]
+  histories     Histories[]
+  icdcodes      IcdCode[]
   appointments  Appointment[]
 
   @@index([id])
+  @@map("patients")
 }
 
 // =========================================
-// ============= ALLERGY ===================
+// =============== ALLERGY =================
 // =========================================
 model Allergy {
   id         Int      @id @default(autoincrement())
@@ -68,6 +68,8 @@ model Allergy {
   reactions  String
   patient_id String
   patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+
+  @@map("allergies")
 }
 
 // =========================================
@@ -79,6 +81,8 @@ model Medication {
   purpose    String
   patient_id String
   patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+
+  @@map("medications")
 }
 
 // =========================================
@@ -90,16 +94,20 @@ model History {
   carrier    String
   patient_id String
   patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+
+  @@map("history")
 }
 
 // =========================================
 // ============== ICD CODES ================
 // =========================================
-model ICDCode {
+model IcdCode {
   id         Int      @id @default(autoincrement())
   code       String
   patient_id String
   patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+
+  @@map("icdcodes")
 }
 
 // =========================================
@@ -116,6 +124,8 @@ model Appointment {
   notes      Json
   patient_id String
   patient    Patient    @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+
+  @@map("appointments")
 }
 
 // =========================================
@@ -129,4 +139,6 @@ model User {
   email        String
   role         String
   created_at   DateTime @default(now())
+
+  @@map("users")
 }
