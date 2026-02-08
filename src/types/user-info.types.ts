@@ -1,6 +1,3 @@
-import { type PersonName } from "./person-name.interface";
-
-
 export interface UserContactInfo {
     phone_number: string;
     
@@ -19,7 +16,9 @@ export type UserRole = typeof UserRoles[number];
 
 
 export interface UserInformation {
-    name:    PersonName;
+    first_name: string;
+
+    last_name: string;
 
     contact: UserContactInfo;
 

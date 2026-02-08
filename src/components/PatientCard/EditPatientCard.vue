@@ -50,11 +50,11 @@ defineExpose({ onSave, onCancel })
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-medium">First name</label>
-        <input v-model="local.name.first" class="border p-1 rounded w-full" />
+        <input v-model="local.first_name" class="border p-1 rounded w-full" />
       </div>
       <div>
         <label class="block text-sm font-medium">Last name</label>
-        <input v-model="local.name.last" class="border p-1 rounded w-full" />
+        <input v-model="local.last_name" class="border p-1 rounded w-full" />
       </div>
       <div>
         <label class="block text-sm font-medium">DOB</label>

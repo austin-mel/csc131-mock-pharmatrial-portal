@@ -1,4 +1,4 @@
-import type { Appointment, PersonName, Trial } from "@/types";
+import type { Appointment, Trial } from "@/types";
 
 export interface PatientContactInfo {
     phone_number: string;
@@ -26,7 +26,9 @@ export interface ICDCodes {
 }
 
 export interface PatientInformation {
-    name:    PersonName;
+    first_name: string;
+
+    last_name: string;
 
     id: string;
 

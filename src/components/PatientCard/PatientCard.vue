@@ -112,7 +112,7 @@ const editRef = ref()
         <UserIcon v-if="!isEditing" class="w-16 h-auto" />
         <div class="w-[24rem] flex flex-col">
           <template v-if="!isEditing">
-            <p class="font-semibold text-3xl">{{ patient.name.first }} {{ patient.name.last }}</p>
+            <p class="font-semibold text-3xl">{{ patient.first_name }} {{ patient.last_name }}</p>
             <p class="text-xl text-gray-600">{{ formattedDate }}</p>
           </template>
 

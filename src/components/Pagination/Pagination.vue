@@ -41,7 +41,7 @@ const pagesToShow = computed(() => {
 <template>
   <nav v-if="totalPages > 1" class="flex items-center justify-center gap-2 my-4" role="navigation"
     aria-label="Pagination">
-    <button @click="goToPage(props.modelValue - 1)" :disabled="props.modelValue === 1"
+    <button @click="goToPage(modelValue - 1)" :disabled="props.modelValue === 1"
       class="px-3 py-1 border rounded disabled:opacity-50">
       Prev
     </button>
@@ -53,7 +53,7 @@ const pagesToShow = computed(() => {
       {{ page }}
     </button>
 
-    <button @click="goToPage(props.modelValue + 1)" :disabled="props.modelValue === totalPages"
+    <button @click="goToPage(modelValue + 1)" :disabled="props.modelValue === totalPages"
       class="px-3 py-1 border rounded disabled:opacity-50">
       Next
     </button>

@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useAuthStore } from '@/stores';
+import { computed, defineProps, ref, onMounted } from 'vue';
 import { ViewButton } from '@/components';
-import { CheckIcon, RejectIcon } from '@/assets';
-import type { PatientInformation, Appointment, Trial } from '@/types';
-import { ProgressBar } from '../ProgressBar';
+import type { PatientInformation } from '@/types';
+import { getPatients } from '@/services/api';
 
-const auth = useAuthStore();
+const patients = ref<PatientInformation[]>([]);
+const loading = ref(false);
 
-const currentRole = computed(() => {
-  if (!auth.isLoggedIn || !auth.accountType) return '';
-  return auth.accountType;
+onMounted(async () => {
+  loading.value = true;
+  try {
+    const response = await getPatients();
+    patients.value = response.data;
+  } catch (err) {
+    console.error('Failed to load patients', err);
+  } finally {
+    loading.value = false;
+  }
 });
-
-const props = defineProps<{
-  patients: PatientInformation[];
-}>();
 </script>
 
 <template>
@@ -25,50 +27,37 @@ const props = defineProps<{
         <tr>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
           <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Patient ID</th>
-          <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Dose</th>
+          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Dose</th>
           <th class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">View</th>
-          <th v-if="currentRole === 'JHAdmin'"
-            class="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase">Eligibility</th>
         </tr>
       </thead>
 
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="patient in props.patients" :key="patient.id" class="block md:table-row">
+        <tr v-for="patient in patients" :key="patient.id" class="block md:table-row">
           <td class="px-6 py-4 text-sm font-medium text-gray-900 hidden md:table-cell">
-            {{ patient.name.first }} {{ patient.name.last }}
+            {{ patient.first_name }} {{ patient.last_name }}
           </td>
           <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
             {{ patient.id }}
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
-            <ProgressBar :currentStep=patient.dose />
+            {{ patient.dose }} / 5
           </td>
           <td class="px-6 py-4 text-sm hidden md:table-cell">
             <div class="flex justify-center">
-              <ViewButton @click="$emit('view', patient)" />
+              <ViewButton @click="$emit('view', patient.id)" />
             </div>
           </td>
-          <td v-if="currentRole === 'JHAdmin'" class="px-6 py-4 hidden md:table-cell">
-            <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" />
-            <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span>
-          </td>
 
-          <!-- Mobile -->
-          <td colspan="5" class="block md:hidden px-6 py-4">
+          <!-- Mobile view -->
+          <td colspan="4" class="block md:hidden px-6 py-4">
             <div class="flex justify-between items-start">
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ patient.name.first }} {{ patient.name.last }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ patient.first_name }} {{ patient.last_name }}</p>
                 <p class="text-xs text-gray-500">ID: {{ patient.id }}</p>
+                <p class="text-sm font-medium text-gray-700">Dose: {{ patient.dose }} / 5</p>
               </div>
-              <div v-if="currentRole === 'JHAdmin'">
-                <component :is="patient.eligibility ? CheckIcon : RejectIcon" class="w-8 h-8" aria-hidden="true" />
-                <span class="sr-only">{{ patient.eligibility ? 'Eligible' : 'Not eligible' }}</span>
-              </div>
-            </div>
-
-            <div class="flex justify-between items-center mt-3 pt-2">
-              <ViewButton @click="$emit('view', patient)" />
-              <div class="text-md font-medium">Dose: {{ patient.dose }} / 5</div>
+              <ViewButton @click="$emit('view', patient.id)" />
             </div>
           </td>
         </tr>
