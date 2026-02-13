@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
-import type { BadgeStatus } from '@/types';
+const props = defineProps<{
+  status: string
+}>()
 
-const props = defineProps({
-  status: {
-    type: String as () => BadgeStatus,
-    required: true,
-  },
-});
+const colors: Record<string, string> = {
+  Pending: 'bg-yellow-400 text-black',
+  Active: 'bg-blue-600 text-white',
+  Completed: 'bg-green-600 text-white',
+  Rejected: 'bg-red-600 text-white'
+}
 </script>
 
 <template>
   <span
-    :class="[
-      'inline-block px-4 py-2 rounded-full font-bold text-center capitalize',
-      status === 'active' ? 'bg-yellow-300' : '',
-      status === 'pending' ? 'bg-gray-300' : '',
-      status === 'completed' ? 'bg-green-400' : '',
-      status === 'rejected' ? 'bg-red-400' : ''
-    ]"
+    class="px-2 py-1 rounded text-xs font-semibold"
+    :class="colors[status] || 'bg-gray-300 text-black'"
   >
     {{ status }}
   </span>

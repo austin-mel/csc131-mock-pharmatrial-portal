@@ -5,11 +5,11 @@ const emit = defineEmits<{
 }>()
 
 const tabs = [
-  { label: 'All', value: 'all' },
-  { label: 'Pending', value: 'pending' },
-  { label: 'Active', value: 'active' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Rejected', value: 'rejected' },
+  { label: 'All', value: 'All' },
+  { label: 'Pending', value: 'Pending' },
+  { label: 'Active', value: 'Active' },
+  { label: 'Completed', value: 'Completed' },
+  { label: 'Rejected', value: 'Rejected' },
 ]
 
 function setTab(value: string) {

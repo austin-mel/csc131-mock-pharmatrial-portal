@@ -7,15 +7,16 @@ import {
   StudyTable,
   PatientTable,
   PatientCard,
-  Pagination,
+  Pagination
 } from '@/components'
+
 import { useAuthStore } from '@/stores'
-import { getPatients, getTrials, getPatientById, getTrialById } from '@/services/api'
+import { getPatients, getTrials, getPatientById } from '@/services/api'
 import type { Trial, PatientInformation } from '@/types'
 
 const auth = useAuthStore()
 
-const activeTab = ref('all')
+const activeTab = ref('All')
 
 const showPatientTable = ref(false)
 const selectedTrial = ref<Trial | null>(null)
@@ -25,9 +26,35 @@ const showPatientModal = ref(false)
 const patients = ref<PatientInformation[]>([])
 const trials = ref<Trial[]>([])
 
-const resultsPerPage = 10
+const isMobile = ref(window.innerWidth < 640)
+
+function handleResize() {
+  isMobile.value = window.innerWidth < 640
+}
+
+window.addEventListener('resize', handleResize)
+
+const trialPageSize = computed(() => (isMobile.value ? 3 : 6))
+const patientPageSize = computed(() => (isMobile.value ? 6 : 10))
+
 const currentTrialPage = ref(1)
 const currentPatientPage = ref(1)
+
+async function loadData() {
+  try {
+    const [patientsRes, trialsRes] = await Promise.all([
+      getPatients(),
+      getTrials()
+    ])
+
+    patients.value = patientsRes.data
+    trials.value = trialsRes.data
+  } catch (err) {
+    console.error('Failed loading dashboard data:', err)
+  }
+}
+
+onMounted(loadData)
 
 function handleViewTrial(trial: Trial) {
   selectedTrial.value = trial
@@ -35,13 +62,13 @@ function handleViewTrial(trial: Trial) {
   currentPatientPage.value = 1
 }
 
-async function handleViewPatient(patientId: string) {
+async function handleViewPatient(id: string) {
   try {
-    const { data } = await getPatientById(patientId)
+    const { data } = await getPatientById(id)
     selectedPatient.value = data
     showPatientModal.value = true
   } catch (err) {
-    console.error('Failed to load patient details', err)
+    console.error('Failed loading patient:', err)
   }
 }
 
@@ -49,75 +76,47 @@ function resetView() {
   selectedTrial.value = null
   selectedPatient.value = null
   showPatientTable.value = false
-  activeTab.value = 'all'
+  activeTab.value = 'All'
   currentTrialPage.value = 1
   currentPatientPage.value = 1
 }
 
 watch(() => auth.accountType, resetView)
-
-watch(activeTab, () => {
-  currentTrialPage.value = 1
-})
+watch(activeTab, () => (currentTrialPage.value = 1))
 
 const filteredTrials = computed(() => {
-  switch (activeTab.value) {
-    case 'pending':
-      return trials.value.filter(t => t.status === 'pending')
-    case 'active':
-      return trials.value.filter(t => t.status === 'active')
-    case 'completed':
-      return trials.value.filter(t => t.status === 'completed')
-    case 'rejected':
-      return trials.value.filter(t => t.status === 'rejected')
-    default:
-      return trials.value
-  }
+  if (activeTab.value === 'All') return trials.value
+  return trials.value.filter(t => t.status === activeTab.value)
 })
 
 const filteredPatients = computed(() => {
-  const trial = selectedTrial.value
-  if (!trial) return []
-  return patients.value.filter(p => p.study_id === trial.id)
+  if (!selectedTrial.value) return []
+  return patients.value.filter(p => p.study_id === selectedTrial.value!.id)
 })
 
 const paginatedTrials = computed(() => {
-  const start = (currentTrialPage.value - 1) * resultsPerPage
-  return filteredTrials.value.slice(start, start + resultsPerPage)
+  const start = (currentTrialPage.value - 1) * trialPageSize.value
+  return filteredTrials.value.slice(start, start + trialPageSize.value)
 })
 
 const paginatedPatients = computed(() => {
-  const start = (currentPatientPage.value - 1) * resultsPerPage
-  return filteredPatients.value.slice(start, start + resultsPerPage)
+  const start = (currentPatientPage.value - 1) * patientPageSize.value
+  return filteredPatients.value.slice(start, start + patientPageSize.value)
 })
-
-async function loadData() {
-  const [patientsRes, trialsRes] = await Promise.all([
-    getPatients(),
-    getTrials(),
-  ])
-
-  patients.value = patientsRes.data
-  trials.value = trialsRes.data
-}
-
-onMounted(loadData)
 </script>
 
 <template>
   <div class="flex">
     <Sidebar v-if="auth.isLoggedIn" @reset-view="resetView" />
 
-    <div class="bg-white w-screen rounded-lg ml-[4rem] sm:mx-[8rem] mt-[4rem] sm:mt-[16rem] sm:h-[100vh] shadow p-4">
-      <div
+    <div class="bg-white w-screen rounded-lg ml-[4rem] sm:mx-[8rem] mt-[4rem] sm:mt-[16rem] shadow p-4">
+      
+      <div 
         class="flex items-center mb-4"
         :class="showPatientTable ? 'justify-center' : 'justify-between'"
       >
         <NewStudy v-if="!showPatientTable" />
-        <SortTabs
-          v-if="!showPatientTable"
-          v-model:activeTab="activeTab"
-        />
+        <SortTabs v-if="!showPatientTable" v-model:activeTab="activeTab" />
 
         <button
           v-if="showPatientTable"
@@ -131,13 +130,13 @@ onMounted(loadData)
       <div class="flex">
         <PatientTable
           v-if="showPatientTable"
-          :patients="patients"
+          :patients="paginatedPatients"
           @view="handleViewPatient"
         />
 
         <StudyTable
           v-else
-          :trials="trials"
+          :trials="paginatedTrials"
           @view="handleViewTrial"
         />
 
@@ -152,14 +151,14 @@ onMounted(loadData)
           v-if="showPatientTable"
           v-model="currentPatientPage"
           :totalItems="filteredPatients.length"
-          :itemsPerPage="resultsPerPage"
+          :itemsPerPage="patientPageSize"
         />
 
         <Pagination
           v-else
           v-model="currentTrialPage"
           :totalItems="filteredTrials.length"
-          :itemsPerPage="resultsPerPage"
+          :itemsPerPage="trialPageSize"
         />
       </div>
     </div>

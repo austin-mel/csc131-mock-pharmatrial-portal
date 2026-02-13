@@ -1,6 +1,7 @@
 import type { BadgeStatus, PatientInformation } from "@/types";
 
 export interface Trial {
+    trial: {};
     name: string;
 
     id: string;
@@ -17,10 +18,9 @@ export interface Trial {
     };
 
     distributed: {
-      jh: boolean;
-      fda: boolean;
-      bav: boolean;
-      [key: string]: boolean;
+      jh: boolean
+      fda: boolean
+      bav: boolean
     };
 
     active: boolean;
