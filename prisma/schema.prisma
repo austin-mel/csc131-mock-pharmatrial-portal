@@ -11,16 +11,17 @@ generator client {
 // =============== TRIAL ===================
 // =========================================
 model Trial {
-  id         String    @id @default(uuid())
-  name       String
-  drug_id    String
-  status     String    @default("pending")
-  active     Boolean   @default(false)
-  completed  Boolean   @default(false)
-  rejected   Boolean   @default(false)
+  id          String    @id @default(uuid())
+  name        String
+  drug_id     String
+  status      String    @default("pending")
+  active      Boolean   @default(false)
+  completed   Boolean   @default(false)
+  rejected    Boolean   @default(false)
 
-  approvals  Json
-  patients   Patient[]
+  approvals   Json
+  distributed Json
+  patients    Patient[]
 
   @@index([id])
   @@map("trials") // map to lowercase table
@@ -34,7 +35,7 @@ model Patient {
   first_name    String
   last_name     String
   study_id      String
-  drug_id       String
+  drug_id       String?
   dob           DateTime
   address       String
   insurance_num String
@@ -51,7 +52,7 @@ model Patient {
   trial         Trial       @relation(fields: [study_id], references: [id])
   allergies     Allergy[]
   medications   Medication[]
-  histories     Histories[]
+  history       History[]
   icdcodes      IcdCode[]
   appointments  Appointment[]
 
@@ -121,7 +122,7 @@ model Appointment {
   temp       Float
   hiv        Int
   doctor     String
-  notes      Json
+  notes      Json?
   patient_id String
   patient    Patient    @relation(fields: [patient_id], references: [id], onDelete: Cascade)
 
