@@ -49,7 +49,7 @@ const pagesToShow = computed(() => {
       :disabled="modelValue === 1"
       class="px-3 py-1 border rounded disabled:opacity-50"
     >
-      Prev
+      Last
     </button>
 
     <button

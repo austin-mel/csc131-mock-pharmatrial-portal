@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ActionButton, ViewButton, Badges } from '@/components';
-import type { Trial } from '@/types'
+import type { Trial, UserRole } from '@/types'
 import { useAuthStore } from '@/stores'
 
 const props = defineProps<{
@@ -14,26 +14,18 @@ const emit = defineEmits<{
 
 const auth = useAuthStore()
 
-// Determine role key
-const userRoleKey = computed<'jh' | 'fda' | 'bav' | null>(() => {
-  if (auth.accountType === 'JHAdmin' || auth.accountType === 'JHDoctor') return 'jh'
-  if (auth.accountType === 'FDA') return 'fda'
-  if (auth.accountType === 'Bavaria') return 'bav'
-  return null
-})
-
-// Helpers
 function pendingApprovals(trial: Trial) {
   return (
-    trial.approvals.jh === false ||
-    trial.approvals.fda === false ||
-    trial.approvals.bav === false
+    trial.approvals.JHDoctor === false ||
+    trial.approvals.FDA === false ||
+    trial.approvals.Bavaria === false ||
+    true
   )
 }
 
 function distributionLabel() {
-  if (userRoleKey.value === 'fda') return 'Repackage Drugs'
-  if (userRoleKey.value === 'jh') return 'Distribute Drugs'
+  if (auth.accountType === 'FDA') return 'Repackage Drugs'
+  if (auth.accountType === 'JHDoctor') return 'Distribute Drugs'
   return 'Send Drugs'
 }
 </script>
@@ -85,42 +77,39 @@ function distributionLabel() {
 
           <!-- Actions -->
           <td class="px-6 py-4 hidden md:table-cell">
-            <template v-if="!trial.rejected">
+            <template v-if="!trial.rejected && auth.accountType != 'JHAdmin'">
 
               <!-- Completed -->
               <div v-if="trial.completed" class="flex justify-center">
                 <ActionButton
                   label="View Report"
                   color="purple"
-                  :disabled="!userRoleKey"
                 />
               </div>
 
               <!-- Pending approvals -->
-              <div v-else-if="pendingApprovals(trial)" class="flex justify-center gap-2">
-                <ActionButton
-                  label="Approve"
-                  color="green"
-                  :disabled="!userRoleKey || trial.approvals[userRoleKey!]"
-                  @click="trial.approvals[userRoleKey!] = true"
-                />
-                <ActionButton
-                  label="Reject"
-                  color="red"
-                  :disabled="!userRoleKey || trial.approvals[userRoleKey!]"
-                  @click="trial.rejected = true"
-                />
-              </div>
+                <div v-else-if="pendingApprovals(trial) === true" class="flex gap-2">
+                  <ActionButton
+                    label="Approve"
+                    color="green"
+                    @click=""
+                  />
+                  <ActionButton
+                    label="Reject"
+                    color="red"
+                    @click=""
+                  />
+                </div>
 
               <!-- All approved -->
-              <div v-else class="flex justify-center">
+<!--               <div v-else class="flex justify-center">
                 <ActionButton
                   :label="distributionLabel()"
                   color="blue"
-                  :disabled="trial.distributed[userRoleKey!]"
-                  @click="trial.distributed[userRoleKey!] = true"
+                  :disabled="trial.distributed[auth.accountType!]"
+                  @click=""
                 />
-              </div>
+              </div> -->
 
             </template>
           </td>
@@ -145,7 +134,7 @@ function distributionLabel() {
                   <ActionButton
                     label="View Report"
                     color="purple"
-                    :disabled="!userRoleKey"
+                    :disabled="!auth.accountType"
                   />
                 </div>
 
@@ -154,26 +143,26 @@ function distributionLabel() {
                   <ActionButton
                     label="Approve"
                     color="green"
-                    :disabled="!userRoleKey || trial.approvals[userRoleKey!]"
-                    @click="trial.approvals[userRoleKey!] = true"
+                    :disabled="!auth.accountType || trial.approvals[auth.accountType!]"
+                    @click=""
                   />
                   <ActionButton
                     label="Reject"
                     color="red"
-                    :disabled="!userRoleKey || trial.approvals[userRoleKey!]"
-                    @click="trial.rejected = true"
+                    :disabled="!auth.accountType || trial.approvals[auth.accountType!]"
+                    @click=""
                   />
                 </div>
 
                 <!-- Approved -->
-                <div v-else>
+<!--                 <div v-else>
                   <ActionButton
                     :label="distributionLabel()"
                     color="blue"
-                    :disabled="trial.distributed[userRoleKey!]"
-                    @click="trial.distributed[userRoleKey!] = true"
+                    :disabled="!auth.accountType || trial.distributed[auth.accountType!]"
+                    @click=""
                   />
-                </div>
+                </div> -->
 
               </template>
             </div>

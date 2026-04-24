@@ -11,16 +11,16 @@ export interface Trial {
     status: BadgeStatus;
 
     approvals: {
-      jh: boolean;
-      fda: boolean;
-      bav: boolean;
+      JHDoctor: boolean;
+      FDA: boolean;
+      Bavaria: boolean;
       [key: string]: boolean;
     };
 
     distributed: {
-      jh: boolean
-      fda: boolean
-      bav: boolean
+      JHDoctor: boolean
+      FDA: boolean
+      Bavaria: boolean
     };
 
     active: boolean;
