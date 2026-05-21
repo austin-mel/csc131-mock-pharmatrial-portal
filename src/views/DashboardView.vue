@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import Dashboard from '@/components/Dashboard/Dashboard.vue';
-
+import { LoginForm } from '@/components/LoginForm';
 </script>
 
 <template>
-  <Dashboard />
+    <LoginForm />
 </template>

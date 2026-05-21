@@ -1,9 +1,6 @@
-import BavariaLogo from "./bavaria-logo.svg";
-import FDALogo from "./fda-logo.svg"
-import JHLogo from "./janehopkins-logo.svg";
-import BavariaTest from "./bavaria-test.svg";
-
-//import NotFound from "./404-not-found.jpg";
+import BavariaLogo from "./bavaria_logo.svg";
+import FDALogo from "./fda_logo.svg"
+import JHLogo from "./jh_logo.svg";
 
 export * from "./icons";
-export { BavariaLogo, FDALogo, JHLogo, BavariaTest };
+export { BavariaLogo, FDALogo, JHLogo };
