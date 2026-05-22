@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { LoginForm } from '@/components/LoginForm';
+import { Login } from "@/components";
 </script>
 
 <template>
-    <LoginForm />
+  <Login />
 </template>

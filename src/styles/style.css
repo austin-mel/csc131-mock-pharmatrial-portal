@@ -3,6 +3,39 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --color-bg: #f5f2ec;
+  --color-surface: #ffffff;
+  --color-ink: #1a1714;
+  --color-muted: #6b6560;
+  --color-rule: #dedad3;
+  --color-jh: #1e7e4e;
+  --color-fda: #2a5c8f;
+  --color-bav: #c0392b;
+  --color-jh-light: #e6f4ec;
+  --color-fda-light: #e8eef5;
+  --color-bav-light: #fdf0ee;
   --color-midnight: #241E1E;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #f5f2ec;
+  color: #1a1714;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}

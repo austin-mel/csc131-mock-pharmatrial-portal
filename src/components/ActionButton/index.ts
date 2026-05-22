@@ -1,3 +1,4 @@
-import ActionButton from "@/components/ActionButton/ActionButton.vue"
+import ActionButton from "@/components/ActionButton/ActionButton.vue";
 
-export { ActionButton }
+export { ActionButton };
+export default ActionButton;

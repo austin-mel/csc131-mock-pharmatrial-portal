@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { LoginForm } from '@/components/LoginForm';
+import { TopNav } from "@/components";
 </script>
 
 <template>
-    <LoginForm />
+  <TopNav />
 </template>
