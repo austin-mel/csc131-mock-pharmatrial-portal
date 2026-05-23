@@ -1,87 +1,45 @@
-import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
-import { BavariaLogo, FDALogo, JHLogo } from '@/assets'
-import type { Portal, PortalId } from '@/types'
-import { router, Routes } from '@/router'
-
-const portals: Portal[] = [
-  {
-    id: 'jh-doctor',
-    label: 'Jane Hopkins',
-    role: 'Doctor',
-    color: '#1e7e4e',
-    tint: '#eaf6ef',
-    abbr: 'JH',
-    user: 'Doctor',
-    logo: JHLogo,
-  },
-  {
-    id: 'jh-admin',
-    label: 'Jane Hopkins',
-    role: 'Admin',
-    color: '#1e7e4e',
-    tint: '#eaf6ef',
-    abbr: 'JH',
-    user: 'Admin',
-    logo: JHLogo,
-  },
-  {
-    id: 'fda',
-    label: 'FDA',
-    role: 'Regulator',
-    color: '#2a5c8f',
-    tint: '#eaf1f8',
-    abbr: 'FDA',
-    user: 'FDA',
-    logo: FDALogo,
-  },
-  {
-    id: 'bavaria',
-    label: 'Bavaria',
-    role: 'Sponsor',
-    color: '#c0392b',
-    tint: '#fbeeed',
-    abbr: 'BAV',
-    user: 'Sponsor',
-    logo: BavariaLogo,
-  },
-]
+import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
+import { seedPortals } from '@/data';
+import type { Portal, PortalId } from '@/types';
 
 const demoCredentials: Record<PortalId, { email: string; password: string }> = {
   'jh-doctor': { email: 'doctor@jh.example', password: 'jh-doctor-demo' },
   'jh-admin': { email: 'admin@jh.example', password: 'jh-admin-demo' },
   fda: { email: 'admin@fda.example', password: 'fda-demo' },
   bavaria: { email: 'admin@bavaria.example', password: 'bavaria-demo' },
-}
+};
 
 export const useAuthStore = defineStore('auth', () => {
-  const isLoggedIn = ref(false)
-  const selectedPortalId = ref<PortalId>('jh-doctor')
-  const error = ref('')
-  const currentPortal = computed(() => portals.find(portal => portal.id === selectedPortalId.value))
+  const selectedPortalId = ref<PortalId>('jh-doctor');
+  const loggedIn = ref(false);
+  const error = ref<string | null>(null);
+
+  const portals = seedPortals;
+  const selectedPortal = computed(() => portals.find(portal => portal.id === selectedPortalId.value) as Portal);
+  const currentPortal = computed(() => loggedIn.value ? selectedPortal.value : null);
+  const isLoggedIn = computed(() => loggedIn.value);
 
   function selectPortal(portalId: PortalId) {
-    selectedPortalId.value = portalId
-    error.value = ''
+    selectedPortalId.value = portalId;
   }
 
-  function login(email: string, password: string) {
-    const credentials = demoCredentials[selectedPortalId.value]
-    if (email !== credentials.email || password !== credentials.password) {
-      error.value = 'Invalid demo credentials for the selected portal.'
-      return
+  function login(email = demoCredentials[selectedPortalId.value].email, password = demoCredentials[selectedPortalId.value].password) {
+    const credentials = demoCredentials[selectedPortalId.value];
+    if (email.trim().toLowerCase() !== credentials.email || password !== credentials.password) {
+      loggedIn.value = false;
+      error.value = 'Invalid email or password for selected portal!';
+      return false;
     }
-
-    isLoggedIn.value = true
-    error.value = ''
-    router.push({ name: Routes.DASHBOARD })
+    loggedIn.value = true;
+    error.value = null;
+    return true;
   }
 
   function logout() {
-    isLoggedIn.value = false
-    error.value = ''
-    router.push({ name: Routes.LOGIN })
+    loggedIn.value = false;
+    error.value = null;
   }
 
-  return { portals, selectedPortalId, currentPortal, isLoggedIn, error, selectPortal, login, logout }
-})
+  return { portals, selectedPortalId, selectedPortal, currentPortal, isLoggedIn, error, selectPortal, login, logout };
+});

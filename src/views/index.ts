@@ -1,6 +1,3 @@
-import AccountView from "./AccountView.vue";
-import DashboardView from "./DashboardView.vue";
-import LoginView from "./LoginView.vue";
-import NotFoundView from "./NotFoundView.vue";
-
-export { AccountView, DashboardView, LoginView, NotFoundView };
+export { default as DashboardView } from './DashboardView.vue';
+export { default as LoginView } from './LoginView.vue';
+export { default as NotFoundView } from './NotFoundView.vue';

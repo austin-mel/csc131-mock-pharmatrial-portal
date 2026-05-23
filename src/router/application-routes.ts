@@ -1,36 +1,33 @@
-import type { RouteRecordRaw } from "vue-router";
-import { AccountView, DashboardView, LoginView, NotFoundView } from "@/views";
-
-import { Routes } from "./allowed-routes.ts";
+import type { RouteRecordRaw } from 'vue-router';
+import { DashboardView, LoginView, NotFoundView } from '@/views';
+import { Routes } from './allowed-routes';
 
 export const routes: RouteRecordRaw[] = [
   {
-    path: "/",
+    path: '/',
     name: Routes.LOGIN,
     component: LoginView,
     meta: {
-      title: "Pharmatrial | Sign In",
+      title: 'Pharmatrial | Sign In',
+      public: true,
     },
   },
   {
-    path: "/dashboard",
+    path: '/dashboard',
     name: Routes.DASHBOARD,
     component: DashboardView,
     meta: {
-      title: "Dashboard",
+      title: 'Dashboard',
+      requiresAuth: true,
     },
   },
   {
-    path: "/account",
-    name: Routes.ACCOUNT,
-    component: AccountView,
-    meta: {
-      title: "Account Information",
-    },
-  },
-  {
-    path: "/:pathMatch(.*)*",
+    path: '/:pathMatch(.*)*',
     name: Routes.NOT_FOUND,
     component: NotFoundView,
+    meta: {
+      title: 'Page Not Found',
+      public: true,
+    },
   },
 ];

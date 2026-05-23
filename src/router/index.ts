@@ -1,3 +1,3 @@
-export * from "./allowed-routes.ts";
-export * from "./application-routes.ts";
-export * from "./router.module.ts";
+export * from './allowed-routes';
+export * from './application-routes';
+export * from './router.module';

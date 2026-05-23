@@ -1,10 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouterLink } from "vue-router";
+import { Routes } from "@/router";
+</script>
 
 <template>
-  <section class="flex min-h-screen items-center justify-center bg-stone-100 px-6 text-center">
-    <div>
-      <h1 class="text-3xl font-semibold text-[#1a1714]">Page not found</h1>
-      <p class="mt-2 text-sm text-[#6b6560]">The page you requested does not exist.</p>
-    </div>
-  </section>
+  <main class="grid min-h-screen place-items-center bg-bg text-ink">
+    <section class="text-center">
+      <p class="font-mono text-[11px] uppercase tracking-[.14em] text-muted">
+        Page Not Found
+      </p>
+      <RouterLink
+        class="mt-3 inline-block rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white"
+        :to="{ name: Routes.LOGIN }"
+      >
+        Return to Sign In
+      </RouterLink>
+    </section>
+  </main>
 </template>

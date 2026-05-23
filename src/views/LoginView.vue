@@ -1,7 +1,22 @@
 <script setup lang="ts">
-import { Login } from "@/components";
+import { watch } from "vue";
+import { useRouter } from "vue-router";
+import { LoginPanel } from "@/components";
+import { useAuthStore } from "@/stores";
+import { Routes } from "@/router";
+
+const auth = useAuthStore();
+const router = useRouter();
+
+watch(
+  () => auth.isLoggedIn,
+  (isLoggedIn) => {
+    if (isLoggedIn) router.replace({ name: Routes.DASHBOARD });
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
-  <Login />
+  <LoginPanel />
 </template>
