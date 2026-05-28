@@ -8,4 +8,5 @@ export { default as ModalShell } from './ModalShell';
 export { default as PortalCard } from './PortalCard';
 export { PortalCardPartnerLogo } from './PortalCard';
 export { default as SearchInput } from './SearchInput';
+export { default as StatusBadge } from './StatusBadge';
 export { default as UserAvatar } from './UserAvatar';

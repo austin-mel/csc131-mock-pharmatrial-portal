@@ -1,7 +1,19 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
+import StatusBadge from "@/components/StatusBadge";
 import type { Trial } from "@/types";
-defineProps<{ trial: Trial; active?: boolean }>();
+
+const props = defineProps<{ trial: Trial; active?: boolean }>();
 defineEmits<{ select: [id: string] }>();
+
+const statusTone = computed(() => {
+  if (props.trial.status === "active") return "green";
+  if (props.trial.status === "pending-approval") return "yellow";
+  if (props.trial.status === "complete") return "blue";
+  if (props.trial.status === "rejected") return "red";
+  return "gray";
+});
 </script>
 
 <template>
@@ -22,16 +34,7 @@ defineEmits<{ select: [id: string] }>();
       {{ trial.id }}
     </div>
     <div class="mt-[5px] flex min-w-0 flex-wrap gap-1">
-      <span
-        class="rounded-full border border-rule bg-bg px-2 py-0.5 font-mono text-[9px] uppercase tracking-[.08em] text-muted"
-      >
-        {{ trial.statusLabel }}
-      </span>
-      <span
-        class="rounded-full border border-rule bg-bg px-2 py-0.5 font-mono text-[9px] uppercase tracking-[.08em] text-muted"
-      >
-        {{ trial.phase }}
-      </span>
+      <StatusBadge :tone="statusTone">{{ trial.statusLabel }}</StatusBadge>
     </div>
   </button>
 </template>
