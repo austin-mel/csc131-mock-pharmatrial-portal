@@ -27,7 +27,7 @@ const toneClasses: Record<StatusBadgeTone, string> = {
 
 <template>
   <span
-    class="inline-block rounded-[20px] px-[9px] py-0.5 font-mono text-[11px] font-semibold"
+    class="inline-block rounded-[20px] px-[9px] py-0.5 font-['DM_Mono',monospace] text-[11px] font-semibold"
     :class="toneClasses[tone]"
   >
     <slot />

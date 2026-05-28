@@ -62,6 +62,9 @@ export const useTrialsStore = defineStore('trials', () => {
       status: 'pending-approval',
       statusLabel: 'Pending Approval',
       archived: false,
+      approvals: { jh: 'blocked', fda: 'pending' },
+      batchSubmitted: false,
+      assignmentsLocked: false,
       dosesPerPatient: draft.dosesPerPatient,
       description: draft.description || 'No description provided.',
     };

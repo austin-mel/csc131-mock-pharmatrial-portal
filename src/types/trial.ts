@@ -12,6 +12,12 @@ export interface Trial {
   status: TrialStatus;
   statusLabel: string;
   archived: boolean;
+  approvals?: {
+    jh: 'approved' | 'pending' | 'rejected' | 'blocked';
+    fda: 'approved' | 'pending' | 'rejected' | 'blocked';
+  };
+  batchSubmitted?: boolean;
+  assignmentsLocked?: boolean;
   dosesPerPatient: number;
   description?: string;
 }
