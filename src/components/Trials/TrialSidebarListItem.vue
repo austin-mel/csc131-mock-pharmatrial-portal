@@ -35,6 +35,7 @@ const statusTone = computed(() => {
     </div>
     <div class="mt-[5px] flex min-w-0 flex-wrap gap-1">
       <StatusBadge :tone="statusTone">{{ trial.statusLabel }}</StatusBadge>
+      <StatusBadge v-if="trial.archived" tone="black">Archived</StatusBadge>
     </div>
   </button>
 </template>

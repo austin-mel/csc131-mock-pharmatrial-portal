@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import ActionButton from "../ActionButton/ActionButton.vue";
 import { SvgIcon } from "@/assets";
 import SearchInput from "../SearchInput/SearchInput.vue";
+import SegmentedControl from "./SegmentedControl.vue";
 import TrialSidebarListItem from "../Trials/TrialSidebarListItem.vue";
 import { useTrialsStore, useAuthStore } from "@/stores";
 
@@ -9,6 +12,15 @@ defineProps<{ open?: boolean }>();
 const emit = defineEmits<{ close: []; create: [] }>();
 const trials = useTrialsStore();
 const auth = useAuthStore();
+const archiveOptions = [
+  { label: "Current", value: "current" },
+  { label: "Archived", value: "archived" },
+];
+const archiveModel = computed({
+  get: () => (trials.showingArchived ? "archived" : "current"),
+  set: (value: string) => trials.setArchiveFilter(value === "archived"),
+});
+
 function selectTrial(id: string) {
   trials.selectTrial(id);
   emit("close");
@@ -39,6 +51,7 @@ function selectTrial(id: string) {
         placeholder="Search trials..."
         @update:model-value="trials.setSearch"
       />
+      <SegmentedControl v-model="archiveModel" :options="archiveOptions" />
       <ActionButton
         v-if="auth.selectedPortalId === 'bavaria'"
         variant="bav"

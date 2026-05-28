@@ -68,8 +68,7 @@ function submit() {
     <p
       class="mb-4 rounded-md border border-rule bg-bg px-3 py-2 text-sm text-muted"
     >
-      Bavaria-created trials appear in the current trial sidebar immediately
-      after submission.
+      Create a new clinical trial and submit for FDA & Jane Hopkins approval.
     </p>
     <FormField label="Trial Name">
       <FormInput v-model="name" placeholder="e.g. Phase 3 Antiviral Regimen B" />

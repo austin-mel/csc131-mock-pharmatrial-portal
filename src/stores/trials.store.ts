@@ -19,25 +19,33 @@ export const useTrialsStore = defineStore('trials', () => {
   const trials = ref<Trial[]>(structuredClone(seedTrials));
   const currentTrialId = ref<string | null>(trials.value[0]?.id ?? null);
   const sidebarSearch = ref('');
+  const showingArchived = ref(false);
 
-  const currentTrials = computed(() => trials.value.filter((trial) => !trial.archived));
-  const currentTrial = computed(() => currentTrials.value.find((trial) => trial.id === currentTrialId.value) ?? null);
+  const currentTrial = computed(() => trials.value.find((trial) => trial.id === currentTrialId.value) ?? null);
   const filteredTrials = computed(() => {
     const query = sidebarSearch.value.trim().toLowerCase();
-    return currentTrials.value.filter((trial) => {
-      if (!query) return true;
-      return [trial.name, trial.id, trial.drug, trial.condition, trial.statusLabel].some((value) =>
-        value.toLowerCase().includes(query),
-      );
-    });
+    return trials.value
+      .filter((trial) => Boolean(trial.archived) === showingArchived.value)
+      .filter((trial) => {
+        if (!query) return true;
+        return [trial.name, trial.id, trial.drug, trial.condition, trial.statusLabel].some((value) =>
+          value.toLowerCase().includes(query),
+        );
+      });
   });
 
   function selectTrial(id: string) {
-    if (currentTrials.value.some((trial) => trial.id === id)) currentTrialId.value = id;
+    currentTrialId.value = id;
+    const trial = trials.value.find((item) => item.id === id);
+    showingArchived.value = Boolean(trial?.archived);
   }
 
   function setSearch(value: string) {
     sidebarSearch.value = value;
+  }
+
+  function setArchiveFilter(value: boolean) {
+    showingArchived.value = value;
   }
 
   function createTrial(draft: CreateTrialDraft) {
@@ -59,6 +67,7 @@ export const useTrialsStore = defineStore('trials', () => {
     };
     trials.value.push(trial);
     currentTrialId.value = trial.id;
+    showingArchived.value = false;
     return trial;
   }
 
@@ -67,10 +76,11 @@ export const useTrialsStore = defineStore('trials', () => {
     currentTrialId,
     currentTrial,
     sidebarSearch,
-    currentTrials,
+    showingArchived,
     filteredTrials,
     selectTrial,
     setSearch,
+    setArchiveFilter,
     createTrial,
   };
 });
