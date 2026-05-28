@@ -2,18 +2,13 @@
 import { computed } from "vue";
 
 import StatusBadge from "@/components/StatusBadge";
+import { statusBadges } from "@/composables";
 import type { Trial } from "@/types";
 
 const props = defineProps<{ trial: Trial; active?: boolean }>();
 defineEmits<{ select: [id: string] }>();
 
-const statusTone = computed(() => {
-  if (props.trial.status === "active") return "green";
-  if (props.trial.status === "pending-approval") return "yellow";
-  if (props.trial.status === "complete") return "blue";
-  if (props.trial.status === "rejected") return "red";
-  return "gray";
-});
+const badges = computed(() => statusBadges(props.trial));
 </script>
 
 <template>
@@ -34,8 +29,13 @@ const statusTone = computed(() => {
       {{ trial.id }}
     </div>
     <div class="mt-[5px] flex min-w-0 flex-wrap gap-1">
-      <StatusBadge :tone="statusTone">{{ trial.statusLabel }}</StatusBadge>
-      <StatusBadge v-if="trial.archived" tone="black">Archived</StatusBadge>
+      <StatusBadge
+        v-for="badge in badges"
+        :key="badge.label"
+        :tone="badge.tone"
+      >
+        {{ badge.label }}
+      </StatusBadge>
     </div>
   </button>
 </template>

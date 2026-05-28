@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SvgIcon } from "@/assets";
-import { CreateTrialModal, TopNav, TrialSidebar } from "@/components";
+import { CreateTrialModal, TopNav, TrialPage, TrialSidebar } from "@/components";
+import { useTrialsStore } from "@/stores";
 
+const trials = useTrialsStore();
 const sidebarOpen = ref(false);
 const createModalOpen = ref(false);
 </script>
@@ -32,7 +34,9 @@ const createModalOpen = ref(false);
       <main
         class="flex flex-1 flex-col overflow-y-auto bg-bg"
         aria-label="Blank trial workspace"
-      ></main>
+      >
+        <TrialPage :trial="trials.currentTrial" />
+      </main>
     </div>
     <CreateTrialModal
       :open="createModalOpen"
