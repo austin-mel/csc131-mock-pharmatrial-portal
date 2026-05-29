@@ -13,7 +13,7 @@ const badges = computed(() => statusBadges(props.trial));
 
 <template>
   <button
-    class="block w-full min-w-0 overflow-hidden border-0 border-l-[3px] px-[18px] py-2.5 text-left hover:bg-bg"
+    class="block w-full min-w-0 overflow-hidden border-0 border-l-[3px] px-4 py-3 text-left hover:bg-bg sm:px-[18px] sm:py-2.5"
     :class="
       active ? 'border-l-fda bg-bg' : 'border-l-transparent bg-transparent'
     "

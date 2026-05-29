@@ -10,9 +10,9 @@ const createModalOpen = ref(false);
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="flex min-h-screen min-w-0 flex-col">
     <TopNav />
-    <div class="relative flex h-[calc(100vh-56px)] flex-1 overflow-hidden">
+    <div class="relative flex h-[calc(100vh-56px)] min-w-0 flex-1 overflow-hidden">
       <button
         class="fixed left-3 top-[68px] z-[360] grid size-10 place-items-center rounded-md border border-rule bg-surface text-ink shadow-app md:hidden"
         type="button"
@@ -32,7 +32,7 @@ const createModalOpen = ref(false);
         @create="createModalOpen = true"
       />
       <main
-        class="flex flex-1 flex-col overflow-y-auto bg-bg"
+        class="flex min-w-0 flex-1 flex-col overflow-y-auto bg-bg"
         aria-label="Blank trial workspace"
       >
         <TrialPage :trial="trials.currentTrial" />

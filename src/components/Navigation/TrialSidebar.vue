@@ -29,7 +29,7 @@ function selectTrial(id: string) {
 
 <template>
   <aside
-    class="fixed inset-y-0 left-0 z-[400] flex w-[280px] max-w-[86vw] shrink-0 flex-col overflow-x-hidden overflow-y-hidden border-r border-rule bg-surface shadow-app-lg transition-transform duration-200 md:static md:z-auto md:w-[230px] md:max-w-none md:translate-x-0 md:shadow-none"
+    class="fixed inset-y-0 left-0 z-[400] flex w-[min(320px,88vw)] shrink-0 flex-col overflow-x-hidden overflow-y-hidden border-r border-rule bg-surface shadow-app-lg transition-transform duration-200 md:static md:z-auto md:w-[230px] md:max-w-none md:translate-x-0 md:shadow-none"
     :class="open ? 'translate-x-0' : '-translate-x-full'"
   >
     <div class="grid min-w-0 gap-2 border-b border-rule px-[18px] pb-2.5 pt-4">

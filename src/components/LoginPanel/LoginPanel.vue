@@ -26,10 +26,10 @@ function signIn() {
 
 <template>
   <div
-    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1a1714]"
+    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1a1714] px-3 py-6"
   >
     <section
-      class="relative z-[1] w-[440px] max-w-[calc(100vw-24px)] rounded-lg bg-white px-6 py-8 shadow-[0_8px_48px_rgba(0,0,0,.15)] sm:px-10 sm:py-11"
+      class="relative z-[1] w-[440px] max-w-full rounded-lg bg-white px-6 py-8 shadow-[0_8px_48px_rgba(0,0,0,.15)] sm:px-10 sm:py-11"
     >
       <div
         class="mb-1 font-['DM_Serif_Display',serif] text-[22px] text-[#1a1714]"
@@ -44,7 +44,7 @@ function signIn() {
       >
         CSUS Dream Team · Sponsored by Vendia
       </div>
-      <div class="mb-[22px] grid grid-cols-2 gap-2.5">
+      <div class="mb-[22px] grid grid-cols-2 gap-2.5 max-[420px]:grid-cols-1">
         <PortalCard
           v-for="portal in auth.portals"
           :key="portal.id"

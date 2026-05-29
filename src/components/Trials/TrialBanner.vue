@@ -23,10 +23,10 @@ const pills = computed(() => [
 
 <template>
   <section
-    class="banner flex flex-wrap items-start justify-between gap-4 bg-ink px-7 py-[22px] text-white"
+    class="banner flex flex-wrap items-start justify-between gap-4 bg-ink px-7 py-[22px] text-white max-[640px]:px-4 max-[640px]:py-5"
   >
-    <div>
-      <div class="mb-[5px] flex gap-1.5">
+    <div class="min-w-0">
+      <div class="mb-[5px] flex flex-wrap gap-1.5">
         <StatusBadge
           v-for="badge in badges"
           :key="badge.label"
@@ -35,19 +35,19 @@ const pills = computed(() => [
           {{ badge.label }}
         </StatusBadge>
       </div>
-      <div class="mb-[3px] font-serif text-[22px] leading-[1.2]">
+      <div class="mb-[3px] break-words font-serif text-[22px] leading-[1.2] max-[640px]:text-[20px]">
         {{ trial.name }}
       </div>
-      <div class="mb-2.5 font-mono text-[11px] text-white/45">
+      <div class="mb-2.5 break-words font-mono text-[11px] text-white/45">
         {{ trial.id }} - Bavaria Pharma - {{ trial.phase }}
       </div>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-2 max-[480px]:grid max-[480px]:grid-cols-2">
         <span
           v-for="pill in pills"
           :key="pill.label"
-          class="flex min-w-[90px] flex-col rounded-[5px] border border-white/10 bg-white/10 px-3 py-1.5 font-mono text-[10px] text-white/40"
+          class="flex min-w-[90px] flex-col rounded-[5px] border border-white/10 bg-white/10 px-3 py-1.5 font-mono text-[10px] text-white/40 max-[480px]:min-w-0"
         >
-          <strong class="font-sans text-xs text-white/90">{{ pill.value }}</strong>
+          <strong class="truncate font-sans text-xs text-white/90">{{ pill.value }}</strong>
           {{ pill.label }}
         </span>
       </div>

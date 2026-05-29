@@ -1,5 +1,18 @@
 import type { Trial } from "@/types";
 
+type ApprovalStatus = "approved" | "pending" | "rejected" | "blocked";
+
+export const lifecycleSteps = [
+  "Bavaria Creates",
+  "FDA Approval",
+  "JH Approval",
+  "Bavaria Ship",
+  "FDA Assignment",
+  "Complete",
+  "JH Results to FDA",
+  "FDA Report to Bavaria and JH with De-Anon PII",
+] as const;
+
 export interface StatusBadgeDefinition {
   label: string;
   tone:
@@ -29,4 +42,50 @@ export function statusBadges(trial: Trial): StatusBadgeDefinition[] {
   else badges.push({ label: "Pending Approval", tone: "yellow" });
 
   return badges;
+}
+
+function approvalsFor(trial: Trial): { jh: ApprovalStatus; fda: ApprovalStatus } {
+  return {
+    jh: trial.approvals?.jh ?? "blocked",
+    fda: trial.approvals?.fda ?? "pending",
+  };
+}
+
+export function rejectedStepIndex(trial: Trial): number | null {
+  if (trial.status !== "rejected") return null;
+
+  const approvals = approvalsFor(trial);
+  if (approvals.fda === "rejected") return 1;
+  if (approvals.jh === "rejected") return 2;
+  if (!trial.batchSubmitted) return 3;
+  if (!trial.assignmentsLocked) return 4;
+  if (!trial.notifiedFDA) return 6;
+  return 7;
+}
+
+export function currentLifecycleStepIndex(trial: Trial, allDosed = false): number {
+  const approvals = approvalsFor(trial);
+
+  if (trial.disclosed && trial.notifiedFDA) return 7;
+  if (trial.notifiedFDA) return 6;
+  if (trial.status === "complete" || allDosed) return 5;
+  if (trial.assignmentsLocked) return 4;
+  if (trial.batchSubmitted) return 3;
+  if (approvals.jh === "approved" && approvals.fda === "approved") return 2;
+  if (approvals.fda === "approved") return 1;
+  return 0;
+}
+
+export function approvalLabel(value: ApprovalStatus): string {
+  return value === "blocked" ? "Awaiting FDA" : value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+export function approvalTone(value: ApprovalStatus): StatusBadgeDefinition["tone"] {
+  if (value === "approved") return "green";
+  if (value === "rejected") return "red";
+  return "yellow";
+}
+
+export function trialApprovals(trial: Trial): { jh: ApprovalStatus; fda: ApprovalStatus } {
+  return approvalsFor(trial);
 }

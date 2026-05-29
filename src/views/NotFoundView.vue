@@ -4,7 +4,7 @@ import { Routes } from "@/router";
 </script>
 
 <template>
-  <main class="grid min-h-screen place-items-center bg-bg text-ink">
+  <main class="grid min-h-screen place-items-center bg-bg px-4 text-ink">
     <section class="text-center">
       <p class="font-mono text-[11px] uppercase tracking-[.14em] text-muted">
         Page Not Found

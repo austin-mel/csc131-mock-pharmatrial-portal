@@ -8,17 +8,17 @@ defineEmits<{ close: [] }>();
 <template>
   <div
     v-if="open"
-    class="fixed inset-0 z-[500] flex items-center justify-center bg-[rgba(20,18,16,.52)]"
+    class="fixed inset-0 z-[500] flex items-end justify-center bg-[rgba(20,18,16,.52)] p-0 sm:items-center sm:p-4"
     @click.self="$emit('close')"
   >
     <section
-      class="max-h-[90vh] w-[580px] max-w-[95vw] overflow-auto rounded-lg bg-white shadow-[0_8px_48px_rgba(0,0,0,.15)]"
-      :class="{ 'w-[740px]': wide }"
+      class="max-h-[94vh] w-full overflow-auto rounded-t-lg bg-white shadow-[0_8px_48px_rgba(0,0,0,.15)] sm:max-h-[90vh] sm:w-[580px] sm:max-w-[95vw] sm:rounded-lg"
+      :class="{ 'sm:w-[740px]': wide }"
     >
       <header
-        class="flex items-center justify-between border-b border-[#dedad3] px-[22px] py-[17px]"
+        class="flex items-center justify-between gap-3 border-b border-[#dedad3] px-4 py-4 sm:px-[22px] sm:py-[17px]"
       >
-        <h2 class="font-['DM_Serif_Display',serif] text-[19px] font-normal">
+        <h2 class="min-w-0 font-['DM_Serif_Display',serif] text-[19px] font-normal">
           {{ title }}
         </h2>
         <button
@@ -29,12 +29,12 @@ defineEmits<{ close: [] }>();
           <SvgIcon name="close" />
         </button>
       </header>
-      <main class="p-[22px]">
+      <main class="p-4 sm:p-[22px]">
         <slot />
       </main>
       <footer
         v-if="$slots.footer"
-        class="flex justify-end gap-2.5 border-t border-[#dedad3] px-[22px] py-[13px]"
+        class="flex flex-col-reverse gap-2.5 border-t border-[#dedad3] px-4 py-[13px] sm:flex-row sm:justify-end sm:px-[22px]"
       >
         <slot name="footer" />
       </footer>
