@@ -148,11 +148,23 @@ function archive() {
   if (!props.trial) return;
   trials.toggleArchive(props.trial.id);
 }
+
+function deleteTrial() {
+  if (!props.trial) return;
+  const confirmed = window.confirm(`Delete ${props.trial.name}? This cannot be undone.`);
+  if (!confirmed) return;
+  trials.deleteTrial(props.trial.id);
+}
 </script>
 
 <template>
   <div v-if="trial" class="flex min-h-0 flex-1 flex-col">
-    <TrialBanner :trial="trial" :can-archive="canArchive" @archive="archive" />
+    <TrialBanner
+      :trial="trial"
+      :can-archive="canArchive"
+      @archive="archive"
+      @delete="deleteTrial"
+    />
     <section
       v-if="trial.status === 'rejected'"
       class="border-y-4 border-[#c0392b] bg-[#fdf0ee] px-7 py-6 text-[#9b1c11] shadow-[0_8px_24px_rgba(192,57,43,.22)] max-[640px]:px-4 max-[640px]:py-5"

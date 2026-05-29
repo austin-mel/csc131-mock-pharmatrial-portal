@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import ActionButton from "../ActionButton/ActionButton.vue";
 import StatusBadge from "../StatusBadge/StatusBadge.vue";
+import { SvgIcon } from "@/assets";
 import { statusBadges } from "@/composables";
 import type { Trial } from "@/types";
 
@@ -15,7 +16,7 @@ const props = withDefaults(
   }>(),
   { eligibleCount: 0, completedCount: 0, canArchive: false },
 );
-defineEmits<{ archive: [] }>();
+defineEmits<{ archive: []; delete: [] }>();
 
 const badges = computed(() => statusBadges(props.trial));
 const pills = computed(() => [
@@ -60,17 +61,27 @@ const pills = computed(() => [
       </div>
     </div>
     <div
-      class="flex flex-wrap gap-2 [&_button:last-child]:border-white/40 [&_button:last-child]:bg-white/10 [&_button:last-child]:text-white max-[640px]:w-full"
+      class="flex flex-wrap gap-2 max-[640px]:w-full"
     >
       <slot name="actions" />
-      <ActionButton
+      <button
         v-if="canArchive"
-        class="max-[640px]:w-full"
-        variant="ghost"
+        class="inline-flex min-h-[39px] items-center justify-center rounded-[5px] border border-white/40 bg-white/10 px-[18px] py-[9px] text-[13px] font-semibold text-white transition-opacity hover:opacity-85 active:scale-[.98] max-[640px]:flex-1"
+        type="button"
         @click="$emit('archive')"
       >
         {{ trial.archived ? "Unarchive Trial" : "Archive Trial" }}
-      </ActionButton>
+      </button>
+      <button
+        v-if="trial.archived"
+        class="grid size-[39px] place-items-center rounded-[5px] border border-white/40 bg-white/10 text-white transition-opacity hover:opacity-85 active:scale-[.98] max-[640px]:size-[42px]"
+        type="button"
+        aria-label="Delete trial"
+        title="Delete trial"
+        @click="$emit('delete')"
+      >
+        <SvgIcon name="trash" />
+      </button>
     </div>
   </section>
 </template>

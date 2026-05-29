@@ -11,6 +11,8 @@ const paths = {
   menu: "M3 18h18v-2H3v2Zm0-5h18v-2H3v2Zm0-7v2h18V6H3Z",
   science:
     "M19.8 18.4 14 10.67V5h1V3H9v2h1v5.67L4.2 18.4A2 2 0 0 0 5.8 21h12.4a2 2 0 0 0 1.6-2.6ZM7 19l5-6.67L17 19H7Z",
+  trash:
+    "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12ZM8 9h8v10H8V9Zm7.5-5-1-1h-5l-1 1H5v2h14V4h-3.5Z",
   uploadFile:
     "M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Zm-2 9v-4H8l4-4 4 4h-3v4h-2Z",
 } as const;

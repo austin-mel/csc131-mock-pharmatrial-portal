@@ -128,6 +128,26 @@ export const useTrialsStore = defineStore('trials', () => {
     return true;
   }
 
+  function deleteTrial(trialId = currentTrialId.value) {
+    const index = trials.value.findIndex((item) => item.id === trialId);
+    if (index < 0) return false;
+
+    const deletedTrial = trials.value[index];
+    trials.value.splice(index, 1);
+
+    if (currentTrialId.value === trialId) {
+      const matchingTabTrial = trials.value.find((trial) => trial.archived === showingArchived.value);
+      currentTrialId.value = matchingTabTrial?.id ?? trials.value[0]?.id ?? null;
+      if (!matchingTabTrial && trials.value[0]) showingArchived.value = Boolean(trials.value[0].archived);
+    }
+
+    if (!trials.value.some((trial) => trial.archived === showingArchived.value) && trials.value.length) {
+      showingArchived.value = Boolean(trials.value[0].archived);
+    }
+
+    return deletedTrial;
+  }
+
   return {
     trials,
     currentTrialId,
@@ -142,5 +162,6 @@ export const useTrialsStore = defineStore('trials', () => {
     approveTrial,
     rejectTrial,
     toggleArchive,
+    deleteTrial,
   };
 });
