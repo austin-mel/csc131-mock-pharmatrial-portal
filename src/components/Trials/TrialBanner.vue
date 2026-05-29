@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import ActionButton from "../ActionButton/ActionButton.vue";
 import StatusBadge from "../StatusBadge/StatusBadge.vue";
 import { statusBadges } from "@/composables";
 import type { Trial } from "@/types";
 
 const props = withDefaults(
-  defineProps<{ trial: Trial; eligibleCount?: number; completedCount?: number }>(),
-  { eligibleCount: 0, completedCount: 0 },
+  defineProps<{
+    trial: Trial;
+    eligibleCount?: number;
+    completedCount?: number;
+    canArchive?: boolean;
+  }>(),
+  { eligibleCount: 0, completedCount: 0, canArchive: false },
 );
+defineEmits<{ archive: [] }>();
 
 const badges = computed(() => statusBadges(props.trial));
 const pills = computed(() => [
@@ -51,6 +58,19 @@ const pills = computed(() => [
           {{ pill.label }}
         </span>
       </div>
+    </div>
+    <div
+      class="flex flex-wrap gap-2 [&_button:last-child]:border-white/40 [&_button:last-child]:bg-white/10 [&_button:last-child]:text-white max-[640px]:w-full"
+    >
+      <slot name="actions" />
+      <ActionButton
+        v-if="canArchive"
+        class="max-[640px]:w-full"
+        variant="ghost"
+        @click="$emit('archive')"
+      >
+        {{ trial.archived ? "Unarchive Trial" : "Archive Trial" }}
+      </ActionButton>
     </div>
   </section>
 </template>

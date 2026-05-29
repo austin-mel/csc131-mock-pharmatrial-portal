@@ -119,6 +119,15 @@ export const useTrialsStore = defineStore('trials', () => {
     return true;
   }
 
+  function toggleArchive(trialId = currentTrialId.value) {
+    const trial = trials.value.find((item) => item.id === trialId);
+    if (!trial) return false;
+
+    trial.archived = !trial.archived;
+    showingArchived.value = trial.archived;
+    return true;
+  }
+
   return {
     trials,
     currentTrialId,
@@ -132,5 +141,6 @@ export const useTrialsStore = defineStore('trials', () => {
     createTrial,
     approveTrial,
     rejectTrial,
+    toggleArchive,
   };
 });

@@ -52,6 +52,7 @@ const items = computed(() => {
 const currentStep = computed(() => (props.trial ? currentLifecycleStepIndex(props.trial) : 0));
 const rejectedIndex = computed(() => (props.trial ? rejectedStepIndex(props.trial) : null));
 const finalReportPublished = computed(() => Boolean(props.trial?.disclosed && props.trial.notifiedFDA));
+const canArchive = computed(() => Boolean(props.trial));
 const approvalAction = computed<ApprovalAction | null>(() => {
   if (!props.trial || props.trial.status !== "pending-approval") return null;
 
@@ -142,11 +143,36 @@ function reject(action: ApprovalAction | null) {
   if (!props.trial || !action || approvalAction.value !== action) return;
   trials.rejectTrial(props.trial.id, action);
 }
+
+function archive() {
+  if (!props.trial) return;
+  trials.toggleArchive(props.trial.id);
+}
 </script>
 
 <template>
   <div v-if="trial" class="flex min-h-0 flex-1 flex-col">
-    <TrialBanner :trial="trial" />
+    <TrialBanner :trial="trial" :can-archive="canArchive" @archive="archive" />
+    <section
+      v-if="trial.status === 'rejected'"
+      class="border-y-4 border-[#c0392b] bg-[#fdf0ee] px-7 py-6 text-[#9b1c11] shadow-[0_8px_24px_rgba(192,57,43,.22)] max-[640px]:px-4 max-[640px]:py-5"
+    >
+      <div class="flex max-w-5xl items-start gap-4">
+        <div
+          class="grid size-14 shrink-0 place-items-center rounded-full bg-[#c0392b] text-white shadow-[0_4px_12px_rgba(192,57,43,.35)] max-[640px]:size-12"
+        >
+          <SvgIcon name="close" />
+        </div>
+        <div class="min-w-0">
+          <div class="text-3xl font-black uppercase leading-none tracking-[.08em] max-[640px]:text-2xl">
+            Trial Rejected
+          </div>
+          <div class="mt-2 text-base font-bold leading-snug max-[640px]:text-sm">
+            This trial has been rejected and is locked from approval workflow actions.
+          </div>
+        </div>
+      </div>
+    </section>
     <main class="p-7 max-[640px]:p-4">
       <div class="mb-5 flex flex-col items-stretch gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="min-w-0">
