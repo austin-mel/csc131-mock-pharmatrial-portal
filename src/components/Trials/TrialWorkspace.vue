@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
 
-import ActionButton from "@/components/ActionButton/ActionButton.vue";
 import DataCard from "@/components/Dashboard/DataCard.vue";
-import PatientAnonymizedTable from "@/components/PatientTables/PatientAnonymizedTable.vue";
-import PatientTable from "@/components/PatientTables/PatientTable.vue";
+import PatientCsvUploadModal from "@/components/Modals/Patients/PatientCsvUploadModal.vue";
 import PatientDetailModal from "@/components/Modals/Patients/PatientDetailModal.vue";
 import PatientFormModal from "@/components/Modals/Patients/PatientFormModal.vue";
 import RejectedTrialBanner from "@/components/Trials/RejectedTrialBanner.vue";
 import TrialBanner from "@/components/Trials/TrialBanner.vue";
 import TrialOverviewTab from "@/components/Trials/TrialOverviewTab.vue";
+import TrialPatientsTab from "@/components/Trials/TrialPatientsTab.vue";
 import TrialTabBar from "@/components/Trials/TrialTabBar.vue";
 import { getVisibleTabs, trialPatients } from "@/composables";
 import { useAuthStore, usePatientsStore, useTrialsStore, useUiStore } from "@/stores";
@@ -29,7 +28,6 @@ const assignments = computed<TrialAssignmentMap>(() => (trial.value ? trials.ass
 const trialPatientsList = computed(() => trialPatients(patientsStore.patients, enrollments.value));
 const selectedPatient = computed(() => (ui.selectedPatientId ? patientsStore.getPatient(ui.selectedPatientId) : null));
 const canEditPatients = computed(() => trial.value?.status !== "complete" && auth.selectedPortalId === "jh-doctor");
-const showPii = computed(() => auth.selectedPortalId === "jh-doctor");
 const canArchive = computed(() => Boolean(trial.value));
 
 const placeholderTitles: Record<Exclude<TrialTab, "overview">, string> = {
@@ -63,10 +61,6 @@ function deleteTrial() {
   trials.deleteTrial(trial.value.id);
 }
 
-function showPatientDetail(id: string) {
-  ui.showModal("patient-detail", id);
-}
-
 function showPatientForm(id: string | null = null) {
   ui.showModal("patient-form", id);
 }
@@ -98,34 +92,13 @@ function editPatient(id: string) {
         v-if="ui.activeTab === 'overview'"
         :trial="trial"
       />
-      <div v-else-if="ui.activeTab === 'patients'" class="grid gap-4">
-        <div
-          v-if="canEditPatients"
-          class="flex justify-end"
-        >
-          <ActionButton variant="jh" @click="showPatientForm()">
-            Add Patient
-          </ActionButton>
-        </div>
-        <PatientTable
-          v-if="showPii"
-          :patients="trialPatientsList"
-          :enrollments="enrollments"
-          :trial="trial"
-          :can-edit="canEditPatients"
-          @detail="showPatientDetail"
-          @edit="editPatient"
-        />
-        <PatientAnonymizedTable
-          v-else
-          :patients="trialPatientsList"
-          :enrollments="enrollments"
-          :assignments="assignments"
-          :trial="trial"
-          :show-tracking="auth.selectedPortalId === 'fda' || trial.disclosed"
-          @detail="showPatientDetail"
-        />
-      </div>
+      <TrialPatientsTab
+        v-else-if="ui.activeTab === 'patients'"
+        :trial="trial"
+        :patients="trialPatientsList"
+        :enrollments="enrollments"
+        :assignments="assignments"
+      />
       <DataCard
         v-else
         :title="placeholderTitles[ui.activeTab]"
@@ -146,6 +119,11 @@ function editPatient(id: string) {
     <PatientFormModal
       :open="ui.openModal === 'patient-form'"
       :patient="selectedPatient"
+      :trial="trial"
+      @close="ui.closeModal"
+    />
+    <PatientCsvUploadModal
+      :open="ui.openModal === 'patient-csv'"
       :trial="trial"
       @close="ui.closeModal"
     />

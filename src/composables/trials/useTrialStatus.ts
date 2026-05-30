@@ -121,6 +121,16 @@ export function canApproveTrial(trial: Trial, portalId: PortalId, hasAssignedPat
   return false;
 }
 
+export function canSeePii(portalId: PortalId): boolean {
+  return portalId === "jh-doctor";
+}
+
+export function canAddPatients(trial: Trial, portalId: PortalId): boolean {
+  if (trial.status === "rejected" || trial.notifiedFDA) return false;
+  if (portalId === "jh-admin") return true;
+  return trial.status === "pending-approval" && portalId === "jh-doctor";
+}
+
 export function isTrialCurrent(trial: Trial): boolean {
   return trial.status === "complete" || (trial.status === "active" && Boolean(trial.assignmentsLocked));
 }
