@@ -4,6 +4,8 @@ import { trialStatusLabel } from '@/composables';
 import { seedAssignments, seedTrialPatients, seedTrials } from '@/data';
 import type { PortalId, Trial, TrialAssignmentMap, TrialEligibility, TrialPatientsByTrial } from '@/types';
 
+const SIDEBAR_PAGE_SIZE = 10;
+
 export interface CreateTrialDraft {
   name: string;
   drug: string;
@@ -22,6 +24,7 @@ export const useTrialsStore = defineStore('trials', () => {
   const assignments = ref<Record<string, TrialAssignmentMap>>(structuredClone(seedAssignments));
   const currentTrialId = ref<string | null>(trials.value[0]?.id ?? null);
   const sidebarSearch = ref('');
+  const sidebarPage = ref(1);
   const showingArchived = ref(false);
 
   const currentTrial = computed(() => trials.value.find((trial) => trial.id === currentTrialId.value) ?? null);
@@ -36,6 +39,13 @@ export const useTrialsStore = defineStore('trials', () => {
         );
       });
   });
+  const pageCount = computed(() => Math.max(1, Math.ceil(filteredTrials.value.length / SIDEBAR_PAGE_SIZE)));
+  const visibleTrials = computed(() =>
+    filteredTrials.value.slice(
+      (sidebarPage.value - 1) * SIDEBAR_PAGE_SIZE,
+      sidebarPage.value * SIDEBAR_PAGE_SIZE,
+    ),
+  );
 
   function selectTrial(id: string) {
     currentTrialId.value = id;
@@ -45,10 +55,16 @@ export const useTrialsStore = defineStore('trials', () => {
 
   function setSearch(value: string) {
     sidebarSearch.value = value;
+    sidebarPage.value = 1;
   }
 
   function setArchiveFilter(value: boolean) {
     showingArchived.value = value;
+    sidebarPage.value = 1;
+  }
+
+  function changePage(delta: number) {
+    sidebarPage.value = Math.min(pageCount.value, Math.max(1, sidebarPage.value + delta));
   }
 
   function enrollmentsFor(trialId: string) {
@@ -168,11 +184,15 @@ export const useTrialsStore = defineStore('trials', () => {
     currentTrialId,
     currentTrial,
     sidebarSearch,
+    sidebarPage,
     showingArchived,
     filteredTrials,
+    visibleTrials,
+    pageCount,
     selectTrial,
     setSearch,
     setArchiveFilter,
+    changePage,
     enrollmentsFor,
     assignmentsFor,
     createTrial,

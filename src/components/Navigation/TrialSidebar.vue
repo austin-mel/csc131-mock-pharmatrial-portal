@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import ActionButton from "../ActionButton/ActionButton.vue";
 import { SvgIcon } from "@/assets";
+import PaginationControls from "./PaginationControls.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";
 import SegmentedControl from "./SegmentedControl.vue";
 import TrialSidebarListItem from "../Trials/TrialSidebarListItem.vue";
@@ -64,12 +65,19 @@ function selectTrial(id: string) {
     </div>
     <div class="min-w-0 flex-1 overflow-x-hidden overflow-y-auto py-2">
       <TrialSidebarListItem
-        v-for="trial in trials.filteredTrials"
+        v-for="trial in trials.visibleTrials"
         :key="trial.id"
         :trial="trial"
         :active="trial.id === trials.currentTrialId"
         @select="selectTrial"
       />
+      <div class="min-w-0 px-[18px] py-3">
+        <PaginationControls
+          :page="trials.sidebarPage"
+          :pages="trials.pageCount"
+          @change="trials.changePage"
+        />
+      </div>
     </div>
   </aside>
 </template>
