@@ -1,3 +1,6 @@
+import type { Appointment } from './appointment';
+import type { TrialApprovals } from './approval';
+
 export type TrialStatus = 'pending-approval' | 'active' | 'rejected' | 'complete';
 
 export type TrialTab =
@@ -21,18 +24,36 @@ export interface Trial {
   end: string;
   enrollment: number;
   status: TrialStatus;
-  statusLabel: string;
+  statusLabel?: string;
   archived: boolean;
   created?: string;
-  approvals?: {
-    jh: 'approved' | 'pending' | 'rejected' | 'blocked';
-    fda: 'approved' | 'pending' | 'rejected' | 'blocked';
-  };
-  batchSubmitted?: boolean;
-  assignmentsLocked?: boolean;
-  notifiedFDA?: boolean;
-  disclosed?: boolean;
+  approvals: TrialApprovals;
+  batchSubmitted: boolean;
+  assignmentsLocked: boolean;
+  notifiedFDA: boolean;
+  disclosed: boolean;
   batchRef?: string;
+  treatmentPct?: number;
+  manufactureDate?: string;
+  lotNumber?: string;
+  shippingNotes?: string;
   dosesPerPatient: number;
   description?: string;
+  eligibility?: TrialEligibility | null;
 }
+
+export interface TrialEligibility {
+  includeIcd: string[];
+  excludeIcd: string[];
+  minAge: number;
+  incompatMeds: string[];
+}
+
+export interface TrialEnrollment {
+  eligible: boolean;
+  doses: number;
+  appointments: Appointment[];
+}
+
+export type TrialEnrollmentMap = Record<string, TrialEnrollment>;
+export type TrialPatientsByTrial = Record<string, TrialEnrollmentMap>;

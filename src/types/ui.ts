@@ -13,15 +13,17 @@ export type ModalId =
   | 'disclose-trial'
   | 'report';
 
-export interface ToastRecord {
+export interface Toast {
   id: number;
   message: string;
   type: 'success' | 'error' | 'info';
 }
 
+export type ToastRecord = Toast;
+
 export interface UiState {
   activeTab: TrialTab;
   openModal: ModalId | null;
   selectedPatientId: string | null;
-  toasts: ToastRecord[];
+  toasts: Toast[];
 }

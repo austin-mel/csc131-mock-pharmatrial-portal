@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { trialStatusLabel } from '@/composables';
-import { seedTrials } from '@/data';
-import type { PortalId, Trial } from '@/types';
+import { seedAssignments, seedTrialPatients, seedTrials } from '@/data';
+import type { PortalId, Trial, TrialAssignmentMap, TrialEligibility, TrialPatientsByTrial } from '@/types';
 
 export interface CreateTrialDraft {
   name: string;
@@ -18,6 +18,8 @@ export interface CreateTrialDraft {
 
 export const useTrialsStore = defineStore('trials', () => {
   const trials = ref<Trial[]>(structuredClone(seedTrials));
+  const trialPatients = ref<TrialPatientsByTrial>(structuredClone(seedTrialPatients));
+  const assignments = ref<Record<string, TrialAssignmentMap>>(structuredClone(seedAssignments));
   const currentTrialId = ref<string | null>(trials.value[0]?.id ?? null);
   const sidebarSearch = ref('');
   const showingArchived = ref(false);
@@ -29,8 +31,8 @@ export const useTrialsStore = defineStore('trials', () => {
       .filter((trial) => Boolean(trial.archived) === showingArchived.value)
       .filter((trial) => {
         if (!query) return true;
-        return [trial.name, trial.id, trial.drug, trial.condition, trial.statusLabel].some((value) =>
-          value.toLowerCase().includes(query),
+        return [trial.name, trial.id, trial.drug, trial.condition, trial.statusLabel ?? trialStatusLabel(trial)].some((value) =>
+          String(value).toLowerCase().includes(query),
         );
       });
   });
@@ -47,6 +49,14 @@ export const useTrialsStore = defineStore('trials', () => {
 
   function setArchiveFilter(value: boolean) {
     showingArchived.value = value;
+  }
+
+  function enrollmentsFor(trialId: string) {
+    return trialPatients.value[trialId] ?? {};
+  }
+
+  function assignmentsFor(trialId: string) {
+    return assignments.value[trialId] ?? {};
   }
 
   function createTrial(draft: CreateTrialDraft) {
@@ -69,24 +79,27 @@ export const useTrialsStore = defineStore('trials', () => {
       assignmentsLocked: false,
       notifiedFDA: false,
       disclosed: false,
+      treatmentPct: 50,
+      eligibility: null,
       dosesPerPatient: draft.dosesPerPatient,
       description: draft.description || 'No description provided.',
     };
     trial.statusLabel = trialStatusLabel(trial);
     trials.value.push(trial);
+    trialPatients.value[trial.id] = {};
+    assignments.value[trial.id] = {};
     currentTrialId.value = trial.id;
     showingArchived.value = false;
     return trial;
   }
 
-  function approveTrial(trialId: string, portalId: PortalId) {
+  function approveTrial(trialId: string, portalId: PortalId, eligibility?: TrialEligibility) {
     const trial = trials.value.find((item) => item.id === trialId);
     if (!trial || trial.status === 'rejected') return false;
 
-    trial.approvals = trial.approvals ?? { jh: 'blocked', fda: 'pending' };
-
     if (portalId === 'fda' && trial.approvals.fda === 'pending') {
       trial.approvals.fda = 'approved';
+      trial.eligibility = eligibility ?? trial.eligibility ?? { includeIcd: [], excludeIcd: [], minAge: 18, incompatMeds: [] };
       if (trial.approvals.jh === 'blocked') trial.approvals.jh = 'pending';
     } else if (portalId === 'jh-admin' && trial.approvals.jh === 'pending') {
       trial.approvals.jh = 'approved';
@@ -105,8 +118,6 @@ export const useTrialsStore = defineStore('trials', () => {
   function rejectTrial(trialId: string, portalId: PortalId) {
     const trial = trials.value.find((item) => item.id === trialId);
     if (!trial || trial.status === 'rejected') return false;
-
-    trial.approvals = trial.approvals ?? { jh: 'blocked', fda: 'pending' };
 
     if (portalId === 'fda' && trial.approvals.fda === 'pending') {
       trial.approvals.fda = 'rejected';
@@ -152,6 +163,8 @@ export const useTrialsStore = defineStore('trials', () => {
 
   return {
     trials,
+    trialPatients,
+    assignments,
     currentTrialId,
     currentTrial,
     sidebarSearch,
@@ -160,6 +173,8 @@ export const useTrialsStore = defineStore('trials', () => {
     selectTrial,
     setSearch,
     setArchiveFilter,
+    enrollmentsFor,
+    assignmentsFor,
     createTrial,
     approveTrial,
     rejectTrial,
