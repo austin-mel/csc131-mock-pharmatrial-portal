@@ -74,7 +74,7 @@ const pills = computed(() => [
       </button>
       <button
         v-if="trial.archived"
-        class="grid size-[39px] place-items-center rounded-[5px] border border-white/40 bg-white/10 text-white transition-opacity hover:opacity-85 active:scale-[.98] max-[640px]:size-[42px]"
+        class="grid size-[39px] place-items-center rounded-[5px] border border-[#c0392b] bg-[#c0392b] text-white shadow-[0_4px_12px_rgba(192,57,43,.35)] transition-opacity hover:opacity-85 active:scale-[.98] max-[640px]:size-[42px]"
         type="button"
         aria-label="Delete trial"
         title="Delete trial"

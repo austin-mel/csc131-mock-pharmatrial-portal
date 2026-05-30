@@ -1,4 +1,4 @@
-import type { Trial } from "@/types";
+import type { PortalId, Trial, TrialTab } from "@/types";
 
 type ApprovalStatus = "approved" | "pending" | "rejected" | "blocked";
 
@@ -88,4 +88,48 @@ export function approvalTone(value: ApprovalStatus): StatusBadgeDefinition["tone
 
 export function trialApprovals(trial: Trial): { jh: ApprovalStatus; fda: ApprovalStatus } {
   return approvalsFor(trial);
+}
+
+export function isTrialCurrent(trial: Trial): boolean {
+  return trial.status === "complete" || (trial.status === "active" && Boolean(trial.assignmentsLocked));
+}
+
+export function getVisibleTabs(trial: Trial, portalId: PortalId): TrialTab[] {
+  const tabs: TrialTab[] = ["overview"];
+
+  if (trial.status === "rejected") {
+    if (portalId === "jh-admin") tabs.push("patients");
+    return tabs;
+  }
+
+  const current = isTrialCurrent(trial);
+  const finalReportPublished = Boolean(trial.disclosed && trial.notifiedFDA);
+
+  if (portalId === "jh-admin" && trial.status === "pending-approval") {
+    tabs.push("patients");
+  }
+
+  if ((portalId === "jh-doctor" || portalId === "jh-admin") && current) {
+    tabs.push("patients");
+    if (portalId === "jh-doctor") tabs.push("appointments", "doses");
+    if (portalId === "jh-admin") tabs.push("doses", "notify");
+  }
+
+  if ((portalId === "jh-admin" || portalId === "jh-doctor") && finalReportPublished) {
+    tabs.push("report");
+  }
+
+  if (portalId === "fda") {
+    if (current) tabs.push("patients");
+    tabs.push("assignments", "disclose");
+    if (finalReportPublished) tabs.push("report");
+  }
+
+  if (portalId === "bavaria") {
+    if (current) tabs.push("patients");
+    tabs.push("batch");
+    if (finalReportPublished) tabs.push("report");
+  }
+
+  return tabs;
 }

@@ -1,3 +1,7 @@
+export { default as RejectedTrialBanner } from './RejectedTrialBanner.vue';
 export { default as TrialSidebarListItem } from './TrialSidebarListItem.vue';
 export { default as TrialBanner } from './TrialBanner.vue';
 export { default as TrialPage } from './TrialPage.vue';
+export { default as TrialOverviewTab } from './TrialOverviewTab.vue';
+export { default as TrialTabBar } from './TrialTabBar.vue';
+export { default as TrialWorkspace } from './TrialWorkspace.vue';

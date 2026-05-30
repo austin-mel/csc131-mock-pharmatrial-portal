@@ -1,5 +1,16 @@
 export type TrialStatus = 'pending-approval' | 'active' | 'rejected' | 'complete';
 
+export type TrialTab =
+  | 'overview'
+  | 'patients'
+  | 'appointments'
+  | 'doses'
+  | 'notify'
+  | 'assignments'
+  | 'disclose'
+  | 'batch'
+  | 'report';
+
 export interface Trial {
   id: string;
   name: string;
