@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
 
+import ActionButton from "@/components/ActionButton/ActionButton.vue";
 import DataCard from "@/components/Dashboard/DataCard.vue";
+import PatientAnonymizedTable from "@/components/PatientTables/PatientAnonymizedTable.vue";
+import PatientTable from "@/components/PatientTables/PatientTable.vue";
+import PatientDetailModal from "@/components/Modals/Patients/PatientDetailModal.vue";
+import PatientFormModal from "@/components/Modals/Patients/PatientFormModal.vue";
 import RejectedTrialBanner from "@/components/Trials/RejectedTrialBanner.vue";
 import TrialBanner from "@/components/Trials/TrialBanner.vue";
 import TrialOverviewTab from "@/components/Trials/TrialOverviewTab.vue";
 import TrialTabBar from "@/components/Trials/TrialTabBar.vue";
-import { getVisibleTabs } from "@/composables";
-import { useAuthStore, useTrialsStore, useUiStore } from "@/stores";
-import type { TrialTab } from "@/types";
+import { getVisibleTabs, trialPatients } from "@/composables";
+import { useAuthStore, usePatientsStore, useTrialsStore, useUiStore } from "@/stores";
+import type { TrialAssignmentMap, TrialEnrollmentMap, TrialTab } from "@/types";
 
 const auth = useAuthStore();
+const patientsStore = usePatientsStore();
 const trials = useTrialsStore();
 const ui = useUiStore();
 
@@ -18,6 +24,12 @@ const trial = computed(() => trials.currentTrial);
 const tabs = computed<TrialTab[]>(() =>
   trial.value ? getVisibleTabs(trial.value, auth.selectedPortalId) : ["overview"],
 );
+const enrollments = computed<TrialEnrollmentMap>(() => (trial.value ? trials.enrollmentsFor(trial.value.id) : {}));
+const assignments = computed<TrialAssignmentMap>(() => (trial.value ? trials.assignmentsFor(trial.value.id) : {}));
+const trialPatientsList = computed(() => trialPatients(patientsStore.patients, enrollments.value));
+const selectedPatient = computed(() => (ui.selectedPatientId ? patientsStore.getPatient(ui.selectedPatientId) : null));
+const canEditPatients = computed(() => trial.value?.status !== "complete" && auth.selectedPortalId === "jh-doctor");
+const showPii = computed(() => auth.selectedPortalId === "jh-doctor");
 const canArchive = computed(() => Boolean(trial.value));
 
 const placeholderTitles: Record<Exclude<TrialTab, "overview">, string> = {
@@ -50,6 +62,19 @@ function deleteTrial() {
   if (!confirmed) return;
   trials.deleteTrial(trial.value.id);
 }
+
+function showPatientDetail(id: string) {
+  ui.showModal("patient-detail", id);
+}
+
+function showPatientForm(id: string | null = null) {
+  ui.showModal("patient-form", id);
+}
+
+function editPatient(id: string) {
+  if (!canEditPatients.value) return;
+  showPatientForm(id);
+}
 </script>
 
 <template>
@@ -73,6 +98,34 @@ function deleteTrial() {
         v-if="ui.activeTab === 'overview'"
         :trial="trial"
       />
+      <div v-else-if="ui.activeTab === 'patients'" class="grid gap-4">
+        <div
+          v-if="canEditPatients"
+          class="flex justify-end"
+        >
+          <ActionButton variant="jh" @click="showPatientForm()">
+            Add Patient
+          </ActionButton>
+        </div>
+        <PatientTable
+          v-if="showPii"
+          :patients="trialPatientsList"
+          :enrollments="enrollments"
+          :trial="trial"
+          :can-edit="canEditPatients"
+          @detail="showPatientDetail"
+          @edit="editPatient"
+        />
+        <PatientAnonymizedTable
+          v-else
+          :patients="trialPatientsList"
+          :enrollments="enrollments"
+          :assignments="assignments"
+          :trial="trial"
+          :show-tracking="auth.selectedPortalId === 'fda' || trial.disclosed"
+          @detail="showPatientDetail"
+        />
+      </div>
       <DataCard
         v-else
         :title="placeholderTitles[ui.activeTab]"
@@ -82,5 +135,19 @@ function deleteTrial() {
         </div>
       </DataCard>
     </main>
+    <PatientDetailModal
+      :open="ui.openModal === 'patient-detail'"
+      :patient="selectedPatient"
+      :trial="trial"
+      :enrollments="enrollments"
+      @close="ui.closeModal"
+      @edit="editPatient"
+    />
+    <PatientFormModal
+      :open="ui.openModal === 'patient-form'"
+      :patient="selectedPatient"
+      :trial="trial"
+      @close="ui.closeModal"
+    />
   </div>
 </template>

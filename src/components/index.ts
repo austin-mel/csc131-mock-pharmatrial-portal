@@ -2,6 +2,7 @@ export * from './Dashboard';
 export * from './Form';
 export * from './Modals';
 export * from './Navigation';
+export * from './PatientTables';
 export * from './Trials';
 export { default as ActionButton } from './ActionButton';
 export { default as ApprovalBanner } from './ApprovalBanner';

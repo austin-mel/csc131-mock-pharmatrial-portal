@@ -75,6 +75,19 @@ export const useTrialsStore = defineStore('trials', () => {
     return assignments.value[trialId] ?? {};
   }
 
+  function enrollPatient(trialId: string, patientId: string, eligible: boolean) {
+    const trial = trials.value.find((item) => item.id === trialId);
+    if (trial?.status === 'rejected') return false;
+    if (!trialPatients.value[trialId]) trialPatients.value[trialId] = {};
+    trialPatients.value[trialId][patientId] = trialPatients.value[trialId][patientId] ?? {
+      eligible,
+      doses: 0,
+      appointments: [],
+    };
+    trialPatients.value[trialId][patientId].eligible = eligible;
+    return true;
+  }
+
   function createTrial(draft: CreateTrialDraft) {
     const next = trials.value.length + 1;
     const trial: Trial = {
@@ -195,6 +208,7 @@ export const useTrialsStore = defineStore('trials', () => {
     changePage,
     enrollmentsFor,
     assignmentsFor,
+    enrollPatient,
     createTrial,
     approveTrial,
     rejectTrial,
