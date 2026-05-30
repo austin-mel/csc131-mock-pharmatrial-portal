@@ -1,18 +1,40 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { SvgIcon } from "@/assets";
-import { CreateTrialModal, TopNav, TrialSidebar, TrialWorkspace } from "@/components";
+import { ApprovalBanner, CreateTrialModal, ToastStack, TopNav, TrialSidebar, TrialWorkspace } from "@/components";
+import { needsReview } from "@/composables";
+import { useAuthStore, useTrialsStore } from "@/stores";
+import type { Trial } from "@/types";
 
+const auth = useAuthStore();
+const trials = useTrialsStore();
 const sidebarOpen = ref(false);
 const createModalOpen = ref(false);
+
+function trialNeedsReview(trial: Trial) {
+  return needsReview(trial, auth.selectedPortalId, trial.status === "complete");
+}
+
+const reviewCount = computed(() =>
+  auth.selectedPortalId === "bavaria" ? 0 : trials.trials.filter(trialNeedsReview).length,
+);
+
+function jumpToReview() {
+  const trial = trials.trials.find(trialNeedsReview);
+  if (trial) trials.selectTrial(trial.id);
+}
 </script>
 
 <template>
   <div class="flex min-h-screen min-w-0 flex-col">
     <TopNav />
-    <div class="relative flex h-[calc(100vh-56px)] min-w-0 flex-1 overflow-hidden">
+    <ApprovalBanner
+      :count="reviewCount"
+      @jump="jumpToReview"
+    />
+    <div class="relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
       <button
-        class="fixed left-3 top-[68px] z-[360] grid size-10 place-items-center rounded-md border border-rule bg-surface text-ink shadow-app md:hidden"
+        class="absolute left-3 top-3 z-[360] grid size-10 place-items-center rounded-md border border-rule bg-surface text-ink shadow-app md:hidden"
         type="button"
         aria-label="Open clinical trials menu"
         @click="sidebarOpen = true"
@@ -40,5 +62,6 @@ const createModalOpen = ref(false);
       :open="createModalOpen"
       @close="createModalOpen = false"
     />
+    <ToastStack />
   </div>
 </template>

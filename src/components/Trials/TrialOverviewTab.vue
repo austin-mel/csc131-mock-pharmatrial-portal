@@ -10,6 +10,7 @@ import { SvgIcon } from "@/assets";
 import {
   approvalLabel,
   approvalTone,
+  canApproveTrial,
   currentLifecycleStepIndex,
   lifecycleSteps,
   rejectedStepIndex,
@@ -47,11 +48,9 @@ const currentStep = computed(() => currentLifecycleStepIndex(props.trial));
 const rejectedIndex = computed(() => rejectedStepIndex(props.trial));
 const finalReportPublished = computed(() => Boolean(props.trial.disclosed && props.trial.notifiedFDA));
 const approvalAction = computed<ApprovalAction | null>(() => {
-  if (props.trial.status !== "pending-approval") return null;
-
-  const approvals = trialApprovals(props.trial);
-  if (auth.selectedPortalId === "fda" && approvals.fda === "pending") return "fda";
-  if (auth.selectedPortalId === "jh-admin" && approvals.jh === "pending") return "jh-admin";
+  if (!canApproveTrial(props.trial, auth.selectedPortalId)) return null;
+  if (auth.selectedPortalId === "fda") return "fda";
+  if (auth.selectedPortalId === "jh-admin") return "jh-admin";
   return null;
 });
 

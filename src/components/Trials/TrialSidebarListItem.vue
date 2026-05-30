@@ -2,13 +2,16 @@
 import { computed } from "vue";
 
 import StatusBadge from "@/components/StatusBadge";
-import { statusBadges } from "@/composables";
+import { needsReview, statusBadges } from "@/composables";
+import { useAuthStore } from "@/stores";
 import type { Trial } from "@/types";
 
 const props = defineProps<{ trial: Trial; active?: boolean }>();
 defineEmits<{ select: [id: string] }>();
+const auth = useAuthStore();
 
 const badges = computed(() => statusBadges(props.trial));
+const review = computed(() => needsReview(props.trial, auth.selectedPortalId, props.trial.status === "complete"));
 </script>
 
 <template>
@@ -35,6 +38,12 @@ const badges = computed(() => statusBadges(props.trial));
         :tone="badge.tone"
       >
         {{ badge.label }}
+      </StatusBadge>
+      <StatusBadge
+        v-if="review"
+        tone="red"
+      >
+        Needs Review
       </StatusBadge>
     </div>
   </button>

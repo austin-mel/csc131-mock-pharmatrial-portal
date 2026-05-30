@@ -7,11 +7,12 @@ import FormTextarea from "../../Form/FormTextarea.vue";
 import FormField from "../../Form/FormField.vue";
 import FormRow from "../../Form/FormRow.vue";
 import ModalShell from "../../ModalShell/ModalShell.vue";
-import { useTrialsStore } from "@/stores";
+import { useTrialsStore, useUiStore } from "@/stores";
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ close: [] }>();
 const trials = useTrialsStore();
+const ui = useUiStore();
 const name = ref("");
 const drug = ref("");
 const phase = ref("Phase 3");
@@ -21,7 +22,6 @@ const dosesPerPatient = ref(5);
 const start = ref("2023-07-01");
 const end = ref("2023-12-31");
 const description = ref("");
-const error = ref("");
 watch(
   () => props.open,
   (open) => {
@@ -35,15 +35,14 @@ watch(
     start.value = "2023-07-01";
     end.value = "2023-12-31";
     description.value = "";
-    error.value = "";
   },
 );
 function submit() {
   if (!name.value.trim() || !drug.value.trim()) {
-    error.value = "Trial name and drug name are required.";
+    ui.pushToast("Trial name and drug name are required.", "error");
     return;
   }
-  trials.createTrial({
+  const trial = trials.createTrial({
     name: name.value.trim(),
     drug: drug.value.trim(),
     phase: phase.value,
@@ -54,6 +53,7 @@ function submit() {
     dosesPerPatient: Number(dosesPerPatient.value) || 5,
     description: description.value,
   });
+  ui.pushToast(`${trial.name} was submitted for approval.`, "success");
   emit("close");
 }
 </script>
@@ -113,9 +113,6 @@ function submit() {
     <FormField label="Description / Objectives">
       <FormTextarea v-model="description" />
     </FormField>
-    <p v-if="error" class="mt-3 text-sm font-semibold text-bav">
-      {{ error }}
-    </p>
     <template #footer>
       <ActionButton @click="$emit('close')">
         Cancel

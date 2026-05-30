@@ -27,19 +27,39 @@ export interface StatusBadgeDefinition {
     | "cyan";
 }
 
+export function trialStatusLabel(trial: Trial): string {
+  const approvals = approvalsFor(trial);
+
+  if (trial.status === "complete") return "Completed";
+  if (trial.status === "rejected") return "Rejected";
+
+  if (trial.status === "pending-approval") {
+    if (approvals.fda === "pending") return "Pending FDA Approval";
+    if (approvals.fda === "approved" && approvals.jh === "pending") return "Pending JH Approval";
+    if (approvals.fda === "approved" && approvals.jh === "blocked") return "Awaiting JH Approval";
+    if (approvals.fda === "approved" && approvals.jh === "approved") return "Approved";
+    return "Pending Approval";
+  }
+
+  if (trial.batchSubmitted && !trial.assignmentsLocked) return "Approved - Awaiting Assignments";
+  if (approvals.jh === "approved" && approvals.fda === "approved" && !trial.batchSubmitted) {
+    return "Approved - Awaiting Batch";
+  }
+
+  return "Active";
+}
+
 export function statusBadges(trial: Trial): StatusBadgeDefinition[] {
   const badges: StatusBadgeDefinition[] = [];
+  const label = trialStatusLabel(trial);
 
   if (trial.archived) badges.push({ label: "Archived", tone: "gray" });
 
-  if (trial.status === "complete") badges.push({ label: "Completed", tone: "purple" });
-  else if (trial.status === "rejected") badges.push({ label: "Rejected", tone: "red" });
-  else if (trial.status === "active" && trial.batchSubmitted && !trial.assignmentsLocked) {
-    badges.push({ label: "Approved - Awaiting Assignments", tone: "orange" });
-  } else if (trial.approvals?.jh === "approved" && trial.approvals.fda === "approved" && !trial.batchSubmitted) {
-    badges.push({ label: "Approved - Awaiting Batch", tone: "orange" });
-  } else if (trial.status === "active") badges.push({ label: "Active", tone: "green" });
-  else badges.push({ label: "Pending Approval", tone: "yellow" });
+  if (trial.status === "complete") badges.push({ label, tone: "purple" });
+  else if (trial.status === "rejected") badges.push({ label, tone: "red" });
+  else if (label === "Active") badges.push({ label, tone: "green" });
+  else if (label.startsWith("Approved")) badges.push({ label, tone: "orange" });
+  else badges.push({ label, tone: "yellow" });
 
   return badges;
 }
@@ -90,6 +110,17 @@ export function trialApprovals(trial: Trial): { jh: ApprovalStatus; fda: Approva
   return approvalsFor(trial);
 }
 
+export function canApproveTrial(trial: Trial, portalId: PortalId, hasAssignedPatients = true): boolean {
+  const approvals = trialApprovals(trial);
+
+  if (trial.status === "rejected") return false;
+  if (portalId === "jh-admin") {
+    return hasAssignedPatients && approvals.jh === "pending" && trial.status === "pending-approval";
+  }
+  if (portalId === "fda") return approvals.fda === "pending" && trial.status === "pending-approval";
+  return false;
+}
+
 export function isTrialCurrent(trial: Trial): boolean {
   return trial.status === "complete" || (trial.status === "active" && Boolean(trial.assignmentsLocked));
 }
@@ -132,4 +163,36 @@ export function getVisibleTabs(trial: Trial, portalId: PortalId): TrialTab[] {
   }
 
   return tabs;
+}
+
+export function needsReview(trial: Trial, portalId: PortalId, allDosed: boolean): boolean {
+  if (trial.archived || trial.status === "rejected") return false;
+
+  const approvals = trialApprovals(trial);
+  const fullyApproved = approvals.jh === "approved" && approvals.fda === "approved";
+
+  if (portalId === "fda") {
+    return (
+      (trial.status === "pending-approval" && approvals.fda === "pending") ||
+      (Boolean(trial.batchSubmitted) && !trial.assignmentsLocked) ||
+      (allDosed && Boolean(trial.notifiedFDA) && Boolean(trial.assignmentsLocked) && !trial.disclosed)
+    );
+  }
+
+  if (portalId === "jh-admin") {
+    return (
+      (trial.status === "pending-approval" && approvals.jh === "pending") ||
+      (allDosed && Boolean(trial.assignmentsLocked) && !trial.notifiedFDA)
+    );
+  }
+
+  if (portalId === "jh-doctor") {
+    return allDosed && Boolean(trial.assignmentsLocked) && !trial.notifiedFDA;
+  }
+
+  if (portalId === "bavaria") {
+    return fullyApproved && !trial.batchSubmitted;
+  }
+
+  return false;
 }

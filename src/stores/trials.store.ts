@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { trialStatusLabel } from '@/composables';
 import { seedTrials } from '@/data';
 import type { PortalId, Trial } from '@/types';
 
@@ -71,6 +72,7 @@ export const useTrialsStore = defineStore('trials', () => {
       dosesPerPatient: draft.dosesPerPatient,
       description: draft.description || 'No description provided.',
     };
+    trial.statusLabel = trialStatusLabel(trial);
     trials.value.push(trial);
     currentTrialId.value = trial.id;
     showingArchived.value = false;
@@ -94,9 +96,9 @@ export const useTrialsStore = defineStore('trials', () => {
 
     if (trial.approvals.jh === 'approved' && trial.approvals.fda === 'approved') {
       trial.status = 'active';
-      trial.statusLabel = 'Active';
     }
 
+    trial.statusLabel = trialStatusLabel(trial);
     return true;
   }
 
@@ -115,7 +117,7 @@ export const useTrialsStore = defineStore('trials', () => {
     }
 
     trial.status = 'rejected';
-    trial.statusLabel = 'Rejected';
+    trial.statusLabel = trialStatusLabel(trial);
     return true;
   }
 
