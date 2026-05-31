@@ -125,6 +125,7 @@ export const useTrialsStore = defineStore('trials', () => {
   function approveTrial(trialId: string, portalId: PortalId, eligibility?: TrialEligibility) {
     const trial = trials.value.find((item) => item.id === trialId);
     if (!trial || trial.status === 'rejected') return false;
+    if (portalId === 'jh-admin' && !Object.keys(enrollmentsFor(trialId)).length) return false;
 
     if (portalId === 'fda' && trial.approvals.fda === 'pending') {
       trial.approvals.fda = 'approved';

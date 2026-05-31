@@ -21,7 +21,7 @@
       type="button"
       @click="$emit('jump')"
     >
-      Review
+      View Trial
     </button>
   </div>
 </template>

@@ -2,6 +2,7 @@
 import { computed, watch } from "vue";
 
 import DataCard from "@/components/Dashboard/DataCard.vue";
+import ApprovalModal from "@/components/Modals/Regulatory/ApprovalModal.vue";
 import PatientCsvUploadModal from "@/components/Modals/Patients/PatientCsvUploadModal.vue";
 import PatientDetailModal from "@/components/Modals/Patients/PatientDetailModal.vue";
 import PatientFormModal from "@/components/Modals/Patients/PatientFormModal.vue";
@@ -124,6 +125,11 @@ function editPatient(id: string) {
     />
     <PatientCsvUploadModal
       :open="ui.openModal === 'patient-csv'"
+      :trial="trial"
+      @close="ui.closeModal"
+    />
+    <ApprovalModal
+      :open="ui.openModal === 'approval'"
       :trial="trial"
       @close="ui.closeModal"
     />

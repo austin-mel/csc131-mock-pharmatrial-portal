@@ -17,12 +17,13 @@ import {
   statusBadges,
   trialApprovals,
 } from "@/composables";
-import { useAuthStore, useTrialsStore } from "@/stores";
+import { useAuthStore, useTrialsStore, useUiStore } from "@/stores";
 import type { PortalId, Trial } from "@/types";
 
 const props = defineProps<{ trial: Trial }>();
 const auth = useAuthStore();
 const trials = useTrialsStore();
+const ui = useUiStore();
 const steps = lifecycleSteps;
 type ApprovalAction = Extract<PortalId, "fda" | "jh-admin">;
 
@@ -48,7 +49,8 @@ const currentStep = computed(() => currentLifecycleStepIndex(props.trial));
 const rejectedIndex = computed(() => rejectedStepIndex(props.trial));
 const finalReportPublished = computed(() => Boolean(props.trial.disclosed && props.trial.notifiedFDA));
 const approvalAction = computed<ApprovalAction | null>(() => {
-  if (!canApproveTrial(props.trial, auth.selectedPortalId)) return null;
+  const hasAssignedPatients = Object.keys(trials.enrollmentsFor(props.trial.id)).length > 0;
+  if (!canApproveTrial(props.trial, auth.selectedPortalId, hasAssignedPatients)) return null;
   if (auth.selectedPortalId === "fda") return "fda";
   if (auth.selectedPortalId === "jh-admin") return "jh-admin";
   return null;
@@ -123,14 +125,9 @@ function stepClasses(index: number) {
   return "border-rule";
 }
 
-function approve(action: ApprovalAction | null) {
+function review(action: ApprovalAction | null) {
   if (!action || approvalAction.value !== action) return;
-  trials.approveTrial(props.trial.id, action);
-}
-
-function reject(action: ApprovalAction | null) {
-  if (!action || approvalAction.value !== action) return;
-  trials.rejectTrial(props.trial.id, action);
+  ui.showModal("approval");
 }
 </script>
 
@@ -143,21 +140,14 @@ function reject(action: ApprovalAction | null) {
       </div>
       <div
         v-if="approvalAction"
-        class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-end lg:shrink-0"
+        class="grid gap-3 sm:flex sm:flex-wrap sm:justify-end lg:shrink-0"
       >
         <ActionButton
           class="min-h-12 w-full px-7 text-base sm:w-auto lg:min-h-16 lg:min-w-40 lg:px-10 lg:text-lg"
-          variant="danger"
-          @click="reject(approvalAction)"
+          :variant="approvalAction === 'fda' ? 'fda' : 'jh'"
+          @click="review(approvalAction)"
         >
-          Reject
-        </ActionButton>
-        <ActionButton
-          class="min-h-12 w-full px-7 text-base sm:w-auto lg:min-h-16 lg:min-w-40 lg:px-10 lg:text-lg"
-          variant="jh"
-          @click="approve(approvalAction)"
-        >
-          Approve
+          Review Trial
         </ActionButton>
       </div>
     </div>
