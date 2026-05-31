@@ -6,6 +6,23 @@ import type { PortalId, Trial, TrialAssignmentMap, TrialEligibility, TrialPatien
 
 const SIDEBAR_PAGE_SIZE = 10;
 
+type TrialAuditAction =
+  | 'trial.approve'
+  | 'trial.reject'
+  | 'trial.submit_batch'
+  | 'trial.lock_assignments'
+  | 'trial.notify_fda'
+  | 'trial.disclose_report';
+
+interface TrialAuditEvent {
+  id: string;
+  actorPortalId: PortalId;
+  action: TrialAuditAction;
+  entityId: string;
+  entityType: 'trial';
+  createdAt: string;
+}
+
 export interface CreateTrialDraft {
   name: string;
   drug: string;
@@ -22,6 +39,7 @@ export const useTrialsStore = defineStore('trials', () => {
   const trials = ref<Trial[]>(structuredClone(seedTrials));
   const trialPatients = ref<TrialPatientsByTrial>(structuredClone(seedTrialPatients));
   const assignments = ref<Record<string, TrialAssignmentMap>>(structuredClone(seedAssignments));
+  const auditLog = ref<TrialAuditEvent[]>([]);
   const currentTrialId = ref<string | null>(trials.value[0]?.id ?? null);
   const sidebarSearch = ref('');
   const sidebarPage = ref(1);
@@ -88,6 +106,17 @@ export const useTrialsStore = defineStore('trials', () => {
     return true;
   }
 
+  function recordAudit(actorPortalId: PortalId, action: TrialAuditAction, entityId: string) {
+    auditLog.value.push({
+      id: crypto.randomUUID(),
+      actorPortalId,
+      action,
+      entityId,
+      entityType: 'trial',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
   function createTrial(draft: CreateTrialDraft) {
     const next = trials.value.length + 1;
     const trial: Trial = {
@@ -142,6 +171,7 @@ export const useTrialsStore = defineStore('trials', () => {
     }
 
     trial.statusLabel = trialStatusLabel(trial);
+    recordAudit(portalId, 'trial.approve', trialId);
     return true;
   }
 
@@ -159,6 +189,68 @@ export const useTrialsStore = defineStore('trials', () => {
 
     trial.status = 'rejected';
     trial.statusLabel = trialStatusLabel(trial);
+    recordAudit(portalId, 'trial.reject', trialId);
+    return true;
+  }
+
+  function submitBatch(
+    trialId: string,
+    draft: {
+      batchRef: string;
+      dosesPerPatient: number;
+      treatmentPct: number;
+      manufactureDate?: string;
+      lotNumber?: string;
+      shippingNotes?: string;
+    },
+    actorPortalId: PortalId = 'bavaria',
+  ) {
+    const trial = trials.value.find((item) => item.id === trialId);
+    if (!trial || trial.status === 'rejected') return false;
+
+    trial.batchSubmitted = true;
+    trial.batchRef = draft.batchRef;
+    trial.dosesPerPatient = draft.dosesPerPatient;
+    trial.treatmentPct = draft.treatmentPct;
+    trial.manufactureDate = draft.manufactureDate;
+    trial.lotNumber = draft.lotNumber;
+    trial.shippingNotes = draft.shippingNotes;
+    trial.assignmentsLocked = false;
+    trial.statusLabel = trialStatusLabel(trial);
+    assignments.value[trialId] = {};
+    recordAudit(actorPortalId, 'trial.submit_batch', trialId);
+    return true;
+  }
+
+  function saveAssignments(trialId: string, draft: TrialAssignmentMap, actorPortalId: PortalId = 'fda') {
+    const trial = trials.value.find((item) => item.id === trialId);
+    if (!trial || trial.status === 'rejected') return false;
+
+    assignments.value[trialId] = draft;
+    trial.assignmentsLocked = true;
+    trial.statusLabel = trialStatusLabel(trial);
+    recordAudit(actorPortalId, 'trial.lock_assignments', trialId);
+    return true;
+  }
+
+  function notifyFda(trialId: string, actorPortalId: PortalId = 'jh-admin') {
+    const trial = trials.value.find((item) => item.id === trialId);
+    if (!trial || trial.status === 'rejected') return false;
+
+    trial.notifiedFDA = true;
+    trial.statusLabel = trialStatusLabel(trial);
+    recordAudit(actorPortalId, 'trial.notify_fda', trialId);
+    return true;
+  }
+
+  function discloseTrial(trialId: string, actorPortalId: PortalId = 'fda') {
+    const trial = trials.value.find((item) => item.id === trialId);
+    if (!trial || trial.status === 'rejected') return false;
+
+    trial.disclosed = true;
+    trial.status = 'complete';
+    trial.statusLabel = trialStatusLabel(trial);
+    recordAudit(actorPortalId, 'trial.disclose_report', trialId);
     return true;
   }
 
@@ -195,6 +287,7 @@ export const useTrialsStore = defineStore('trials', () => {
     trials,
     trialPatients,
     assignments,
+    auditLog,
     currentTrialId,
     currentTrial,
     sidebarSearch,
@@ -213,6 +306,10 @@ export const useTrialsStore = defineStore('trials', () => {
     createTrial,
     approveTrial,
     rejectTrial,
+    submitBatch,
+    saveAssignments,
+    notifyFda,
+    discloseTrial,
     toggleArchive,
     deleteTrial,
   };
