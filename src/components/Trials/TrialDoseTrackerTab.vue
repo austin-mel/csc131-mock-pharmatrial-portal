@@ -7,8 +7,9 @@ import ProgressBar from "@/components/Dashboard/ProgressBar.vue";
 import PaginationControls from "@/components/Navigation/PaginationControls.vue";
 import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
 import { SvgIcon } from "@/assets";
-import { canSeePii, completedDoseCount, totalDosesGiven } from "@/composables";
+import { completedDoseCount, totalDosesGiven } from "@/composables";
 import { useAuthStore } from "@/stores";
+import { buildPatientDisplay, canShowPatientPii } from "@/utils";
 import type { Patient, Trial, TrialEnrollmentMap } from "@/types";
 
 const props = defineProps<{
@@ -22,7 +23,7 @@ const PAGE_SIZE = 20;
 const page = ref(1);
 const query = ref("");
 
-const pii = computed(() => canSeePii(auth.selectedPortalId));
+const pii = computed(() => canShowPatientPii(auth.selectedPortalId));
 const completedCount = computed(() => completedDoseCount(props.trial, props.patients, props.enrollments));
 const totalDoses = computed(() => totalDosesGiven(props.patients, props.enrollments));
 const requiredDoses = computed(() => props.patients.length * props.trial.dosesPerPatient);
@@ -50,6 +51,10 @@ function changePage(delta: number) {
 
 function patientDoses(patientId: string) {
   return props.enrollments[patientId]?.doses ?? 0;
+}
+
+function patientDisplay(patient: Patient) {
+  return buildPatientDisplay(patient, props.enrollments[patient.id], props.trial, auth.selectedPortalId);
 }
 </script>
 
@@ -103,8 +108,8 @@ function patientDoses(patientId: string) {
             </td>
           </tr>
           <tr v-for="patient in pagedPatients" :key="patient.id">
-            <td v-if="pii">{{ patient.name }}</td>
-            <td v-if="pii">{{ patient.dob }}</td>
+            <td v-if="pii">{{ patientDisplay(patient).name }}</td>
+            <td v-if="pii">{{ patientDisplay(patient).dob }}</td>
             <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
             <td v-for="index in trial.dosesPerPatient" :key="index">
               <StatusBadge :tone="index <= patientDoses(patient.id) ? 'green' : 'gray'">
@@ -126,4 +131,3 @@ function patientDoses(patientId: string) {
     </div>
   </div>
 </template>
-

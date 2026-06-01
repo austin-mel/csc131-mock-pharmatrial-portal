@@ -11,5 +11,6 @@ export { default as TrialNotifyFdaTab } from './TrialNotifyFdaTab.vue';
 export { default as TrialPage } from './TrialPage.vue';
 export { default as TrialOverviewTab } from './TrialOverviewTab.vue';
 export { default as TrialPatientsTab } from './TrialPatientsTab.vue';
+export { default as TrialReportTab } from './TrialReportTab.vue';
 export { default as TrialTabBar } from './TrialTabBar.vue';
 export { default as TrialWorkspace } from './TrialWorkspace.vue';

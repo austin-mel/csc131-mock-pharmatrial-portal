@@ -21,6 +21,7 @@ import TrialDoseTrackerTab from "@/components/Trials/TrialDoseTrackerTab.vue";
 import TrialNotifyFdaTab from "@/components/Trials/TrialNotifyFdaTab.vue";
 import TrialOverviewTab from "@/components/Trials/TrialOverviewTab.vue";
 import TrialPatientsTab from "@/components/Trials/TrialPatientsTab.vue";
+import TrialReportTab from "@/components/Trials/TrialReportTab.vue";
 import TrialTabBar from "@/components/Trials/TrialTabBar.vue";
 import { allEligibleDosed, completedDoseCount, eligiblePatients, getVisibleTabs, needsWorkflowReviewTag, trialPatients } from "@/composables";
 import { useAuthStore, usePatientsStore, useTrialsStore, useUiStore } from "@/stores";
@@ -50,7 +51,8 @@ const trialNeedsReview = computed(() =>
 );
 const selectedPatient = computed(() => (ui.selectedPatientId ? patientsStore.getPatient(ui.selectedPatientId) : null));
 const canEditPatients = computed(() => trial.value?.status !== "complete" && auth.selectedPortalId === "jh-doctor");
-const canArchive = computed(() => Boolean(trial.value));
+const canArchive = computed(() => Boolean(trial.value) && auth.selectedPortalId !== "jh-doctor");
+const canDelete = computed(() => Boolean(trial.value?.archived) && auth.selectedPortalId !== "jh-doctor");
 
 const placeholderTitles: Record<TrialTab, string> = {
   overview: "Overview",
@@ -73,12 +75,12 @@ watch(
 );
 
 function archive() {
-  if (!trial.value) return;
+  if (!trial.value || !canArchive.value) return;
   trials.toggleArchive(trial.value.id);
 }
 
 function deleteTrial() {
-  if (!trial.value) return;
+  if (!trial.value || !canDelete.value) return;
   const confirmed = window.confirm(`Delete ${trial.value.name}? This cannot be undone.`);
   if (!confirmed) return;
   trials.deleteTrial(trial.value.id);
@@ -102,6 +104,7 @@ function editPatient(id: string) {
       :completed-count="completedCount"
       :needs-review="trialNeedsReview"
       :can-archive="canArchive"
+      :can-delete="canDelete"
       @archive="archive"
       @delete="deleteTrial"
     />
@@ -160,6 +163,13 @@ function editPatient(id: string) {
         v-else-if="ui.activeTab === 'disclose'"
         :trial="trial"
         :patients="eligibleTrialPatients"
+        :enrollments="enrollments"
+        :assignments="assignments"
+      />
+      <TrialReportTab
+        v-else-if="ui.activeTab === 'report'"
+        :trial="trial"
+        :patients="trialPatientsList"
         :enrollments="enrollments"
         :assignments="assignments"
       />

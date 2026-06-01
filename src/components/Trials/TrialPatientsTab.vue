@@ -7,8 +7,9 @@ import PatientTable from "@/components/PatientTables/PatientTable.vue";
 import PaginationControls from "@/components/Navigation/PaginationControls.vue";
 import StatCard from "@/components/Dashboard/StatCard.vue";
 import { SvgIcon } from "@/assets";
-import { canAddPatients, canSeePii } from "@/composables";
+import { canAddPatients } from "@/composables";
 import { useAuthStore, useUiStore } from "@/stores";
+import { canShowPatientPii } from "@/utils";
 import type { Patient, Trial, TrialAssignmentMap, TrialEnrollmentMap } from "@/types";
 
 const props = defineProps<{
@@ -24,7 +25,7 @@ const query = ref("");
 const page = ref(1);
 const PAGE_SIZE = 20;
 
-const pii = computed(() => canSeePii(auth.selectedPortalId));
+const pii = computed(() => canShowPatientPii(auth.selectedPortalId));
 const canAdd = computed(() => canAddPatients(props.trial, auth.selectedPortalId));
 const canCsv = computed(() => canAdd.value && (auth.selectedPortalId === "jh-admin" || auth.selectedPortalId === "jh-doctor"));
 const canEditPatients = computed(() => pii.value && props.trial.status !== "complete");

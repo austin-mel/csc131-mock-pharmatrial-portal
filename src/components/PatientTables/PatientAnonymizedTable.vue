@@ -3,6 +3,7 @@ import DataCard from "@/components/Dashboard/DataCard.vue";
 import DataTable from "@/components/Dashboard/DataTable.vue";
 import DoseBar from "@/components/DoseBar/DoseBar.vue";
 import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
+import { buildAnonymizedPatientDisplay } from "@/utils";
 import type { Patient, Trial, TrialAssignmentMap, TrialEnrollmentMap } from "@/types";
 
 const props = defineProps<{
@@ -15,15 +16,31 @@ const props = defineProps<{
 defineEmits<{ detail: [id: string] }>();
 
 function statusLabel(patientId: string) {
-  const enrollment = props.enrollments[patientId];
-  if (!enrollment?.eligible) return "Excluded";
-  return enrollment.doses >= props.trial.dosesPerPatient ? "Complete" : "Active";
+  const patient = props.patients.find((row) => row.id === patientId);
+  if (!patient) return "Excluded";
+  return buildAnonymizedPatientDisplay(
+    patient,
+    props.enrollments[patientId],
+    props.trial,
+    props.assignments?.[patientId],
+    props.showTracking,
+  ).statusLabel;
 }
 
 function statusTone(patientId: string) {
   const enrollment = props.enrollments[patientId];
   if (!enrollment?.eligible) return "gray";
-  return enrollment.doses >= props.trial.dosesPerPatient ? "green" : "yellow";
+  return statusLabel(patientId) === "Complete" ? "green" : "yellow";
+}
+
+function display(patient: Patient) {
+  return buildAnonymizedPatientDisplay(
+    patient,
+    props.enrollments[patient.id],
+    props.trial,
+    props.assignments?.[patient.id],
+    props.showTracking,
+  );
 }
 </script>
 
@@ -51,10 +68,10 @@ function statusTone(patientId: string) {
           @click="$emit('detail', patient.id)"
         >
           <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
-          <td>{{ patient.icdCodes.join(", ") }}</td>
+          <td>{{ display(patient).icdCodes }}</td>
           <td>
             <StatusBadge :tone="enrollments[patient.id]?.eligible ? 'green' : 'gray'">
-              {{ enrollments[patient.id]?.eligible ? "Eligible" : "Excluded" }}
+              {{ display(patient).eligibilityLabel }}
             </StatusBadge>
           </td>
           <td>
@@ -69,7 +86,7 @@ function statusTone(patientId: string) {
             </StatusBadge>
           </td>
           <td v-if="showTracking" class="font-mono text-xs text-fda">
-            {{ trial.disclosed ? assignments?.[patient.id]?.trackingId ?? "-" : "-" }}
+            {{ trial.disclosed ? display(patient).trackingId : "-" }}
           </td>
         </tr>
       </tbody>

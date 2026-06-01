@@ -37,7 +37,11 @@ export function trialStatusLabel(trial: Trial): string {
     if (approvals.fda === "pending") return "Pending FDA Approval";
     if (approvals.fda === "approved" && approvals.jh === "pending") return "Pending JH Approval";
     if (approvals.fda === "approved" && approvals.jh === "blocked") return "Awaiting JH Approval";
-    if (approvals.fda === "approved" && approvals.jh === "approved") return "Approved";
+    if (approvals.fda === "approved" && approvals.jh === "approved") {
+      if (trial.batchSubmitted && !trial.assignmentsLocked) return "Approved - Awaiting Assignments";
+      if (!trial.batchSubmitted) return "Approved - Awaiting Batch";
+      return "Approved";
+    }
     return "Pending Approval";
   }
 
@@ -191,14 +195,11 @@ export function needsReview(trial: Trial, portalId: PortalId, allDosed: boolean)
   }
 
   if (portalId === "jh-admin") {
-    return (
-      (trial.status === "pending-approval" && approvals.jh === "pending") ||
-      (allDosed && Boolean(trial.assignmentsLocked) && !trial.notifiedFDA)
-    );
+    return trial.status === "active" && allDosed && Boolean(trial.assignmentsLocked) && !trial.notifiedFDA;
   }
 
   if (portalId === "jh-doctor") {
-    return allDosed && Boolean(trial.assignmentsLocked) && !trial.notifiedFDA;
+    return false;
   }
 
   if (portalId === "bavaria") {

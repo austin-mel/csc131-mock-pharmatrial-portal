@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { logAppointment as applyAppointment, trialStatusLabel } from '@/composables';
 import { seedAssignments, seedTrialPatients, seedTrials } from '@/data';
+import { useAuthStore } from './auth.store';
 import type { AppointmentDraft, PortalId, Trial, TrialAssignmentMap, TrialEligibility, TrialPatientsByTrial } from '@/types';
 
 const SIDEBAR_PAGE_SIZE = 10;
@@ -36,6 +37,7 @@ export interface CreateTrialDraft {
 }
 
 export const useTrialsStore = defineStore('trials', () => {
+  const auth = useAuthStore();
   const trials = ref<Trial[]>(structuredClone(seedTrials));
   const trialPatients = ref<TrialPatientsByTrial>(structuredClone(seedTrialPatients));
   const assignments = ref<Record<string, TrialAssignmentMap>>(structuredClone(seedAssignments));
@@ -45,11 +47,15 @@ export const useTrialsStore = defineStore('trials', () => {
   const sidebarPage = ref(1);
   const showingArchived = ref(false);
 
-  const currentTrial = computed(() => trials.value.find((trial) => trial.id === currentTrialId.value) ?? null);
+  const currentTrial = computed(() => {
+    const trial = trials.value.find((item) => item.id === currentTrialId.value);
+    return trial && canPortalViewTrial(trial) && matchesArchiveFilter(trial) ? trial : null;
+  });
   const filteredTrials = computed(() => {
     const query = sidebarSearch.value.trim().toLowerCase();
     return trials.value
-      .filter((trial) => Boolean(trial.archived) === showingArchived.value)
+      .filter((trial) => canPortalViewTrial(trial))
+      .filter((trial) => matchesArchiveFilter(trial))
       .filter((trial) => {
         if (!query) return true;
         return [trial.name, trial.id, trial.drug, trial.condition, trial.statusLabel ?? trialStatusLabel(trial)].some((value) =>
@@ -65,10 +71,48 @@ export const useTrialsStore = defineStore('trials', () => {
     ),
   );
 
+  function canPortalViewTrial(trial: Trial, portalId: PortalId = auth.selectedPortalId): boolean {
+    if (portalId !== 'jh-doctor') return true;
+    return trial.status === 'active';
+  }
+
+  function matchesArchiveFilter(trial: Trial, portalId: PortalId = auth.selectedPortalId): boolean {
+    if (portalId === 'jh-doctor') return !trial.archived;
+    return Boolean(trial.archived) === showingArchived.value;
+  }
+
+  function firstVisibleTrial() {
+    return (
+      trials.value.find((trial) => canPortalViewTrial(trial) && matchesArchiveFilter(trial)) ??
+      trials.value.find((trial) => canPortalViewTrial(trial) && (auth.selectedPortalId !== 'jh-doctor' || !trial.archived)) ??
+      null
+    );
+  }
+
+  function ensureSelectedTrialVisible() {
+    sidebarPage.value = Math.min(pageCount.value, Math.max(1, sidebarPage.value));
+    const selected = trials.value.find((trial) => trial.id === currentTrialId.value);
+    if (selected && canPortalViewTrial(selected) && matchesArchiveFilter(selected)) return;
+
+    const next = firstVisibleTrial();
+    currentTrialId.value = next?.id ?? null;
+    if (next && auth.selectedPortalId !== 'jh-doctor') showingArchived.value = Boolean(next.archived);
+  }
+
+  watch(
+    [
+      () => auth.selectedPortalId,
+      () => trials.value.map((trial) => `${trial.id}:${trial.status}:${trial.archived}`).join('|'),
+    ],
+    ensureSelectedTrialVisible,
+    { immediate: true },
+  );
+
   function selectTrial(id: string) {
-    currentTrialId.value = id;
     const trial = trials.value.find((item) => item.id === id);
-    showingArchived.value = Boolean(trial?.archived);
+    if (!trial || !canPortalViewTrial(trial) || !matchesArchiveFilter(trial)) return;
+    currentTrialId.value = id;
+    if (auth.selectedPortalId !== 'jh-doctor') showingArchived.value = Boolean(trial?.archived);
   }
 
   function setSearch(value: string) {
@@ -77,8 +121,10 @@ export const useTrialsStore = defineStore('trials', () => {
   }
 
   function setArchiveFilter(value: boolean) {
+    if (auth.selectedPortalId === 'jh-doctor') return;
     showingArchived.value = value;
     sidebarPage.value = 1;
+    ensureSelectedTrialVisible();
   }
 
   function changePage(delta: number) {
@@ -175,10 +221,6 @@ export const useTrialsStore = defineStore('trials', () => {
       return false;
     }
 
-    if (trial.approvals.jh === 'approved' && trial.approvals.fda === 'approved') {
-      trial.status = 'active';
-    }
-
     trial.statusLabel = trialStatusLabel(trial);
     recordAudit(portalId, 'trial.approve', trialId);
     return true;
@@ -241,6 +283,7 @@ export const useTrialsStore = defineStore('trials', () => {
 
     assignments.value[trialId] = draft;
     trial.assignmentsLocked = true;
+    trial.status = 'active';
     trial.statusLabel = trialStatusLabel(trial);
     recordAudit(actorPortalId, 'trial.lock_assignments', trialId);
     return true;
@@ -288,13 +331,15 @@ export const useTrialsStore = defineStore('trials', () => {
     trials.value.splice(index, 1);
 
     if (currentTrialId.value === trialId) {
-      const matchingTabTrial = trials.value.find((trial) => trial.archived === showingArchived.value);
-      currentTrialId.value = matchingTabTrial?.id ?? trials.value[0]?.id ?? null;
-      if (!matchingTabTrial && trials.value[0]) showingArchived.value = Boolean(trials.value[0].archived);
+      const matchingTabTrial = trials.value.find((trial) => canPortalViewTrial(trial) && matchesArchiveFilter(trial));
+      const nextVisibleTrial = matchingTabTrial ?? firstVisibleTrial();
+      currentTrialId.value = nextVisibleTrial?.id ?? null;
+      if (nextVisibleTrial && auth.selectedPortalId !== 'jh-doctor') showingArchived.value = Boolean(nextVisibleTrial.archived);
     }
 
-    if (!trials.value.some((trial) => trial.archived === showingArchived.value) && trials.value.length) {
-      showingArchived.value = Boolean(trials.value[0].archived);
+    if (!trials.value.some((trial) => canPortalViewTrial(trial) && matchesArchiveFilter(trial))) {
+      const nextVisibleTrial = firstVisibleTrial();
+      if (nextVisibleTrial && auth.selectedPortalId !== 'jh-doctor') showingArchived.value = Boolean(nextVisibleTrial.archived);
     }
 
     return deletedTrial;

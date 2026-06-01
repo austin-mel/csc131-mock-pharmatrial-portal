@@ -7,6 +7,7 @@ import DetailGrid from "@/components/Dashboard/DetailGrid.vue";
 import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
 import ModalShell from "@/components/ModalShell/ModalShell.vue";
 import { useAuthStore } from "@/stores";
+import { buildPatientDisplay, canShowPatientPii } from "@/utils";
 import type { Patient, Trial, TrialEnrollmentMap } from "@/types";
 
 const props = defineProps<{
@@ -18,11 +19,14 @@ const props = defineProps<{
 defineEmits<{ close: []; edit: [id: string] }>();
 
 const auth = useAuthStore();
-const showPii = computed(() => auth.selectedPortalId === "jh-doctor");
+const showPii = computed(() => canShowPatientPii(auth.selectedPortalId));
 const enrollment = computed(() => (props.patient ? props.enrollments[props.patient.id] : null));
+const display = computed(() =>
+  props.patient ? buildPatientDisplay(props.patient, enrollment.value ?? undefined, props.trial, auth.selectedPortalId) : null,
+);
 const canEdit = computed(() => showPii.value && props.trial.status !== "complete");
 const initials = computed(() =>
-  props.patient?.name
+  (display.value?.name ?? "")
     .split(" ")
     .map((part) => part[0])
     .join("")
@@ -33,19 +37,19 @@ const initials = computed(() =>
 const items = computed(() => {
   if (!props.patient) return [];
   const base = [
-    { label: "UUID", value: props.patient.id },
-    { label: "ICD-10 Codes", value: props.patient.icdCodes.join(", ") || "None" },
+    { label: "UUID", value: display.value?.id ?? props.patient.id },
+    { label: "ICD-10 Codes", value: display.value?.icdCodes ?? "None" },
     { label: "Enrollment", value: enrollment.value ? "Enrolled" : "Not enrolled" },
-    { label: "Eligibility", value: enrollment.value?.eligible ? "Eligible" : "Excluded" },
-    { label: "Doses", value: `${enrollment.value?.doses ?? 0}/${props.trial.dosesPerPatient}` },
+    { label: "Eligibility", value: display.value?.eligibilityLabel ?? "Excluded" },
+    { label: "Doses", value: display.value?.doseLabel ?? `0/${props.trial.dosesPerPatient}` },
     { label: "Appointments", value: enrollment.value?.appointments.length ?? 0 },
   ];
 
   if (!showPii.value) return base;
 
   return [
-    { label: "Name", value: props.patient.name },
-    { label: "DOB", value: props.patient.dob },
+    { label: "Name", value: display.value?.name ?? props.patient.name },
+    { label: "DOB", value: display.value?.dob ?? props.patient.dob },
     { label: "Blood Type", value: props.patient.bloodType },
     ...base,
     { label: "Blood Pressure", value: props.patient.bp ?? "-" },
@@ -77,7 +81,7 @@ const items = computed(() => {
       </div>
       <div class="min-w-0">
         <div class="font-serif text-xl">
-          {{ showPii ? patient.name : "Anonymized Patient" }}
+          {{ display?.name ?? patient.id }}
         </div>
         <div class="mt-0.5 font-mono text-[11px] text-white/60">{{ patient.id }}</div>
         <div class="mt-2 flex flex-wrap gap-[7px]">

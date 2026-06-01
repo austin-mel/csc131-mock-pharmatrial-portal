@@ -52,7 +52,11 @@ function selectTrial(id: string) {
         placeholder="Search trials..."
         @update:model-value="trials.setSearch"
       />
-      <SegmentedControl v-model="archiveModel" :options="archiveOptions" />
+      <SegmentedControl
+        v-if="auth.selectedPortalId !== 'jh-doctor'"
+        v-model="archiveModel"
+        :options="archiveOptions"
+      />
       <ActionButton
         v-if="auth.selectedPortalId === 'bavaria'"
         variant="bav"

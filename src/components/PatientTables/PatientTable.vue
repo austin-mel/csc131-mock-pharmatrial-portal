@@ -4,9 +4,10 @@ import DataCard from "@/components/Dashboard/DataCard.vue";
 import DataTable from "@/components/Dashboard/DataTable.vue";
 import DoseBar from "@/components/DoseBar/DoseBar.vue";
 import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
+import { buildPatientDisplay } from "@/utils";
 import type { Patient, Trial, TrialEnrollmentMap } from "@/types";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     patients: Patient[];
     enrollments: TrialEnrollmentMap;
@@ -17,6 +18,10 @@ withDefaults(
   { showEligibility: true, canEdit: true },
 );
 defineEmits<{ detail: [id: string]; edit: [id: string] }>();
+
+function display(patient: Patient) {
+  return buildPatientDisplay(patient, props.enrollments[patient.id], props.trial, "jh-doctor");
+}
 </script>
 
 <template>
@@ -43,14 +48,14 @@ defineEmits<{ detail: [id: string]; edit: [id: string] }>();
           @click="$emit('detail', patient.id)"
         >
           <td>
-            <strong>{{ patient.name }}</strong>
+            <strong>{{ display(patient).name }}</strong>
             <div class="font-mono text-xs text-fda">{{ patient.id }}</div>
           </td>
-          <td class="hidden md:table-cell">{{ patient.dob }}</td>
-          <td class="hidden md:table-cell">{{ patient.icdCodes.join(", ") }}</td>
+          <td class="hidden md:table-cell">{{ display(patient).dob }}</td>
+          <td class="hidden md:table-cell">{{ display(patient).icdCodes }}</td>
           <td v-if="showEligibility" class="hidden md:table-cell">
             <StatusBadge :tone="enrollments[patient.id]?.eligible ? 'green' : 'gray'">
-              {{ enrollments[patient.id]?.eligible ? "Eligible" : "Excluded" }}
+              {{ display(patient).eligibilityLabel }}
             </StatusBadge>
           </td>
           <td>

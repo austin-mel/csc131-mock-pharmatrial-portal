@@ -14,8 +14,9 @@ const props = withDefaults(
     completedCount?: number;
     needsReview?: boolean;
     canArchive?: boolean;
+    canDelete?: boolean;
   }>(),
-  { eligibleCount: 0, completedCount: 0, needsReview: false, canArchive: false },
+  { eligibleCount: 0, completedCount: 0, needsReview: false, canArchive: false, canDelete: false },
 );
 defineEmits<{ archive: []; delete: [] }>();
 
@@ -77,7 +78,7 @@ const pills = computed(() => [
         {{ trial.archived ? "Unarchive Trial" : "Archive Trial" }}
       </button>
       <button
-        v-if="trial.archived"
+        v-if="canDelete && trial.archived"
         class="grid size-[39px] place-items-center rounded-[5px] border border-[#c0392b] bg-[#c0392b] text-white shadow-[0_4px_12px_rgba(192,57,43,.35)] transition-opacity hover:opacity-85 active:scale-[.98] max-[640px]:size-[42px]"
         type="button"
         aria-label="Delete trial"
