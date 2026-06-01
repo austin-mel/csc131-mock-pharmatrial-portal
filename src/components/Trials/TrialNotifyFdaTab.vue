@@ -1,0 +1,84 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+import ActionButton from "@/components/ActionButton/ActionButton.vue";
+import DataCard from "@/components/Dashboard/DataCard.vue";
+import DataTable from "@/components/Dashboard/DataTable.vue";
+import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
+import { allEligibleDosed, completedDoseCount } from "@/composables";
+import { useAuthStore, useUiStore } from "@/stores";
+import type { Patient, Trial, TrialEnrollmentMap } from "@/types";
+
+const props = defineProps<{ trial: Trial; patients: Patient[]; enrollments: TrialEnrollmentMap }>();
+
+const auth = useAuthStore();
+const ui = useUiStore();
+const completed = computed(() => completedDoseCount(props.trial, props.patients, props.enrollments));
+const allDone = computed(() => allEligibleDosed(props.trial, props.patients, props.enrollments));
+const canNotify = computed(() =>
+  (auth.selectedPortalId === "jh-admin" || auth.selectedPortalId === "jh-doctor") &&
+  props.trial.assignmentsLocked &&
+  allDone.value &&
+  !props.trial.notifiedFDA,
+);
+const message = computed(() => {
+  if (props.trial.notifiedFDA) return "Results have already been transmitted to the FDA for this trial.";
+  if (!props.trial.assignmentsLocked) return "Drug assignments must be locked before Jane Hopkins can notify the FDA.";
+  if (!allDone.value) return `Not ready - ${completed.value}/${props.patients.length} eligible patients have completed all doses.`;
+  return "All eligible patients have completed dosing. You may now notify the FDA.";
+});
+</script>
+
+<template>
+  <div>
+    <div class="mb-5 flex flex-wrap items-start justify-between gap-2.5">
+      <div>
+        <div class="font-serif text-2xl font-normal">Notify FDA</div>
+        <div class="mt-0.5 text-[13px] text-muted">Transmit anonymized results once all dosing is complete.</div>
+      </div>
+      <ActionButton
+        v-if="auth.selectedPortalId === 'jh-admin' || auth.selectedPortalId === 'jh-doctor'"
+        class="min-h-12 w-full px-7 text-base sm:w-auto lg:min-h-16 lg:min-w-40 lg:px-10 lg:text-lg"
+        variant="jh"
+        :disabled="!canNotify"
+        @click="ui.showModal('notify-fda')"
+      >
+        Send Results to FDA
+      </ActionButton>
+    </div>
+    <div
+      class="mb-5 rounded-md border px-3 py-2 text-sm"
+      :class="allDone && trial.assignmentsLocked ? 'border-[#b8dfc5] bg-[#e6f4ec] text-[#1e7e4e]' : 'border-[#f3d7a2] bg-[#fff8e8] text-[#8a5a00]'"
+    >
+      {{ message }}
+    </div>
+    <DataCard title="Results Preview (Anonymized)">
+      <template #header>
+        <StatusBadge>No PII</StatusBadge>
+      </template>
+      <DataTable>
+        <thead>
+          <tr>
+            <th>UUID</th>
+            <th>Doses</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="!patients.length">
+            <td colspan="3" class="text-muted">No eligible patients available.</td>
+          </tr>
+          <tr v-for="patient in patients" :key="patient.id">
+            <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
+            <td>{{ enrollments[patient.id]?.doses ?? 0 }}/{{ trial.dosesPerPatient }}</td>
+            <td>
+              <StatusBadge :tone="(enrollments[patient.id]?.doses ?? 0) >= trial.dosesPerPatient ? 'green' : 'yellow'">
+                {{ (enrollments[patient.id]?.doses ?? 0) >= trial.dosesPerPatient ? "Complete" : "In Progress" }}
+              </StatusBadge>
+            </td>
+          </tr>
+        </tbody>
+      </DataTable>
+    </DataCard>
+  </div>
+</template>

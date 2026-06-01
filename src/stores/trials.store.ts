@@ -246,9 +246,11 @@ export const useTrialsStore = defineStore('trials', () => {
     return true;
   }
 
-  function notifyFda(trialId: string, actorPortalId: PortalId = 'jh-admin') {
+  function notifyFda(trialId: string, actorPortalId: PortalId = 'jh-admin', allEligibleDosed = false) {
     const trial = trials.value.find((item) => item.id === trialId);
     if (!trial || trial.status === 'rejected') return false;
+    if (actorPortalId !== 'jh-admin' && actorPortalId !== 'jh-doctor') return false;
+    if (!trial.assignmentsLocked || !allEligibleDosed || trial.notifiedFDA) return false;
 
     trial.notifiedFDA = true;
     trial.statusLabel = trialStatusLabel(trial);
@@ -256,9 +258,11 @@ export const useTrialsStore = defineStore('trials', () => {
     return true;
   }
 
-  function discloseTrial(trialId: string, actorPortalId: PortalId = 'fda') {
+  function discloseTrial(trialId: string, actorPortalId: PortalId = 'fda', allEligibleDosed = false) {
     const trial = trials.value.find((item) => item.id === trialId);
     if (!trial || trial.status === 'rejected') return false;
+    if (actorPortalId !== 'fda') return false;
+    if (!trial.notifiedFDA || !trial.assignmentsLocked || !allEligibleDosed || trial.disclosed) return false;
 
     trial.disclosed = true;
     trial.status = 'complete';

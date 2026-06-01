@@ -20,7 +20,7 @@ import {
 import { useAuthStore, useTrialsStore, useUiStore } from "@/stores";
 import type { PortalId, Trial } from "@/types";
 
-const props = defineProps<{ trial: Trial }>();
+const props = withDefaults(defineProps<{ trial: Trial; allDosed?: boolean }>(), { allDosed: false });
 const auth = useAuthStore();
 const trials = useTrialsStore();
 const ui = useUiStore();
@@ -45,7 +45,7 @@ const items = computed(() => [
   { label: "Doses per Patient", value: props.trial.dosesPerPatient },
 ]);
 
-const currentStep = computed(() => currentLifecycleStepIndex(props.trial));
+const currentStep = computed(() => currentLifecycleStepIndex(props.trial, props.allDosed));
 const rejectedIndex = computed(() => rejectedStepIndex(props.trial));
 const finalReportPublished = computed(() => Boolean(props.trial.disclosed && props.trial.notifiedFDA));
 const approvalAction = computed<ApprovalAction | null>(() => {
@@ -91,10 +91,10 @@ const approvalRows = computed(() => {
       tone: props.trial.assignmentsLocked ? ("green" as const) : ("yellow" as const),
     },
     {
-      label: "Complete",
+      label: "Dosing Complete",
       sub: "All patients complete dosing",
-      value: props.trial.status === "complete" ? "Complete" : "Pending",
-      tone: props.trial.status === "complete" ? ("green" as const) : ("yellow" as const),
+      value: props.allDosed || props.trial.status === "complete" || props.trial.notifiedFDA ? "Complete" : "Pending",
+      tone: props.allDosed || props.trial.status === "complete" || props.trial.notifiedFDA ? ("green" as const) : ("yellow" as const),
     },
     {
       label: "JH Results to FDA",

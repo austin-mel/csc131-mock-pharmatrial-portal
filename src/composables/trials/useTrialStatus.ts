@@ -8,7 +8,7 @@ export const lifecycleSteps = [
   "JH Approval",
   "Bavaria Ship",
   "FDA Assignment",
-  "Complete",
+  "Dosing Complete",
   "JH Results to FDA",
   "FDA Report to Bavaria and JH with De-Anon PII",
 ] as const;
@@ -30,7 +30,7 @@ export interface StatusBadgeDefinition {
 export function trialStatusLabel(trial: Trial): string {
   const approvals = approvalsFor(trial);
 
-  if (trial.status === "complete") return "Completed";
+  if (trial.status === "complete" && trial.disclosed && trial.notifiedFDA) return "Completed";
   if (trial.status === "rejected") return "Rejected";
 
   if (trial.status === "pending-approval") {
@@ -41,6 +41,7 @@ export function trialStatusLabel(trial: Trial): string {
     return "Pending Approval";
   }
 
+  if (trial.notifiedFDA && !trial.disclosed) return "Awaiting FDA Report";
   if (trial.batchSubmitted && !trial.assignmentsLocked) return "Approved - Awaiting Assignments";
   if (approvals.jh === "approved" && approvals.fda === "approved" && !trial.batchSubmitted) {
     return "Approved - Awaiting Batch";
@@ -55,7 +56,7 @@ export function statusBadges(trial: Trial): StatusBadgeDefinition[] {
 
   if (trial.archived) badges.push({ label: "Archived", tone: "gray" });
 
-  if (trial.status === "complete") badges.push({ label, tone: "purple" });
+  if (trial.status === "complete" && trial.disclosed && trial.notifiedFDA) badges.push({ label, tone: "purple" });
   else if (trial.status === "rejected") badges.push({ label, tone: "red" });
   else if (label === "Active") badges.push({ label, tone: "green" });
   else if (label.startsWith("Approved")) badges.push({ label, tone: "orange" });
@@ -88,7 +89,7 @@ export function currentLifecycleStepIndex(trial: Trial, allDosed = false): numbe
 
   if (trial.disclosed && trial.notifiedFDA) return 7;
   if (trial.notifiedFDA) return 6;
-  if (trial.status === "complete" || allDosed) return 5;
+  if (allDosed) return 5;
   if (trial.assignmentsLocked) return 4;
   if (trial.batchSubmitted) return 3;
   if (approvals.jh === "approved" && approvals.fda === "approved") return 2;
@@ -202,6 +203,20 @@ export function needsReview(trial: Trial, portalId: PortalId, allDosed: boolean)
 
   if (portalId === "bavaria") {
     return fullyApproved && !trial.batchSubmitted;
+  }
+
+  return false;
+}
+
+export function needsWorkflowReviewTag(trial: Trial, portalId: PortalId, allDosed: boolean): boolean {
+  if (trial.archived || trial.status !== "active") return false;
+
+  if (portalId === "jh-admin") {
+    return allDosed && Boolean(trial.assignmentsLocked) && !trial.notifiedFDA;
+  }
+
+  if (portalId === "fda") {
+    return allDosed && Boolean(trial.assignmentsLocked) && Boolean(trial.notifiedFDA) && !trial.disclosed;
   }
 
   return false;

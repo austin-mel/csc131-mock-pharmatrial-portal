@@ -2,16 +2,19 @@
 import { computed } from "vue";
 
 import StatusBadge from "@/components/StatusBadge";
-import { needsReview, statusBadges } from "@/composables";
-import { useAuthStore } from "@/stores";
+import { allEligibleDosed, needsWorkflowReviewTag, statusBadges } from "@/composables";
+import { useAuthStore, usePatientsStore, useTrialsStore } from "@/stores";
 import type { Trial } from "@/types";
 
 const props = defineProps<{ trial: Trial; active?: boolean }>();
 defineEmits<{ select: [id: string] }>();
 const auth = useAuthStore();
+const patients = usePatientsStore();
+const trials = useTrialsStore();
 
 const badges = computed(() => statusBadges(props.trial));
-const review = computed(() => needsReview(props.trial, auth.selectedPortalId, props.trial.status === "complete"));
+const allDosed = computed(() => allEligibleDosed(props.trial, patients.patients, trials.enrollmentsFor(props.trial.id)));
+const review = computed(() => needsWorkflowReviewTag(props.trial, auth.selectedPortalId, allDosed.value));
 </script>
 
 <template>

@@ -5,7 +5,9 @@ import DataCard from "@/components/Dashboard/DataCard.vue";
 import AppointmentFormModal from "@/components/Modals/Appointments/AppointmentFormModal.vue";
 import DrugBatchModal from "@/components/Modals/Batches/DrugBatchModal.vue";
 import ApprovalModal from "@/components/Modals/Regulatory/ApprovalModal.vue";
+import DiscloseTrialModal from "@/components/Modals/Regulatory/DiscloseTrialModal.vue";
 import FdaAssignmentModal from "@/components/Modals/Regulatory/FdaAssignmentModal.vue";
+import NotifyFdaModal from "@/components/Modals/Regulatory/NotifyFdaModal.vue";
 import PatientCsvUploadModal from "@/components/Modals/Patients/PatientCsvUploadModal.vue";
 import PatientDetailModal from "@/components/Modals/Patients/PatientDetailModal.vue";
 import PatientFormModal from "@/components/Modals/Patients/PatientFormModal.vue";
@@ -14,11 +16,13 @@ import TrialAppointmentsTab from "@/components/Trials/TrialAppointmentsTab.vue";
 import TrialHeader from "@/components/Trials/TrialHeader.vue";
 import TrialAssignmentsTab from "@/components/Trials/TrialAssignmentsTab.vue";
 import TrialBatchTab from "@/components/Trials/TrialBatchTab.vue";
+import TrialDisclosureTab from "@/components/Trials/TrialDisclosureTab.vue";
 import TrialDoseTrackerTab from "@/components/Trials/TrialDoseTrackerTab.vue";
+import TrialNotifyFdaTab from "@/components/Trials/TrialNotifyFdaTab.vue";
 import TrialOverviewTab from "@/components/Trials/TrialOverviewTab.vue";
 import TrialPatientsTab from "@/components/Trials/TrialPatientsTab.vue";
 import TrialTabBar from "@/components/Trials/TrialTabBar.vue";
-import { completedDoseCount, eligiblePatients, getVisibleTabs, trialPatients } from "@/composables";
+import { allEligibleDosed, completedDoseCount, eligiblePatients, getVisibleTabs, needsWorkflowReviewTag, trialPatients } from "@/composables";
 import { useAuthStore, usePatientsStore, useTrialsStore, useUiStore } from "@/stores";
 import type { TrialAssignmentMap, TrialEnrollmentMap, TrialTab } from "@/types";
 
@@ -37,6 +41,12 @@ const trialPatientsList = computed(() => trialPatients(patientsStore.patients, e
 const eligibleTrialPatients = computed(() => eligiblePatients(patientsStore.patients, enrollments.value));
 const completedCount = computed(() =>
   trial.value ? completedDoseCount(trial.value, patientsStore.patients, enrollments.value) : 0,
+);
+const allDosed = computed(() =>
+  trial.value ? allEligibleDosed(trial.value, patientsStore.patients, enrollments.value) : false,
+);
+const trialNeedsReview = computed(() =>
+  trial.value ? needsWorkflowReviewTag(trial.value, auth.selectedPortalId, allDosed.value) : false,
 );
 const selectedPatient = computed(() => (ui.selectedPatientId ? patientsStore.getPatient(ui.selectedPatientId) : null));
 const canEditPatients = computed(() => trial.value?.status !== "complete" && auth.selectedPortalId === "jh-doctor");
@@ -90,6 +100,7 @@ function editPatient(id: string) {
       :trial="trial"
       :eligible-count="eligibleTrialPatients.length"
       :completed-count="completedCount"
+      :needs-review="trialNeedsReview"
       :can-archive="canArchive"
       @archive="archive"
       @delete="deleteTrial"
@@ -106,6 +117,7 @@ function editPatient(id: string) {
       <TrialOverviewTab
         v-if="ui.activeTab === 'overview'"
         :trial="trial"
+        :all-dosed="allDosed"
       />
       <TrialPatientsTab
         v-else-if="ui.activeTab === 'patients'"
@@ -126,6 +138,12 @@ function editPatient(id: string) {
         :patients="eligibleTrialPatients"
         :enrollments="enrollments"
       />
+      <TrialNotifyFdaTab
+        v-else-if="ui.activeTab === 'notify'"
+        :trial="trial"
+        :patients="eligibleTrialPatients"
+        :enrollments="enrollments"
+      />
       <TrialBatchTab
         v-else-if="ui.activeTab === 'batch'"
         :trial="trial"
@@ -133,6 +151,13 @@ function editPatient(id: string) {
       />
       <TrialAssignmentsTab
         v-else-if="ui.activeTab === 'assignments'"
+        :trial="trial"
+        :patients="eligibleTrialPatients"
+        :enrollments="enrollments"
+        :assignments="assignments"
+      />
+      <TrialDisclosureTab
+        v-else-if="ui.activeTab === 'disclose'"
         :trial="trial"
         :patients="eligibleTrialPatients"
         :enrollments="enrollments"
@@ -190,6 +215,18 @@ function editPatient(id: string) {
       :patients="eligibleTrialPatients"
       :enrollments="enrollments"
       :assignments="assignments"
+      @close="ui.closeModal"
+    />
+    <NotifyFdaModal
+      :open="ui.openModal === 'notify-fda'"
+      :trial="trial"
+      :all-dosed="allDosed"
+      @close="ui.closeModal"
+    />
+    <DiscloseTrialModal
+      :open="ui.openModal === 'disclose-trial'"
+      :trial="trial"
+      :all-dosed="allDosed"
       @close="ui.closeModal"
     />
   </div>

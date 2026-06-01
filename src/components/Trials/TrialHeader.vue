@@ -12,9 +12,10 @@ const props = withDefaults(
     trial: Trial;
     eligibleCount?: number;
     completedCount?: number;
+    needsReview?: boolean;
     canArchive?: boolean;
   }>(),
-  { eligibleCount: 0, completedCount: 0, canArchive: false },
+  { eligibleCount: 0, completedCount: 0, needsReview: false, canArchive: false },
 );
 defineEmits<{ archive: []; delete: [] }>();
 
@@ -41,6 +42,9 @@ const pills = computed(() => [
           :tone="badge.tone"
         >
           {{ badge.label }}
+        </StatusBadge>
+        <StatusBadge v-if="needsReview" tone="red">
+          Needs Review
         </StatusBadge>
       </div>
       <div class="mb-[3px] break-words font-serif text-[22px] leading-[1.2] max-[640px]:text-[20px]">
