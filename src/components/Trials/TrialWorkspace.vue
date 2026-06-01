@@ -2,6 +2,7 @@
 import { computed, watch } from "vue";
 
 import DataCard from "@/components/Dashboard/DataCard.vue";
+import AppointmentFormModal from "@/components/Modals/Appointments/AppointmentFormModal.vue";
 import DrugBatchModal from "@/components/Modals/Batches/DrugBatchModal.vue";
 import ApprovalModal from "@/components/Modals/Regulatory/ApprovalModal.vue";
 import FdaAssignmentModal from "@/components/Modals/Regulatory/FdaAssignmentModal.vue";
@@ -9,6 +10,7 @@ import PatientCsvUploadModal from "@/components/Modals/Patients/PatientCsvUpload
 import PatientDetailModal from "@/components/Modals/Patients/PatientDetailModal.vue";
 import PatientFormModal from "@/components/Modals/Patients/PatientFormModal.vue";
 import RejectedTrialBanner from "@/components/Trials/RejectedTrialBanner.vue";
+import TrialAppointmentsTab from "@/components/Trials/TrialAppointmentsTab.vue";
 import TrialBanner from "@/components/Trials/TrialBanner.vue";
 import TrialAssignmentsTab from "@/components/Trials/TrialAssignmentsTab.vue";
 import TrialBatchTab from "@/components/Trials/TrialBatchTab.vue";
@@ -106,6 +108,12 @@ function editPatient(id: string) {
         :enrollments="enrollments"
         :assignments="assignments"
       />
+      <TrialAppointmentsTab
+        v-else-if="ui.activeTab === 'appointments'"
+        :trial="trial"
+        :patients="trialPatientsList"
+        :enrollments="enrollments"
+      />
       <TrialBatchTab
         v-else-if="ui.activeTab === 'batch'"
         :trial="trial"
@@ -144,6 +152,13 @@ function editPatient(id: string) {
     <PatientCsvUploadModal
       :open="ui.openModal === 'patient-csv'"
       :trial="trial"
+      @close="ui.closeModal"
+    />
+    <AppointmentFormModal
+      :open="ui.openModal === 'appointment-form'"
+      :trial="trial"
+      :patients="eligiblePatients"
+      :enrollments="enrollments"
       @close="ui.closeModal"
     />
     <ApprovalModal

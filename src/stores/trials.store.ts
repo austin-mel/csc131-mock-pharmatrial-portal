@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { trialStatusLabel } from '@/composables';
+import { logAppointment as applyAppointment, trialStatusLabel } from '@/composables';
 import { seedAssignments, seedTrialPatients, seedTrials } from '@/data';
-import type { PortalId, Trial, TrialAssignmentMap, TrialEligibility, TrialPatientsByTrial } from '@/types';
+import type { AppointmentDraft, PortalId, Trial, TrialAssignmentMap, TrialEligibility, TrialPatientsByTrial } from '@/types';
 
 const SIDEBAR_PAGE_SIZE = 10;
 
@@ -104,6 +104,15 @@ export const useTrialsStore = defineStore('trials', () => {
     };
     trialPatients.value[trialId][patientId].eligible = eligible;
     return true;
+  }
+
+  function logAppointment(trialId: string, patientId: string, draft: AppointmentDraft, actorPortalId: PortalId = 'jh-doctor') {
+    const trial = trials.value.find((item) => item.id === trialId);
+    const enrollment = trialPatients.value[trialId]?.[patientId];
+    if (!trial || trial.status === 'rejected' || actorPortalId !== 'jh-doctor') return false;
+    if (!enrollment?.eligible) return false;
+
+    return applyAppointment(enrollment, trial.dosesPerPatient, draft);
   }
 
   function recordAudit(actorPortalId: PortalId, action: TrialAuditAction, entityId: string) {
@@ -307,6 +316,7 @@ export const useTrialsStore = defineStore('trials', () => {
     enrollmentsFor,
     assignmentsFor,
     enrollPatient,
+    logAppointment,
     createTrial,
     approveTrial,
     rejectTrial,
