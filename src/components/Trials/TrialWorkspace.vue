@@ -11,13 +11,14 @@ import PatientDetailModal from "@/components/Modals/Patients/PatientDetailModal.
 import PatientFormModal from "@/components/Modals/Patients/PatientFormModal.vue";
 import RejectedTrialBanner from "@/components/Trials/RejectedTrialBanner.vue";
 import TrialAppointmentsTab from "@/components/Trials/TrialAppointmentsTab.vue";
-import TrialBanner from "@/components/Trials/TrialBanner.vue";
+import TrialHeader from "@/components/Trials/TrialHeader.vue";
 import TrialAssignmentsTab from "@/components/Trials/TrialAssignmentsTab.vue";
 import TrialBatchTab from "@/components/Trials/TrialBatchTab.vue";
+import TrialDoseTrackerTab from "@/components/Trials/TrialDoseTrackerTab.vue";
 import TrialOverviewTab from "@/components/Trials/TrialOverviewTab.vue";
 import TrialPatientsTab from "@/components/Trials/TrialPatientsTab.vue";
 import TrialTabBar from "@/components/Trials/TrialTabBar.vue";
-import { getVisibleTabs, trialPatients } from "@/composables";
+import { completedDoseCount, eligiblePatients, getVisibleTabs, trialPatients } from "@/composables";
 import { useAuthStore, usePatientsStore, useTrialsStore, useUiStore } from "@/stores";
 import type { TrialAssignmentMap, TrialEnrollmentMap, TrialTab } from "@/types";
 
@@ -33,7 +34,10 @@ const tabs = computed<TrialTab[]>(() =>
 const enrollments = computed<TrialEnrollmentMap>(() => (trial.value ? trials.enrollmentsFor(trial.value.id) : {}));
 const assignments = computed<TrialAssignmentMap>(() => (trial.value ? trials.assignmentsFor(trial.value.id) : {}));
 const trialPatientsList = computed(() => trialPatients(patientsStore.patients, enrollments.value));
-const eligiblePatients = computed(() => trialPatientsList.value.filter((patient) => enrollments.value[patient.id]?.eligible));
+const eligibleTrialPatients = computed(() => eligiblePatients(patientsStore.patients, enrollments.value));
+const completedCount = computed(() =>
+  trial.value ? completedDoseCount(trial.value, patientsStore.patients, enrollments.value) : 0,
+);
 const selectedPatient = computed(() => (ui.selectedPatientId ? patientsStore.getPatient(ui.selectedPatientId) : null));
 const canEditPatients = computed(() => trial.value?.status !== "complete" && auth.selectedPortalId === "jh-doctor");
 const canArchive = computed(() => Boolean(trial.value));
@@ -82,8 +86,10 @@ function editPatient(id: string) {
 
 <template>
   <div v-if="trial" class="flex min-h-0 flex-1 flex-col">
-    <TrialBanner
+    <TrialHeader
       :trial="trial"
+      :eligible-count="eligibleTrialPatients.length"
+      :completed-count="completedCount"
       :can-archive="canArchive"
       @archive="archive"
       @delete="deleteTrial"
@@ -114,15 +120,21 @@ function editPatient(id: string) {
         :patients="trialPatientsList"
         :enrollments="enrollments"
       />
+      <TrialDoseTrackerTab
+        v-else-if="ui.activeTab === 'doses'"
+        :trial="trial"
+        :patients="eligibleTrialPatients"
+        :enrollments="enrollments"
+      />
       <TrialBatchTab
         v-else-if="ui.activeTab === 'batch'"
         :trial="trial"
-        :eligible-count="eligiblePatients.length"
+        :eligible-count="eligibleTrialPatients.length"
       />
       <TrialAssignmentsTab
         v-else-if="ui.activeTab === 'assignments'"
         :trial="trial"
-        :patients="eligiblePatients"
+        :patients="eligibleTrialPatients"
         :enrollments="enrollments"
         :assignments="assignments"
       />
@@ -157,7 +169,7 @@ function editPatient(id: string) {
     <AppointmentFormModal
       :open="ui.openModal === 'appointment-form'"
       :trial="trial"
-      :patients="eligiblePatients"
+      :patients="eligibleTrialPatients"
       :enrollments="enrollments"
       @close="ui.closeModal"
     />
@@ -169,13 +181,13 @@ function editPatient(id: string) {
     <DrugBatchModal
       :open="ui.openModal === 'drug-batch'"
       :trial="trial"
-      :eligible-count="eligiblePatients.length"
+      :eligible-count="eligibleTrialPatients.length"
       @close="ui.closeModal"
     />
     <FdaAssignmentModal
       :open="ui.openModal === 'fda-assignment'"
       :trial="trial"
-      :patients="eligiblePatients"
+      :patients="eligibleTrialPatients"
       :enrollments="enrollments"
       :assignments="assignments"
       @close="ui.closeModal"

@@ -4,8 +4,30 @@ export function trialPatients(patients: Patient[], enrollments: TrialEnrollmentM
   return patients.filter((patient) => enrollments[patient.id]);
 }
 
+export function enrolledPatients(patients: Patient[], enrollments: TrialEnrollmentMap): Patient[] {
+  return trialPatients(patients, enrollments);
+}
+
 export function eligiblePatients(patients: Patient[], enrollments: TrialEnrollmentMap): Patient[] {
   return trialPatients(patients, enrollments).filter((patient) => enrollments[patient.id].eligible);
+}
+
+export function completedDoseCount(trial: Trial, patients: Patient[], enrollments: TrialEnrollmentMap): number {
+  return eligiblePatients(patients, enrollments).filter(
+    (patient) => (enrollments[patient.id]?.doses ?? 0) >= trial.dosesPerPatient,
+  ).length;
+}
+
+export function totalDosesGiven(patients: Patient[], enrollments: TrialEnrollmentMap): number {
+  return eligiblePatients(patients, enrollments).reduce(
+    (sum, patient) => sum + (enrollments[patient.id]?.doses ?? 0),
+    0,
+  );
+}
+
+export function allEligibleDosed(trial: Trial, patients: Patient[], enrollments: TrialEnrollmentMap): boolean {
+  const eligible = eligiblePatients(patients, enrollments);
+  return eligible.length > 0 && completedDoseCount(trial, patients, enrollments) === eligible.length;
 }
 
 export function checkEligibility(patient: Patient, trial: Trial): boolean {

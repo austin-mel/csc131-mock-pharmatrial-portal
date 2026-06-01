@@ -1,1 +1,1 @@
-export { default } from './ActionButton.vue';
+export { default, default as ActionButton } from './ActionButton.vue';

@@ -1,1 +1,1 @@
-export { default } from './ToastStack.vue';
+export { default, default as ToastStack } from './ToastStack.vue';

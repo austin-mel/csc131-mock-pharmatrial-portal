@@ -1,1 +1,1 @@
-export { default } from './LoginPanel.vue';
+export { default, default as LoginPanel } from './LoginPanel.vue';

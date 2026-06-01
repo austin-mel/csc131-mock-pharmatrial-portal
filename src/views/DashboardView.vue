@@ -2,17 +2,22 @@
 import { computed, ref } from "vue";
 import { SvgIcon } from "@/assets";
 import { ApprovalBanner, CreateTrialModal, ToastStack, TopNav, TrialSidebar, TrialWorkspace } from "@/components";
-import { needsReview } from "@/composables";
-import { useAuthStore, useTrialsStore } from "@/stores";
+import { allEligibleDosed, needsReview } from "@/composables";
+import { useAuthStore, usePatientsStore, useTrialsStore } from "@/stores";
 import type { Trial } from "@/types";
 
 const auth = useAuthStore();
+const patients = usePatientsStore();
 const trials = useTrialsStore();
 const sidebarOpen = ref(false);
 const createModalOpen = ref(false);
 
 function trialNeedsReview(trial: Trial) {
-  return needsReview(trial, auth.selectedPortalId, trial.status === "complete");
+  return needsReview(
+    trial,
+    auth.selectedPortalId,
+    allEligibleDosed(trial, patients.patients, trials.enrollmentsFor(trial.id)),
+  );
 }
 
 const reviewCount = computed(() =>

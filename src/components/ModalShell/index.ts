@@ -1,1 +1,1 @@
-export { default } from './ModalShell.vue';
+export { default, default as ModalShell } from './ModalShell.vue';
