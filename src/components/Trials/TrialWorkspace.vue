@@ -2,12 +2,16 @@
 import { computed, watch } from "vue";
 
 import DataCard from "@/components/Dashboard/DataCard.vue";
+import DrugBatchModal from "@/components/Modals/Batches/DrugBatchModal.vue";
 import ApprovalModal from "@/components/Modals/Regulatory/ApprovalModal.vue";
+import FdaAssignmentModal from "@/components/Modals/Regulatory/FdaAssignmentModal.vue";
 import PatientCsvUploadModal from "@/components/Modals/Patients/PatientCsvUploadModal.vue";
 import PatientDetailModal from "@/components/Modals/Patients/PatientDetailModal.vue";
 import PatientFormModal from "@/components/Modals/Patients/PatientFormModal.vue";
 import RejectedTrialBanner from "@/components/Trials/RejectedTrialBanner.vue";
 import TrialBanner from "@/components/Trials/TrialBanner.vue";
+import TrialAssignmentsTab from "@/components/Trials/TrialAssignmentsTab.vue";
+import TrialBatchTab from "@/components/Trials/TrialBatchTab.vue";
 import TrialOverviewTab from "@/components/Trials/TrialOverviewTab.vue";
 import TrialPatientsTab from "@/components/Trials/TrialPatientsTab.vue";
 import TrialTabBar from "@/components/Trials/TrialTabBar.vue";
@@ -27,11 +31,13 @@ const tabs = computed<TrialTab[]>(() =>
 const enrollments = computed<TrialEnrollmentMap>(() => (trial.value ? trials.enrollmentsFor(trial.value.id) : {}));
 const assignments = computed<TrialAssignmentMap>(() => (trial.value ? trials.assignmentsFor(trial.value.id) : {}));
 const trialPatientsList = computed(() => trialPatients(patientsStore.patients, enrollments.value));
+const eligiblePatients = computed(() => trialPatientsList.value.filter((patient) => enrollments.value[patient.id]?.eligible));
 const selectedPatient = computed(() => (ui.selectedPatientId ? patientsStore.getPatient(ui.selectedPatientId) : null));
 const canEditPatients = computed(() => trial.value?.status !== "complete" && auth.selectedPortalId === "jh-doctor");
 const canArchive = computed(() => Boolean(trial.value));
 
-const placeholderTitles: Record<Exclude<TrialTab, "overview">, string> = {
+const placeholderTitles: Record<TrialTab, string> = {
+  overview: "Overview",
   patients: "Patients",
   appointments: "Appointments",
   doses: "Dose Tracker",
@@ -100,6 +106,18 @@ function editPatient(id: string) {
         :enrollments="enrollments"
         :assignments="assignments"
       />
+      <TrialBatchTab
+        v-else-if="ui.activeTab === 'batch'"
+        :trial="trial"
+        :eligible-count="eligiblePatients.length"
+      />
+      <TrialAssignmentsTab
+        v-else-if="ui.activeTab === 'assignments'"
+        :trial="trial"
+        :patients="eligiblePatients"
+        :enrollments="enrollments"
+        :assignments="assignments"
+      />
       <DataCard
         v-else
         :title="placeholderTitles[ui.activeTab]"
@@ -131,6 +149,20 @@ function editPatient(id: string) {
     <ApprovalModal
       :open="ui.openModal === 'approval'"
       :trial="trial"
+      @close="ui.closeModal"
+    />
+    <DrugBatchModal
+      :open="ui.openModal === 'drug-batch'"
+      :trial="trial"
+      :eligible-count="eligiblePatients.length"
+      @close="ui.closeModal"
+    />
+    <FdaAssignmentModal
+      :open="ui.openModal === 'fda-assignment'"
+      :trial="trial"
+      :patients="eligiblePatients"
+      :enrollments="enrollments"
+      :assignments="assignments"
       @close="ui.closeModal"
     />
   </div>

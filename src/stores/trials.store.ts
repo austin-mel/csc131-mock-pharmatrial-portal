@@ -207,6 +207,8 @@ export const useTrialsStore = defineStore('trials', () => {
   ) {
     const trial = trials.value.find((item) => item.id === trialId);
     if (!trial || trial.status === 'rejected') return false;
+    if (actorPortalId !== 'bavaria') return false;
+    if (trial.approvals.fda !== 'approved' || trial.approvals.jh !== 'approved') return false;
 
     trial.batchSubmitted = true;
     trial.batchRef = draft.batchRef;
@@ -225,6 +227,8 @@ export const useTrialsStore = defineStore('trials', () => {
   function saveAssignments(trialId: string, draft: TrialAssignmentMap, actorPortalId: PortalId = 'fda') {
     const trial = trials.value.find((item) => item.id === trialId);
     if (!trial || trial.status === 'rejected') return false;
+    if (actorPortalId !== 'fda' || !trial.batchSubmitted) return false;
+    if (!Object.keys(draft).length) return false;
 
     assignments.value[trialId] = draft;
     trial.assignmentsLocked = true;

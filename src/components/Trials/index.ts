@@ -1,6 +1,8 @@
 export { default as RejectedTrialBanner } from './RejectedTrialBanner.vue';
 export { default as TrialSidebarListItem } from './TrialSidebarListItem.vue';
 export { default as TrialBanner } from './TrialBanner.vue';
+export { default as TrialAssignmentsTab } from './TrialAssignmentsTab.vue';
+export { default as TrialBatchTab } from './TrialBatchTab.vue';
 export { default as TrialPage } from './TrialPage.vue';
 export { default as TrialOverviewTab } from './TrialOverviewTab.vue';
 export { default as TrialPatientsTab } from './TrialPatientsTab.vue';

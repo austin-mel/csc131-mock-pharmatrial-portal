@@ -4,6 +4,7 @@ export * from './Modals';
 export * from './Navigation';
 export * from './PatientTables';
 export * from './Trials';
+export { default as AssignmentPreviewTable } from './AssignmentPreviewTable';
 export { default as ActionButton } from './ActionButton';
 export { default as ApprovalBanner } from './ApprovalBanner';
 export { default as LoginPanel } from './LoginPanel';
