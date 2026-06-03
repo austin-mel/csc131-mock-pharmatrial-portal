@@ -186,7 +186,7 @@ export const seedTrials: Trial[] = [
     enrollment: 40,
     status: 'complete',
     statusLabel: 'Complete',
-    archived: true,
+    archived: false,
     approvals: { jh: 'approved', fda: 'approved' },
     batchSubmitted: true,
     assignmentsLocked: true,
