@@ -1,15 +1,16 @@
 import type { Patient, TrialAssignmentMap } from "@/types";
+import { calculateTreatmentPatientCounts } from "@/composables/batches/useDrugBatch";
 
 function trackingPrefix(index: number, isTreatment: boolean) {
   return `${isTreatment ? "BAV" : "PLC"}-${String(index + 1).padStart(3, "0")}`;
 }
 
 export function createAssignments(patients: Patient[], treatmentPct = 50): TrialAssignmentMap {
-  const treatmentCount = Math.round((patients.length * treatmentPct) / 100);
+  const { treatmentPatients } = calculateTreatmentPatientCounts(patients.length, treatmentPct);
   const shuffled = [...patients].sort(() => Math.random() - 0.5);
 
   return shuffled.reduce<TrialAssignmentMap>((map, patient, index) => {
-    const isTreatment = index < treatmentCount;
+    const isTreatment = index < treatmentPatients;
     map[patient.id] = {
       patientId: patient.id,
       drug: isTreatment ? "bavaria" : "placebo",
@@ -26,4 +27,3 @@ export function assignmentCounts(assignments: TrialAssignmentMap) {
     placebo: rows.filter((assignment) => assignment.drug === "placebo").length,
   };
 }
-

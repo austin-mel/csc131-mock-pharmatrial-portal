@@ -22,6 +22,7 @@ defineEmits<{ close: []; edit: [id: string]; logAppointment: [id: string]; remov
 const auth = useAuthStore();
 const appointmentPage = ref(1);
 const showPii = computed(() => canShowPatientPii(auth.selectedPortalId));
+const showEligibilityReview = computed(() => auth.selectedPortalId !== "jh-doctor");
 const enrollment = computed(() => (props.patient ? props.enrollments[props.patient.id] : null));
 const display = computed(() =>
   props.patient ? buildPatientDisplay(props.patient, enrollment.value ?? undefined, props.trial, auth.selectedPortalId) : null,
@@ -55,10 +56,12 @@ const items = computed(() => {
     { label: "UUID", value: display.value?.id ?? props.patient.id },
     { label: "ICD-10 Codes", value: display.value?.icdCodes ?? "None" },
     { label: "Enrollment", value: enrollment.value ? "Enrolled" : "Not enrolled" },
-    { label: "Eligibility", value: display.value?.eligibilityLabel ?? "Excluded" },
     { label: "Doses", value: display.value?.doseLabel ?? `0/${props.trial.dosesPerPatient}` },
     { label: "Appointments", value: enrollment.value?.appointments.length ?? 0 },
   ];
+  if (showEligibilityReview.value) {
+    base.splice(3, 0, { label: "Eligibility", value: display.value?.eligibilityLabel ?? "Excluded" });
+  }
 
   if (!showPii.value) return base;
 
@@ -131,7 +134,7 @@ function changeAppointmentPage(delta: number) {
         </div>
         <div class="mt-0.5 font-mono text-[11px] text-white/60">{{ patient.id }}</div>
         <div class="mt-2 flex flex-wrap gap-[7px]">
-          <StatusBadge :tone="enrollment?.eligible ? 'green' : 'gray'">
+          <StatusBadge v-if="showEligibilityReview" :tone="enrollment?.eligible ? 'green' : 'gray'">
             {{ enrollment?.eligible ? "Eligible" : "Excluded" }}
           </StatusBadge>
           <StatusBadge tone="blue">{{ enrollment ? "Enrolled" : "Not enrolled" }}</StatusBadge>
@@ -167,28 +170,34 @@ function changeAppointmentPage(delta: number) {
       </div>
     </DataCard>
     <template #footer>
-      <ActionButton @click="$emit('close')">Close</ActionButton>
-      <ActionButton
-        v-if="patient && canLogAppointment"
-        variant="jh"
-        @click="$emit('logAppointment', patient.id)"
-      >
-        Log Appointment
-      </ActionButton>
-      <ActionButton
-        v-if="patient && canEdit"
-        variant="jh"
-        @click="$emit('edit', patient.id)"
-      >
-        Edit Record
-      </ActionButton>
-      <ActionButton
-        v-if="patient && canDelete"
-        variant="danger"
-        @click="$emit('remove', patient.id)"
-      >
-        Delete Record
-      </ActionButton>
+      <div class="flex w-full flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <ActionButton
+            v-if="patient && canDelete"
+            variant="danger"
+            @click="$emit('remove', patient.id)"
+          >
+            Delete Record
+          </ActionButton>
+        </div>
+        <div class="flex flex-col gap-2.5 sm:flex-row sm:justify-end">
+          <ActionButton @click="$emit('close')">Close</ActionButton>
+          <ActionButton
+            v-if="patient && canLogAppointment"
+            variant="jh"
+            @click="$emit('logAppointment', patient.id)"
+          >
+            Log Appointment
+          </ActionButton>
+          <ActionButton
+            v-if="patient && canEdit"
+            variant="jh"
+            @click="$emit('edit', patient.id)"
+          >
+            Edit Record
+          </ActionButton>
+        </div>
+      </div>
     </template>
   </ModalShell>
 </template>

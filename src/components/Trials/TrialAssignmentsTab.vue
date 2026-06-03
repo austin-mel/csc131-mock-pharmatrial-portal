@@ -46,6 +46,7 @@ const batch = computed(() => calculateBatch(props.patients.length, props.trial))
         :assignments="assignments"
         :enrollments="enrollments"
         :doses-per-patient="trial.dosesPerPatient"
+        :locked="trial.assignmentsLocked"
       />
       <DataCard title="Batch Details">
         <div class="grid grid-cols-4 gap-3.5 px-[18px] py-4 max-[780px]:grid-cols-2 max-[520px]:grid-cols-1">
@@ -60,14 +61,15 @@ const batch = computed(() => calculateBatch(props.patients.length, props.trial))
           <div>
             <div class="font-mono text-[10px] uppercase tracking-[.12em] text-muted">Bavaria Drug</div>
             <strong>{{ batch.treatment }}</strong>
+            <div class="text-xs text-muted">{{ batch.treatmentPatients }} patients</div>
           </div>
           <div>
             <div class="font-mono text-[10px] uppercase tracking-[.12em] text-muted">Placebo</div>
             <strong>{{ batch.placebo }}</strong>
+            <div class="text-xs text-muted">{{ batch.placeboPatients }} patients</div>
           </div>
         </div>
       </DataCard>
     </template>
   </div>
 </template>
-

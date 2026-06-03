@@ -272,6 +272,8 @@ export const useTrialsStore = defineStore('trials', () => {
     if (!trial || trial.status === 'rejected') return false;
     if (actorPortalId !== 'bavaria') return false;
     if (trial.approvals.fda !== 'approved' || trial.approvals.jh !== 'approved') return false;
+    if (!Number.isInteger(draft.dosesPerPatient) || draft.dosesPerPatient <= 0) return false;
+    if (!Number.isFinite(draft.treatmentPct) || draft.treatmentPct < 10 || draft.treatmentPct > 90) return false;
 
     trial.batchSubmitted = true;
     trial.batchRef = draft.batchRef;
@@ -289,9 +291,16 @@ export const useTrialsStore = defineStore('trials', () => {
 
   function saveAssignments(trialId: string, draft: TrialAssignmentMap, actorPortalId: PortalId = 'fda') {
     const trial = trials.value.find((item) => item.id === trialId);
+    const eligiblePatientIds = Object.entries(trialPatients.value[trialId] ?? {})
+      .filter(([, enrollment]) => enrollment.eligible)
+      .map(([patientId]) => patientId);
+    const draftPatientIds = Object.keys(draft);
+
     if (!trial || trial.status === 'rejected') return false;
     if (actorPortalId !== 'fda' || !trial.batchSubmitted) return false;
-    if (!Object.keys(draft).length) return false;
+    if (eligiblePatientIds.length === 0) return false;
+    if (draftPatientIds.length !== eligiblePatientIds.length) return false;
+    if (!eligiblePatientIds.every((patientId) => draft[patientId]?.patientId === patientId)) return false;
 
     assignments.value[trialId] = draft;
     trial.assignmentsLocked = true;

@@ -19,6 +19,8 @@ const submittedItems = computed(() => [
   { label: "Total Vials", value: batch.value.totalVials },
   { label: "Doses per Patient", value: props.trial.dosesPerPatient },
   { label: "Treatment / Placebo Split", value: `${props.trial.treatmentPct ?? 50}% / ${100 - (props.trial.treatmentPct ?? 50)}%` },
+  { label: "Treatment Patients", value: batch.value.treatmentPatients },
+  { label: "Placebo Patients", value: batch.value.placeboPatients },
   { label: "Bavaria Drug", value: `${batch.value.treatment} vials` },
   { label: "Placebo", value: `${batch.value.placebo} vials` },
   { label: "Manufacture Date", value: props.trial.manufactureDate ?? "-" },
@@ -61,10 +63,9 @@ const submittedItems = computed(() => [
           <StatCard label="Eligible Patients">{{ eligibleCount }}</StatCard>
           <StatCard label="Doses Each">{{ trial.dosesPerPatient }}</StatCard>
           <StatCard label="Total Vials">{{ batch.totalVials }}</StatCard>
-          <StatCard label="Default Split">{{ trial.treatmentPct ?? 50 }}% / {{ 100 - (trial.treatmentPct ?? 50) }}%</StatCard>
+          <StatCard label="Patient Split">{{ batch.treatmentPatients }}/{{ batch.placeboPatients }}</StatCard>
         </div>
       </DataCard>
     </template>
   </div>
 </template>
-

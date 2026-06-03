@@ -141,6 +141,17 @@ export const seedTrialPatients: TrialPatientsByTrial = {
   },
   'TRL-2023-003': {
     'b7d2-8e44': { eligible: true, doses: 0, appointments: [] },
+    'a3f9-2c11': { eligible: true, doses: 0, appointments: [] },
+    'c1a8-5f90': { eligible: true, doses: 0, appointments: [] },
+    'demo-01': { eligible: true, doses: 0, appointments: [] },
+    'demo-02': { eligible: true, doses: 0, appointments: [] },
+    'demo-03': { eligible: true, doses: 0, appointments: [] },
+    'demo-04': { eligible: true, doses: 0, appointments: [] },
+    'demo-05': { eligible: true, doses: 0, appointments: [] },
+    'demo-06': { eligible: true, doses: 0, appointments: [] },
+    'demo-07': { eligible: true, doses: 0, appointments: [] },
+    'demo-08': { eligible: true, doses: 0, appointments: [] },
+    'demo-09': { eligible: true, doses: 0, appointments: [] },
   },
   'TRL-2023-004': {
     'a3f9-2c11': { eligible: true, doses: 0, appointments: [] },

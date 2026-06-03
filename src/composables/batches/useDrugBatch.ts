@@ -4,18 +4,36 @@ export interface BatchCalculation {
   totalVials: number;
   treatment: number;
   placebo: number;
+  treatmentPatients: number;
+  placeboPatients: number;
+}
+
+export function calculateTreatmentPatientCounts(totalPatients: number, treatmentPct = 50) {
+  const patients = Math.max(0, Math.floor(Number(totalPatients) || 0));
+  const percent = Math.min(100, Math.max(0, Number(treatmentPct) || 50));
+  const treatmentPatients = Math.round((patients * percent) / 100);
+
+  return {
+    treatmentPatients,
+    placeboPatients: patients - treatmentPatients,
+  };
 }
 
 export function calculateBatch(totalPatients: number, trial: Trial): BatchCalculation {
-  const dosesPerPatient = Math.max(0, Number(trial.dosesPerPatient) || 0);
-  const treatmentPct = Math.min(100, Math.max(0, Number(trial.treatmentPct ?? 50) || 50));
-  const totalVials = totalPatients * dosesPerPatient;
-  const treatment = Math.round((totalVials * treatmentPct) / 100);
+  const dosesPerPatient = Math.max(0, Math.floor(Number(trial.dosesPerPatient) || 0));
+  const { treatmentPatients, placeboPatients } = calculateTreatmentPatientCounts(
+    totalPatients,
+    trial.treatmentPct ?? 50,
+  );
+  const treatment = treatmentPatients * dosesPerPatient;
+  const placebo = placeboPatients * dosesPerPatient;
 
   return {
-    totalVials,
+    totalVials: treatment + placebo,
     treatment,
-    placebo: totalVials - treatment,
+    placebo,
+    treatmentPatients,
+    placeboPatients,
   };
 }
 

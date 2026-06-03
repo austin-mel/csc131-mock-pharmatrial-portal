@@ -11,28 +11,31 @@ import {
   approvalLabel,
   approvalTone,
   canApproveTrial,
+  completedDoseCount,
   currentLifecycleStepIndex,
+  eligiblePatients,
+  enrolledPatients,
   lifecycleSteps,
   rejectedStepIndex,
-  statusBadges,
+  totalDosesGiven,
   trialApprovals,
 } from "@/composables";
-import { useAuthStore, useTrialsStore, useUiStore } from "@/stores";
-import type { PortalId, Trial } from "@/types";
+import { useAuthStore, useUiStore } from "@/stores";
+import type { Patient, PortalId, Trial, TrialEnrollmentMap } from "@/types";
 
-const props = withDefaults(defineProps<{ trial: Trial; allDosed?: boolean }>(), { allDosed: false });
+const props = withDefaults(
+  defineProps<{
+    trial: Trial;
+    patients: Patient[];
+    enrollments: TrialEnrollmentMap;
+    allDosed?: boolean;
+  }>(),
+  { allDosed: false },
+);
 const auth = useAuthStore();
-const trials = useTrialsStore();
 const ui = useUiStore();
 const steps = lifecycleSteps;
 type ApprovalAction = Extract<PortalId, "fda" | "jh-admin">;
-
-const statusLabel = computed(() =>
-  statusBadges(props.trial)
-    .filter((badge) => badge.label !== "Archived")
-    .map((badge) => badge.label)
-    .join(", "),
-);
 
 const items = computed(() => [
   { label: "Trial ID", value: props.trial.id },
@@ -45,11 +48,19 @@ const items = computed(() => [
   { label: "Doses per Patient", value: props.trial.dosesPerPatient },
 ]);
 
+const enrolledCount = computed(() => enrolledPatients(props.patients, props.enrollments).length);
+const eligibleCount = computed(() => eligiblePatients(props.patients, props.enrollments).length);
+const completedCount = computed(() => completedDoseCount(props.trial, props.patients, props.enrollments));
+const totalDoses = computed(() => totalDosesGiven(props.patients, props.enrollments));
+const remainingDoses = computed(() => Math.max(0, eligibleCount.value * props.trial.dosesPerPatient - totalDoses.value));
+const completionPct = computed(() =>
+  eligibleCount.value ? Math.round((completedCount.value / eligibleCount.value) * 100) : 0,
+);
 const currentStep = computed(() => currentLifecycleStepIndex(props.trial, props.allDosed));
 const rejectedIndex = computed(() => rejectedStepIndex(props.trial));
 const finalReportPublished = computed(() => Boolean(props.trial.disclosed && props.trial.notifiedFDA));
 const approvalAction = computed<ApprovalAction | null>(() => {
-  const hasAssignedPatients = Object.keys(trials.enrollmentsFor(props.trial.id)).length > 0;
+  const hasAssignedPatients = Object.keys(props.enrollments).length > 0;
   if (!canApproveTrial(props.trial, auth.selectedPortalId, hasAssignedPatients)) return null;
   if (auth.selectedPortalId === "fda") return "fda";
   if (auth.selectedPortalId === "jh-admin") return "jh-admin";
@@ -152,17 +163,20 @@ function review(action: ApprovalAction | null) {
       </div>
     </div>
     <div class="mb-5 grid grid-cols-4 gap-3 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
-      <StatCard label="Target Enrollment" sub="planned participants">
-        {{ trial.enrollment }}
+      <StatCard label="Enrolled Patients" sub="assigned to trial">
+        {{ enrolledCount }}
       </StatCard>
-      <StatCard label="Trial Status" sub="current workflow state">
-        {{ statusLabel }}
+      <StatCard
+        :label="auth.selectedPortalId === 'jh-doctor' ? 'Remaining Doses' : 'Eligible'"
+        :sub="auth.selectedPortalId === 'jh-doctor' ? 'left to administer' : 'meet criteria'"
+      >
+        {{ auth.selectedPortalId === "jh-doctor" ? remainingDoses : eligibleCount }}
       </StatCard>
-      <StatCard label="Phase" sub="clinical stage">
-        {{ trial.phase }}
+      <StatCard label="Doses Given" :sub="`of ${eligibleCount * trial.dosesPerPatient} total`">
+        {{ totalDoses }}
       </StatCard>
-      <StatCard label="Doses" sub="per patient">
-        {{ trial.dosesPerPatient }}
+      <StatCard label="Completion" :sub="`${completedCount}/${eligibleCount} patients`">
+        {{ completionPct }}%
       </StatCard>
     </div>
     <DataCard title="Trial Lifecycle">

@@ -5,7 +5,7 @@ import ActionButton from "@/components/ActionButton/ActionButton.vue";
 import AssignmentPreviewTable from "@/components/AssignmentPreviewTable/AssignmentPreviewTable.vue";
 import ModalShell from "@/components/ModalShell/ModalShell.vue";
 import StatCard from "@/components/Dashboard/StatCard.vue";
-import { assignmentCounts, createAssignments } from "@/composables";
+import { assignmentCounts, calculateTreatmentPatientCounts, createAssignments } from "@/composables";
 import { useAuthStore, useTrialsStore, useUiStore } from "@/stores";
 import type { Patient, Trial, TrialAssignmentMap, TrialEnrollmentMap } from "@/types";
 
@@ -24,7 +24,11 @@ const ui = useUiStore();
 const draft = ref<TrialAssignmentMap>({});
 
 const counts = computed(() => assignmentCounts(draft.value));
-const canLock = computed(() => auth.selectedPortalId === "fda" && props.trial.batchSubmitted && Boolean(Object.keys(draft.value).length));
+const targetCounts = computed(() => calculateTreatmentPatientCounts(props.patients.length, props.trial.treatmentPct ?? 50));
+const fullyAssigned = computed(
+  () => props.patients.length > 0 && props.patients.every((patient) => draft.value[patient.id]?.patientId === patient.id),
+);
+const canLock = computed(() => auth.selectedPortalId === "fda" && props.trial.batchSubmitted && fullyAssigned.value);
 
 watch(
   () => props.open,
@@ -57,7 +61,7 @@ function lock() {
     </p>
     <div class="mb-4 grid grid-cols-4 gap-3 max-[780px]:grid-cols-2 max-[520px]:grid-cols-1">
       <StatCard label="Eligible Patients">{{ patients.length }}</StatCard>
-      <StatCard label="Target Split">{{ trial.treatmentPct ?? 50 }}% / {{ 100 - (trial.treatmentPct ?? 50) }}%</StatCard>
+      <StatCard label="Target Split">{{ targetCounts.treatmentPatients }} / {{ targetCounts.placeboPatients }}</StatCard>
       <StatCard label="Treatment Group">{{ counts.treatment }}</StatCard>
       <StatCard label="Placebo Group">{{ counts.placebo }}</StatCard>
     </div>
@@ -66,6 +70,7 @@ function lock() {
       :enrollments="enrollments"
       :assignments="draft"
       :doses-per-patient="trial.dosesPerPatient"
+      :locked="false"
     />
     <template #footer>
       <ActionButton @click="randomize">Randomize</ActionButton>
@@ -73,4 +78,3 @@ function lock() {
     </template>
   </ModalShell>
 </template>
-

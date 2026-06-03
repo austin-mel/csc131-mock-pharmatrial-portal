@@ -40,6 +40,9 @@ const enrollments = computed<TrialEnrollmentMap>(() => (trial.value ? trials.enr
 const assignments = computed<TrialAssignmentMap>(() => (trial.value ? trials.assignmentsFor(trial.value.id) : {}));
 const trialPatientsList = computed(() => trialPatients(patientsStore.patients, enrollments.value));
 const eligibleTrialPatients = computed(() => eligiblePatients(patientsStore.patients, enrollments.value));
+const visibleTreatmentPatients = computed(() =>
+  auth.selectedPortalId === "jh-doctor" ? eligibleTrialPatients.value : trialPatientsList.value,
+);
 const completedCount = computed(() =>
   trial.value ? completedDoseCount(trial.value, patientsStore.patients, enrollments.value) : 0,
 );
@@ -137,12 +140,14 @@ function deletePatient(id: string) {
       <TrialOverviewTab
         v-if="ui.activeTab === 'overview'"
         :trial="trial"
+        :patients="trialPatientsList"
+        :enrollments="enrollments"
         :all-dosed="allDosed"
       />
       <TrialPatientsTab
         v-else-if="ui.activeTab === 'patients'"
         :trial="trial"
-        :patients="trialPatientsList"
+        :patients="visibleTreatmentPatients"
         :enrollments="enrollments"
         :assignments="assignments"
         @remove="deletePatient"

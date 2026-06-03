@@ -31,6 +31,7 @@ const canAdd = computed(() => canAddPatients(props.trial, auth.selectedPortalId)
 const canCsv = computed(() => canAdd.value && (auth.selectedPortalId === "jh-admin" || auth.selectedPortalId === "jh-doctor"));
 const canEditPatients = computed(() => pii.value && props.trial.status !== "complete");
 const canDeletePatients = computed(() => auth.selectedPortalId === "jh-admin" && props.trial.status !== "complete");
+const showEligibilityReview = computed(() => auth.selectedPortalId !== "jh-doctor");
 const rows = computed(() => props.patients.filter((patient) => props.enrollments[patient.id]));
 const filteredRows = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -89,7 +90,7 @@ function changePage(delta: number) {
     </div>
     <div class="mb-5 grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
       <StatCard label="Enrolled">{{ rows.length }}</StatCard>
-      <StatCard label="Eligible">{{ eligibleCount }}</StatCard>
+      <StatCard :label="showEligibilityReview ? 'Eligible' : 'Treatment Patients'">{{ eligibleCount }}</StatCard>
       <StatCard label="Completed Doses">{{ completedCount }}</StatCard>
     </div>
     <PatientTable
@@ -97,6 +98,7 @@ function changePage(delta: number) {
       :patients="pagedRows"
       :enrollments="enrollments"
       :trial="trial"
+      :show-eligibility="showEligibilityReview"
       :can-edit="canEditPatients"
       :can-delete="canDeletePatients"
       @detail="ui.showModal('patient-detail', $event)"

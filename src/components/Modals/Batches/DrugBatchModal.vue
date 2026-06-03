@@ -26,13 +26,23 @@ const manufactureDate = ref("");
 const lotNumber = ref("");
 const shippingNotes = ref("");
 
+const parsedDosesPerPatient = computed(() => Number(dosesPerPatient.value));
+const parsedTreatmentPct = computed(() => Number(treatmentPct.value));
+const validDosesPerPatient = computed(
+  () => Number.isInteger(parsedDosesPerPatient.value) && parsedDosesPerPatient.value > 0,
+);
+const validTreatmentPct = computed(
+  () => Number.isFinite(parsedTreatmentPct.value) && parsedTreatmentPct.value >= 10 && parsedTreatmentPct.value <= 90,
+);
 const draftTrial = computed<Trial>(() => ({
   ...props.trial,
-  dosesPerPatient: Number(dosesPerPatient.value) || props.trial.dosesPerPatient,
-  treatmentPct: Number(treatmentPct.value) || 50,
+  dosesPerPatient: validDosesPerPatient.value ? parsedDosesPerPatient.value : props.trial.dosesPerPatient,
+  treatmentPct: validTreatmentPct.value ? parsedTreatmentPct.value : props.trial.treatmentPct ?? 50,
 }));
 const batch = computed(() => calculateBatch(props.eligibleCount, draftTrial.value));
-const canSubmit = computed(() => auth.selectedPortalId === "bavaria" && canSubmitBatch(props.trial));
+const canSubmit = computed(
+  () => auth.selectedPortalId === "bavaria" && canSubmitBatch(props.trial) && validDosesPerPatient.value && validTreatmentPct.value,
+);
 
 watch(
   () => props.open,
@@ -48,12 +58,22 @@ watch(
 );
 
 function submit() {
+  if (!validDosesPerPatient.value) {
+    ui.pushToast("Doses per patient must be a whole number greater than zero.", "error");
+    return;
+  }
+
+  if (!validTreatmentPct.value) {
+    ui.pushToast("Treatment percent must be between 10% and 90%.", "error");
+    return;
+  }
+
   const submitted = trials.submitBatch(
     props.trial.id,
     {
       batchRef: batchRef.value || `BAV-${props.trial.id}-BATCH-001`,
-      dosesPerPatient: Number(dosesPerPatient.value) || props.trial.dosesPerPatient,
-      treatmentPct: Number(treatmentPct.value) || 50,
+      dosesPerPatient: parsedDosesPerPatient.value,
+      treatmentPct: parsedTreatmentPct.value,
       manufactureDate: manufactureDate.value,
       lotNumber: lotNumber.value,
       shippingNotes: shippingNotes.value,
@@ -108,8 +128,10 @@ function submit() {
     <FormField label="Shipping Notes">
       <FormTextarea v-model="shippingNotes" />
     </FormField>
-    <div class="mt-3 grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
+    <div class="mt-3 grid grid-cols-5 gap-3 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
       <StatCard label="Total Vials">{{ batch.totalVials }}</StatCard>
+      <StatCard label="Treatment Patients">{{ batch.treatmentPatients }}</StatCard>
+      <StatCard label="Placebo Patients">{{ batch.placeboPatients }}</StatCard>
       <StatCard label="Bavaria Drug">{{ batch.treatment }}</StatCard>
       <StatCard label="Placebo">{{ batch.placebo }}</StatCard>
     </div>
@@ -119,4 +141,3 @@ function submit() {
     </template>
   </ModalShell>
 </template>
-

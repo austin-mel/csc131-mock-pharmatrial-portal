@@ -11,9 +11,11 @@ const props = defineProps<{
   enrollments: TrialEnrollmentMap;
   assignments: TrialAssignmentMap;
   dosesPerPatient?: number;
+  locked?: boolean;
 }>();
 
-const locked = computed(() => Object.keys(props.assignments).length > 0);
+const locked = computed(() => Boolean(props.locked));
+const statusLabel = computed(() => (locked.value ? "Locked" : "Draft"));
 
 function tone(patientId: string) {
   const drug = props.assignments[patientId]?.drug;
@@ -39,7 +41,7 @@ function remaining(patientId: string) {
   <DataCard title="UUID to Drug Mapping">
     <template #header>
       <StatusBadge :tone="locked ? 'green' : 'yellow'">
-        {{ locked ? "Locked" : "Draft" }}
+        {{ statusLabel }}
       </StatusBadge>
     </template>
     <DataTable>
@@ -66,4 +68,3 @@ function remaining(patientId: string) {
     </DataTable>
   </DataCard>
 </template>
-
