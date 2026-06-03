@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 import ActionButton from "@/components/ActionButton/ActionButton.vue";
 import DataCard from "@/components/Dashboard/DataCard.vue";
 import DetailGrid from "@/components/Dashboard/DetailGrid.vue";
+import PaginationControls from "@/components/Navigation/PaginationControls.vue";
 import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
 import ModalShell from "@/components/ModalShell/ModalShell.vue";
 import { useAuthStore } from "@/stores";
@@ -16,15 +17,29 @@ const props = defineProps<{
   trial: Trial;
   enrollments: TrialEnrollmentMap;
 }>();
-defineEmits<{ close: []; edit: [id: string] }>();
+defineEmits<{ close: []; edit: [id: string]; logAppointment: [id: string]; remove: [id: string] }>();
 
 const auth = useAuthStore();
+const appointmentPage = ref(1);
 const showPii = computed(() => canShowPatientPii(auth.selectedPortalId));
 const enrollment = computed(() => (props.patient ? props.enrollments[props.patient.id] : null));
 const display = computed(() =>
   props.patient ? buildPatientDisplay(props.patient, enrollment.value ?? undefined, props.trial, auth.selectedPortalId) : null,
 );
 const canEdit = computed(() => showPii.value && props.trial.status !== "complete");
+const canDelete = computed(() => auth.selectedPortalId === "jh-admin" && props.trial.status !== "complete");
+const canLogAppointment = computed(
+  () => auth.selectedPortalId === "jh-doctor" && props.trial.status !== "complete" && Boolean(enrollment.value?.eligible),
+);
+const bannerClass = computed(() =>
+  enrollment.value?.eligible ? "bg-[linear-gradient(135deg,#1e7e4e,#155d38)]" : "bg-[linear-gradient(135deg,#a83232,#6f1d1d)]",
+);
+const appointments = computed(() =>
+  [...(enrollment.value?.appointments ?? [])].sort((a, b) =>
+    `${b.date} ${b.time ?? ""}`.localeCompare(`${a.date} ${a.time ?? ""}`),
+  ),
+);
+const currentAppointment = computed(() => appointments.value[appointmentPage.value - 1] ?? null);
 const initials = computed(() =>
   (display.value?.name ?? "")
     .split(" ")
@@ -63,6 +78,36 @@ const items = computed(() => {
     { label: "Employment", value: props.patient.employment ?? "-" },
   ];
 });
+
+const appointmentItems = computed(() => {
+  const appointment = currentAppointment.value;
+  if (!appointment) return [];
+
+  return [
+    { label: "Date", value: appointment.date },
+    { label: "Time", value: appointment.time ?? "-" },
+    { label: "Visit Type", value: appointment.type },
+    { label: "Dose", value: appointment.dose ? "Recorded" : "No" },
+    { label: "Blood Test", value: appointment.bloodTestLevel ?? "Not recorded" },
+    { label: "Adverse Events", value: appointment.adverseEvents.length ? appointment.adverseEvents.join(", ") : "None" },
+    { label: "Notes", value: appointment.note || "-" },
+  ];
+});
+
+watch(
+  () => props.patient?.id,
+  () => {
+    appointmentPage.value = 1;
+  },
+);
+
+watch(appointments, (items) => {
+  appointmentPage.value = Math.min(Math.max(items.length, 1), appointmentPage.value);
+});
+
+function changeAppointmentPage(delta: number) {
+  appointmentPage.value = Math.min(appointments.value.length, Math.max(1, appointmentPage.value + delta));
+}
 </script>
 
 <template>
@@ -74,7 +119,8 @@ const items = computed(() => {
   >
     <div
       v-if="patient"
-      class="-m-[22px] mb-[22px] flex items-center gap-[18px] bg-[linear-gradient(135deg,#1e7e4e,#155d38)] p-[22px] text-white"
+      :class="bannerClass"
+      class="-m-[22px] mb-[22px] flex items-center gap-[18px] p-[22px] text-white"
     >
       <div class="flex size-[58px] shrink-0 items-center justify-center rounded-full bg-white/20 font-serif text-[21px]">
         {{ initials }}
@@ -96,19 +142,52 @@ const items = computed(() => {
       </div>
     </div>
     <DetailGrid v-if="patient" :items="items" />
-    <DataCard v-if="patient" title="Appointments">
+    <DataCard v-if="patient && appointments.length" class="mt-5" title="Appointments">
+      <template #header>
+        <span class="font-mono text-xs text-fda">{{ appointmentPage }}/{{ appointments.length }}</span>
+      </template>
+      <div class="p-[18px]">
+        <div class="mb-3 rounded-md border border-rule bg-[#faf9f7] p-4">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <strong>{{ currentAppointment?.type }}</strong>
+            <span class="font-mono text-xs text-fda">{{ currentAppointment?.date }} {{ currentAppointment?.time ?? "" }}</span>
+          </div>
+          <DetailGrid :items="appointmentItems" />
+        </div>
+        <PaginationControls
+          :page="appointmentPage"
+          :pages="appointments.length"
+          @change="changeAppointmentPage"
+        />
+      </div>
+    </DataCard>
+    <DataCard v-else-if="patient" class="mt-5" title="Appointments">
       <div class="p-[18px] text-sm text-muted">
-        {{ enrollment?.appointments.length ?? 0 }} appointment{{ (enrollment?.appointments.length ?? 0) === 1 ? "" : "s" }} logged for this trial.
+        No appointments logged for this patient.
       </div>
     </DataCard>
     <template #footer>
       <ActionButton @click="$emit('close')">Close</ActionButton>
+      <ActionButton
+        v-if="patient && canLogAppointment"
+        variant="jh"
+        @click="$emit('logAppointment', patient.id)"
+      >
+        Log Appointment
+      </ActionButton>
       <ActionButton
         v-if="patient && canEdit"
         variant="jh"
         @click="$emit('edit', patient.id)"
       >
         Edit Record
+      </ActionButton>
+      <ActionButton
+        v-if="patient && canDelete"
+        variant="danger"
+        @click="$emit('remove', patient.id)"
+      >
+        Delete Record
       </ActionButton>
     </template>
   </ModalShell>

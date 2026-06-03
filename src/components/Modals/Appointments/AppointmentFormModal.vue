@@ -17,6 +17,7 @@ const props = defineProps<{
   patients: Patient[];
   enrollments: TrialEnrollmentMap;
   trial: Trial;
+  initialPatientId?: string | null;
 }>();
 const emit = defineEmits<{ close: [] }>();
 
@@ -33,12 +34,15 @@ const adverseEvents = ref<string[]>([""]);
 const note = ref("");
 
 const patientOptions = computed(() => props.patients.filter((patient) => props.enrollments[patient.id]?.eligible));
+const initialPatient = computed(() =>
+  patientOptions.value.find((patient) => patient.id === props.initialPatientId) ?? patientOptions.value[0],
+);
 
 watch(
   () => props.open,
   (open) => {
     if (!open) return;
-    patientId.value = patientOptions.value[0]?.id ?? "";
+    patientId.value = initialPatient.value?.id ?? "";
     date.value = new Date().toISOString().slice(0, 10);
     time.value = "09:00";
     type.value = "Dose Administration";

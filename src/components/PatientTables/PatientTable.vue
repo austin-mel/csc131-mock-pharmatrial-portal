@@ -4,6 +4,7 @@ import DataCard from "@/components/Dashboard/DataCard.vue";
 import DataTable from "@/components/Dashboard/DataTable.vue";
 import DoseBar from "@/components/DoseBar/DoseBar.vue";
 import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
+import { SvgIcon } from "@/assets";
 import { buildPatientDisplay } from "@/utils";
 import type { Patient, Trial, TrialEnrollmentMap } from "@/types";
 
@@ -14,10 +15,11 @@ const props = withDefaults(
     trial: Trial;
     showEligibility?: boolean;
     canEdit?: boolean;
+    canDelete?: boolean;
   }>(),
-  { showEligibility: true, canEdit: true },
+  { showEligibility: true, canEdit: true, canDelete: false },
 );
-defineEmits<{ detail: [id: string]; edit: [id: string] }>();
+defineEmits<{ detail: [id: string]; edit: [id: string]; remove: [id: string] }>();
 
 function display(patient: Patient) {
   return buildPatientDisplay(patient, props.enrollments[patient.id], props.trial, "jh-doctor");
@@ -73,6 +75,15 @@ function display(patient: Patient) {
               @click="$emit('edit', patient.id)"
             >
               Edit
+            </ActionButton>
+            <ActionButton
+              v-if="canDelete"
+              class="w-[94px]"
+              variant="danger"
+              @click="$emit('remove', patient.id)"
+            >
+              <SvgIcon name="trash" />
+              Delete
             </ActionButton>
           </td>
         </tr>

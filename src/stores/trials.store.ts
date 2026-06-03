@@ -155,6 +155,15 @@ export const useTrialsStore = defineStore('trials', () => {
     return true;
   }
 
+  function removePatientReferences(patientId: string) {
+    Object.values(trialPatients.value).forEach((enrollments) => {
+      delete enrollments[patientId];
+    });
+    Object.values(assignments.value).forEach((trialAssignments) => {
+      delete trialAssignments[patientId];
+    });
+  }
+
   function logAppointment(trialId: string, patientId: string, draft: AppointmentDraft, actorPortalId: PortalId = 'jh-doctor') {
     const trial = trials.value.find((item) => item.id === trialId);
     const enrollment = trialPatients.value[trialId]?.[patientId];
@@ -370,6 +379,7 @@ export const useTrialsStore = defineStore('trials', () => {
     enrollmentsFor,
     assignmentsFor,
     enrollPatient,
+    removePatientReferences,
     logAppointment,
     createTrial,
     approveTrial,

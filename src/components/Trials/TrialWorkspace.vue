@@ -94,6 +94,23 @@ function editPatient(id: string) {
   if (!canEditPatients.value) return;
   showPatientForm(id);
 }
+
+function logPatientAppointment(id: string) {
+  if (auth.selectedPortalId !== "jh-doctor" || trial.value?.status === "complete") return;
+  ui.showModal("appointment-form", id);
+}
+
+function deletePatient(id: string) {
+  if (auth.selectedPortalId !== "jh-admin" || trial.value?.status === "complete") return;
+  const patient = patientsStore.getPatient(id);
+  if (!patient) return;
+  const confirmed = window.confirm(`Delete ${patient.name}? This will remove the patient from all trial records.`);
+  if (!confirmed) return;
+  patientsStore.deletePatient(id);
+  trials.removePatientReferences(id);
+  ui.closeModal();
+  ui.pushToast("Patient record deleted.", "success");
+}
 </script>
 
 <template>
@@ -128,6 +145,7 @@ function editPatient(id: string) {
         :patients="trialPatientsList"
         :enrollments="enrollments"
         :assignments="assignments"
+        @remove="deletePatient"
       />
       <TrialAppointmentsTab
         v-else-if="ui.activeTab === 'appointments'"
@@ -189,6 +207,8 @@ function editPatient(id: string) {
       :enrollments="enrollments"
       @close="ui.closeModal"
       @edit="editPatient"
+      @log-appointment="logPatientAppointment"
+      @remove="deletePatient"
     />
     <PatientFormModal
       :open="ui.openModal === 'patient-form'"
@@ -206,6 +226,7 @@ function editPatient(id: string) {
       :trial="trial"
       :patients="eligibleTrialPatients"
       :enrollments="enrollments"
+      :initial-patient-id="ui.selectedPatientId"
       @close="ui.closeModal"
     />
     <ApprovalModal

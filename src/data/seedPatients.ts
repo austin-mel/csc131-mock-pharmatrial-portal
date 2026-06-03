@@ -136,7 +136,7 @@ export const seedTrialPatients: TrialPatientsByTrial = {
     ) as Record<string, TrialEnrollment>),
   },
   'TRL-2023-002': {
-    'd4e6-1b72': { eligible: true, doses: 0, appointments: [] },
+    'd4e6-1b72': { eligible: false, doses: 0, appointments: [] },
     'a3f9-2c11': { eligible: true, doses: 0, appointments: [] },
   },
   'TRL-2023-003': {

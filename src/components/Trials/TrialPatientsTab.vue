@@ -18,6 +18,7 @@ const props = defineProps<{
   enrollments: TrialEnrollmentMap;
   assignments: TrialAssignmentMap;
 }>();
+defineEmits<{ remove: [id: string] }>();
 
 const auth = useAuthStore();
 const ui = useUiStore();
@@ -29,6 +30,7 @@ const pii = computed(() => canShowPatientPii(auth.selectedPortalId));
 const canAdd = computed(() => canAddPatients(props.trial, auth.selectedPortalId));
 const canCsv = computed(() => canAdd.value && (auth.selectedPortalId === "jh-admin" || auth.selectedPortalId === "jh-doctor"));
 const canEditPatients = computed(() => pii.value && props.trial.status !== "complete");
+const canDeletePatients = computed(() => auth.selectedPortalId === "jh-admin" && props.trial.status !== "complete");
 const rows = computed(() => props.patients.filter((patient) => props.enrollments[patient.id]));
 const filteredRows = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -96,8 +98,10 @@ function changePage(delta: number) {
       :enrollments="enrollments"
       :trial="trial"
       :can-edit="canEditPatients"
+      :can-delete="canDeletePatients"
       @detail="ui.showModal('patient-detail', $event)"
       @edit="ui.showModal('patient-form', $event)"
+      @remove="$emit('remove', $event)"
     />
     <PatientAnonymizedTable
       v-else

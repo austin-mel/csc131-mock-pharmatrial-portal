@@ -17,9 +17,17 @@ export const usePatientsStore = defineStore('patients', () => {
     return patient;
   }
 
+  function deletePatient(id: string) {
+    const index = patients.value.findIndex((patient) => patient.id === id);
+    if (index < 0) return false;
+    patients.value.splice(index, 1);
+    return true;
+  }
+
   return {
     patients,
     getPatient,
     upsertPatient,
+    deletePatient,
   };
 });
