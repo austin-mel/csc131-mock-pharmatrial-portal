@@ -34,7 +34,7 @@ export interface ReportRowDisplay {
 }
 
 export function canShowPatientPii(portalId: PortalId): boolean {
-  return portalId === "jh-doctor";
+  return portalId === "jh-doctor" || portalId === "jh-admin";
 }
 
 export function maskPatientName(patientOrId: Patient | string): string {

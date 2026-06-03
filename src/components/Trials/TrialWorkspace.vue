@@ -23,7 +23,7 @@ import TrialOverviewTab from "@/components/Trials/TrialOverviewTab.vue";
 import TrialPatientsTab from "@/components/Trials/TrialPatientsTab.vue";
 import TrialReportTab from "@/components/Trials/TrialReportTab.vue";
 import TrialTabBar from "@/components/Trials/TrialTabBar.vue";
-import { allEligibleDosed, completedDoseCount, eligiblePatients, getVisibleTabs, needsWorkflowReviewTag, trialPatients } from "@/composables";
+import { allEligibleDosed, canArchiveTrial, canDeleteArchivedTrial, completedDoseCount, eligiblePatients, getVisibleTabs, needsWorkflowReviewTag, trialPatients } from "@/composables";
 import { useAuthStore, usePatientsStore, useTrialsStore, useUiStore } from "@/stores";
 import type { TrialAssignmentMap, TrialEnrollmentMap, TrialTab } from "@/types";
 
@@ -51,8 +51,8 @@ const trialNeedsReview = computed(() =>
 );
 const selectedPatient = computed(() => (ui.selectedPatientId ? patientsStore.getPatient(ui.selectedPatientId) : null));
 const canEditPatients = computed(() => trial.value?.status !== "complete" && auth.selectedPortalId === "jh-doctor");
-const canArchive = computed(() => Boolean(trial.value) && auth.selectedPortalId !== "jh-doctor");
-const canDelete = computed(() => Boolean(trial.value?.archived) && auth.selectedPortalId !== "jh-doctor");
+const canArchive = computed(() => (trial.value ? canArchiveTrial(trial.value, auth.selectedPortalId) : false));
+const canDelete = computed(() => (trial.value ? canDeleteArchivedTrial(trial.value, auth.selectedPortalId) : false));
 
 const placeholderTitles: Record<TrialTab, string> = {
   overview: "Overview",

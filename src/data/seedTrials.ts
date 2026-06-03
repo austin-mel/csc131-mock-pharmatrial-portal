@@ -136,7 +136,7 @@ export const seedTrials: Trial[] = [
     enrollment: 18,
     status: 'rejected',
     statusLabel: 'Rejected',
-    archived: false,
+    archived: true,
     approvals: { jh: 'blocked', fda: 'rejected' },
     batchSubmitted: false,
     assignmentsLocked: false,

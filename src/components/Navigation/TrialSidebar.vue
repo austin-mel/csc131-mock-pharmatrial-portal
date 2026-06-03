@@ -13,11 +13,18 @@ defineProps<{ open?: boolean }>();
 const emit = defineEmits<{ close: []; create: [] }>();
 const trials = useTrialsStore();
 const auth = useAuthStore();
-const archiveOptions = [
-  { label: "Current", value: "current" },
-  { label: "Archived", value: "archived" },
-];
-const archiveModel = computed({
+const filterOptions = computed(() =>
+  auth.selectedPortalId === "bavaria"
+    ? [
+        { label: "Current", value: "current" },
+        { label: "Archived", value: "archived" },
+      ]
+    : [
+        { label: "Current", value: "current" },
+        { label: "Completed", value: "archived" },
+      ],
+);
+const filterModel = computed({
   get: () => (trials.showingArchived ? "archived" : "current"),
   set: (value: string) => trials.setArchiveFilter(value === "archived"),
 });
@@ -53,9 +60,8 @@ function selectTrial(id: string) {
         @update:model-value="trials.setSearch"
       />
       <SegmentedControl
-        v-if="auth.selectedPortalId !== 'jh-doctor'"
-        v-model="archiveModel"
-        :options="archiveOptions"
+        v-model="filterModel"
+        :options="filterOptions"
       />
       <ActionButton
         v-if="auth.selectedPortalId === 'bavaria'"

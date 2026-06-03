@@ -106,6 +106,7 @@ function changePage(delta: number) {
       :trial="trial"
       :assignments="assignments"
       :show-tracking="auth.selectedPortalId === 'bavaria' || trial.disclosed"
+      :show-clinical-data="auth.selectedPortalId === 'fda'"
       @detail="ui.showModal('patient-detail', $event)"
     />
     <div v-if="pageCount > 1" class="mt-3">

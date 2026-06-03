@@ -12,6 +12,7 @@ const props = defineProps<{
   trial: Trial;
   assignments?: TrialAssignmentMap;
   showTracking?: boolean;
+  showClinicalData?: boolean;
 }>();
 defineEmits<{ detail: [id: string] }>();
 
@@ -53,7 +54,7 @@ function display(patient: Patient) {
       <thead>
         <tr>
           <th>UUID</th>
-          <th>ICD-10</th>
+          <th v-if="showClinicalData">ICD-10</th>
           <th>Eligibility</th>
           <th>Doses</th>
           <th>Status</th>
@@ -68,7 +69,7 @@ function display(patient: Patient) {
           @click="$emit('detail', patient.id)"
         >
           <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
-          <td>{{ display(patient).icdCodes }}</td>
+          <td v-if="showClinicalData">{{ display(patient).icdCodes }}</td>
           <td>
             <StatusBadge :tone="enrollments[patient.id]?.eligible ? 'green' : 'gray'">
               {{ display(patient).eligibilityLabel }}

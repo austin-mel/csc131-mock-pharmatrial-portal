@@ -14,7 +14,7 @@ const trials = useTrialsStore();
 const ui = useUiStore();
 
 const canNotify = computed(() =>
-  (auth.selectedPortalId === "jh-admin" || auth.selectedPortalId === "jh-doctor") &&
+  auth.selectedPortalId === "jh-admin" &&
   props.trial.assignmentsLocked &&
   props.allDosed &&
   !props.trial.notifiedFDA,

@@ -16,7 +16,7 @@ const ui = useUiStore();
 const completed = computed(() => completedDoseCount(props.trial, props.patients, props.enrollments));
 const allDone = computed(() => allEligibleDosed(props.trial, props.patients, props.enrollments));
 const canNotify = computed(() =>
-  (auth.selectedPortalId === "jh-admin" || auth.selectedPortalId === "jh-doctor") &&
+  auth.selectedPortalId === "jh-admin" &&
   props.trial.assignmentsLocked &&
   allDone.value &&
   !props.trial.notifiedFDA,
@@ -37,7 +37,7 @@ const message = computed(() => {
         <div class="mt-0.5 text-[13px] text-muted">Transmit anonymized results once all dosing is complete.</div>
       </div>
       <ActionButton
-        v-if="auth.selectedPortalId === 'jh-admin' || auth.selectedPortalId === 'jh-doctor'"
+        v-if="auth.selectedPortalId === 'jh-admin'"
         class="min-h-12 w-full px-7 text-base sm:w-auto lg:min-h-16 lg:min-w-40 lg:px-10 lg:text-lg"
         variant="jh"
         :disabled="!canNotify"

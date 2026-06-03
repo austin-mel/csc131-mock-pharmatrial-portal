@@ -127,7 +127,7 @@ export function canApproveTrial(trial: Trial, portalId: PortalId, hasAssignedPat
 }
 
 export function canSeePii(portalId: PortalId): boolean {
-  return portalId === "jh-doctor";
+  return portalId === "jh-doctor" || portalId === "jh-admin";
 }
 
 export function canAddPatients(trial: Trial, portalId: PortalId): boolean {
@@ -138,6 +138,14 @@ export function canAddPatients(trial: Trial, portalId: PortalId): boolean {
 
 export function isTrialCurrent(trial: Trial): boolean {
   return trial.status === "complete" || (trial.status === "active" && Boolean(trial.assignmentsLocked));
+}
+
+export function canArchiveTrial(trial: Trial, portalId: PortalId): boolean {
+  return portalId === "bavaria" && (trial.status === "complete" || trial.status === "rejected");
+}
+
+export function canDeleteArchivedTrial(trial: Trial, portalId: PortalId): boolean {
+  return portalId === "bavaria" && trial.status === "rejected" && Boolean(trial.archived);
 }
 
 export function getVisibleTabs(trial: Trial, portalId: PortalId): TrialTab[] {
