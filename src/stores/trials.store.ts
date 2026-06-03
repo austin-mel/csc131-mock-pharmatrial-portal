@@ -260,7 +260,6 @@ export const useTrialsStore = defineStore('trials', () => {
     trialId: string,
     draft: {
       batchRef: string;
-      dosesPerPatient: number;
       treatmentPct: number;
       manufactureDate?: string;
       lotNumber?: string;
@@ -272,12 +271,10 @@ export const useTrialsStore = defineStore('trials', () => {
     if (!trial || trial.status === 'rejected') return false;
     if (actorPortalId !== 'bavaria') return false;
     if (trial.approvals.fda !== 'approved' || trial.approvals.jh !== 'approved') return false;
-    if (!Number.isInteger(draft.dosesPerPatient) || draft.dosesPerPatient <= 0) return false;
     if (!Number.isFinite(draft.treatmentPct) || draft.treatmentPct < 10 || draft.treatmentPct > 90) return false;
 
     trial.batchSubmitted = true;
     trial.batchRef = draft.batchRef;
-    trial.dosesPerPatient = draft.dosesPerPatient;
     trial.treatmentPct = draft.treatmentPct;
     trial.manufactureDate = draft.manufactureDate;
     trial.lotNumber = draft.lotNumber;

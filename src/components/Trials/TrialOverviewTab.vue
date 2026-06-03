@@ -52,10 +52,29 @@ const enrolledCount = computed(() => enrolledPatients(props.patients, props.enro
 const eligibleCount = computed(() => eligiblePatients(props.patients, props.enrollments).length);
 const completedCount = computed(() => completedDoseCount(props.trial, props.patients, props.enrollments));
 const totalDoses = computed(() => totalDosesGiven(props.patients, props.enrollments));
-const remainingDoses = computed(() => Math.max(0, eligibleCount.value * props.trial.dosesPerPatient - totalDoses.value));
+const requiredDoses = computed(() => eligibleCount.value * props.trial.dosesPerPatient);
+const remainingDoses = computed(() => Math.max(0, requiredDoses.value - totalDoses.value));
 const completionPct = computed(() =>
   eligibleCount.value ? Math.round((completedCount.value / eligibleCount.value) * 100) : 0,
 );
+const overviewCards = computed(() => {
+  const remainingCard = {
+    label: "Remaining Doses",
+    sub: `of ${requiredDoses.value} total`,
+    value: remainingDoses.value,
+  };
+
+  return [
+    auth.selectedPortalId === "jh-admin"
+      ? { label: "Enrolled Patients", sub: "assigned to trial", value: enrolledCount.value }
+      : { label: "Eligible Patients", sub: "treatment population", value: eligibleCount.value },
+    auth.selectedPortalId === "jh-admin"
+      ? { label: "Eligible", sub: "meet criteria", value: eligibleCount.value }
+      : { label: "Doses per Patient", sub: "trial schedule", value: props.trial.dosesPerPatient },
+    remainingCard,
+    { label: "Completion", sub: `${completedCount.value}/${eligibleCount.value} patients`, value: `${completionPct.value}%` },
+  ];
+});
 const currentStep = computed(() => currentLifecycleStepIndex(props.trial, props.allDosed));
 const rejectedIndex = computed(() => rejectedStepIndex(props.trial));
 const finalReportPublished = computed(() => Boolean(props.trial.disclosed && props.trial.notifiedFDA));
@@ -163,20 +182,13 @@ function review(action: ApprovalAction | null) {
       </div>
     </div>
     <div class="mb-5 grid grid-cols-4 gap-3 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
-      <StatCard label="Enrolled Patients" sub="assigned to trial">
-        {{ enrolledCount }}
-      </StatCard>
       <StatCard
-        :label="auth.selectedPortalId === 'jh-doctor' ? 'Remaining Doses' : 'Eligible'"
-        :sub="auth.selectedPortalId === 'jh-doctor' ? 'left to administer' : 'meet criteria'"
+        v-for="card in overviewCards"
+        :key="card.label"
+        :label="card.label"
+        :sub="card.sub"
       >
-        {{ auth.selectedPortalId === "jh-doctor" ? remainingDoses : eligibleCount }}
-      </StatCard>
-      <StatCard label="Doses Given" :sub="`of ${eligibleCount * trial.dosesPerPatient} total`">
-        {{ totalDoses }}
-      </StatCard>
-      <StatCard label="Completion" :sub="`${completedCount}/${eligibleCount} patients`">
-        {{ completionPct }}%
+        {{ card.value }}
       </StatCard>
     </div>
     <DataCard title="Trial Lifecycle">

@@ -20,28 +20,22 @@ const trials = useTrialsStore();
 const ui = useUiStore();
 
 const batchRef = ref("");
-const dosesPerPatient = ref<number | null>(1);
 const treatmentPct = ref<number | null>(50);
 const manufactureDate = ref("");
 const lotNumber = ref("");
 const shippingNotes = ref("");
 
-const parsedDosesPerPatient = computed(() => Number(dosesPerPatient.value));
 const parsedTreatmentPct = computed(() => Number(treatmentPct.value));
-const validDosesPerPatient = computed(
-  () => Number.isInteger(parsedDosesPerPatient.value) && parsedDosesPerPatient.value > 0,
-);
 const validTreatmentPct = computed(
   () => Number.isFinite(parsedTreatmentPct.value) && parsedTreatmentPct.value >= 10 && parsedTreatmentPct.value <= 90,
 );
 const draftTrial = computed<Trial>(() => ({
   ...props.trial,
-  dosesPerPatient: validDosesPerPatient.value ? parsedDosesPerPatient.value : props.trial.dosesPerPatient,
   treatmentPct: validTreatmentPct.value ? parsedTreatmentPct.value : props.trial.treatmentPct ?? 50,
 }));
 const batch = computed(() => calculateBatch(props.eligibleCount, draftTrial.value));
 const canSubmit = computed(
-  () => auth.selectedPortalId === "bavaria" && canSubmitBatch(props.trial) && validDosesPerPatient.value && validTreatmentPct.value,
+  () => auth.selectedPortalId === "bavaria" && canSubmitBatch(props.trial) && validTreatmentPct.value,
 );
 
 watch(
@@ -49,7 +43,6 @@ watch(
   (open) => {
     if (!open) return;
     batchRef.value = props.trial.batchRef ?? `BAV-${props.trial.id}-BATCH-001`;
-    dosesPerPatient.value = props.trial.dosesPerPatient;
     treatmentPct.value = props.trial.treatmentPct ?? 50;
     manufactureDate.value = props.trial.manufactureDate ?? new Date().toISOString().slice(0, 10);
     lotNumber.value = props.trial.lotNumber ?? `LOT-${props.trial.id.replace(/\D/g, "") || "001"}`;
@@ -58,11 +51,6 @@ watch(
 );
 
 function submit() {
-  if (!validDosesPerPatient.value) {
-    ui.pushToast("Doses per patient must be a whole number greater than zero.", "error");
-    return;
-  }
-
   if (!validTreatmentPct.value) {
     ui.pushToast("Treatment percent must be between 10% and 90%.", "error");
     return;
@@ -72,7 +60,6 @@ function submit() {
     props.trial.id,
     {
       batchRef: batchRef.value || `BAV-${props.trial.id}-BATCH-001`,
-      dosesPerPatient: parsedDosesPerPatient.value,
       treatmentPct: parsedTreatmentPct.value,
       manufactureDate: manufactureDate.value,
       lotNumber: lotNumber.value,
@@ -101,7 +88,7 @@ function submit() {
     </FormField>
     <FormRow>
       <FormField label="Doses Per Patient">
-        <FormInput v-model="dosesPerPatient" type="number" min="1" />
+        <FormInput :model-value="trial.dosesPerPatient" readonly />
       </FormField>
       <FormField label="Eligible Patients">
         <FormInput :model-value="eligibleCount" readonly />
