@@ -1,15 +1,30 @@
 <script setup lang="ts">
+import { ref } from "vue";
+
 import { SvgIcon } from "@/assets";
 
 defineProps<{ open: boolean; title: string; wide?: boolean }>();
-defineEmits<{ close: [] }>();
+const emit = defineEmits<{ close: [] }>();
+
+const pointerStartedOnBackdrop = ref(false);
+
+function onBackdropPointerDown(event: PointerEvent) {
+  pointerStartedOnBackdrop.value = event.target === event.currentTarget;
+}
+
+function onBackdropPointerUp(event: PointerEvent) {
+  const endedOnBackdrop = event.target === event.currentTarget;
+  if (pointerStartedOnBackdrop.value && endedOnBackdrop) emit("close");
+  pointerStartedOnBackdrop.value = false;
+}
 </script>
 
 <template>
   <div
     v-if="open"
     class="fixed inset-0 z-[500] flex items-end justify-center bg-[rgba(20,18,16,.52)] p-0 sm:items-center sm:p-4"
-    @click.self="$emit('close')"
+    @pointerdown="onBackdropPointerDown"
+    @pointerup="onBackdropPointerUp"
   >
     <section
       class="max-h-[94vh] w-full overflow-auto rounded-t-lg bg-white shadow-[0_8px_48px_rgba(0,0,0,.15)] sm:max-h-[90vh] sm:w-[580px] sm:max-w-[95vw] sm:rounded-lg"
