@@ -9,14 +9,14 @@ const auth = useAuthStore();
 const router = useRouter();
 
 watch(
-  () => auth.isLoggedIn,
-  (isLoggedIn) => {
-    if (isLoggedIn) router.replace({ name: Routes.DASHBOARD });
-  },
-  { immediate: true },
+    () => auth.isLoggedIn,
+    (isLoggedIn) => {
+        if (isLoggedIn) router.replace({ name: Routes.DASHBOARD });
+    },
+    { immediate: true },
 );
 </script>
 
 <template>
-  <LoginPanel />
+    <LoginPanel />
 </template>

@@ -1,6 +1,6 @@
-export type ApprovalStatus = 'approved' | 'pending' | 'rejected' | 'blocked';
+export type ApprovalStatus = "approved" | "pending" | "rejected" | "blocked";
 
 export interface TrialApprovals {
-  jh: ApprovalStatus;
-  fda: ApprovalStatus;
+    jh: ApprovalStatus;
+    fda: ApprovalStatus;
 }

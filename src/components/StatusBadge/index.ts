@@ -1,4 +1,4 @@
-import StatusBadge from './StatusBadge.vue';
+import StatusBadge from "./StatusBadge.vue";
 
 export { StatusBadge };
 export default StatusBadge;

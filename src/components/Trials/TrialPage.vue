@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TrialWorkspace from "@/components/Trials/TrialWorkspace.vue";
+import { TrialWorkspace } from "@/components";
 </script>
 
 <template>
-  <TrialWorkspace />
+    <TrialWorkspace />
 </template>

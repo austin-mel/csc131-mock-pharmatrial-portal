@@ -1,58 +1,62 @@
-import type { Appointment } from './appointment';
-import type { TrialApprovals } from './approval';
+import type { Appointment } from "./appointment";
+import type { TrialApprovals } from "./approval";
 
-export type TrialStatus = 'pending-approval' | 'active' | 'rejected' | 'complete';
+export type TrialStatus =
+    | "pending-approval"
+    | "active"
+    | "rejected"
+    | "complete";
 
 export type TrialTab =
-  | 'overview'
-  | 'patients'
-  | 'appointments'
-  | 'doses'
-  | 'notify'
-  | 'assignments'
-  | 'disclose'
-  | 'batch'
-  | 'report';
+    | "overview"
+    | "patients"
+    | "appointments"
+    | "doses"
+    | "notify"
+    | "assignments"
+    | "disclose"
+    | "batch"
+    | "report";
 
 export interface Trial {
-  id: string;
-  name: string;
-  drug: string;
-  phase: string;
-  condition: string;
-  start: string;
-  end: string;
-  enrollment: number;
-  status: TrialStatus;
-  statusLabel?: string;
-  archived: boolean;
-  created?: string;
-  approvals: TrialApprovals;
-  batchSubmitted: boolean;
-  assignmentsLocked: boolean;
-  notifiedFDA: boolean;
-  disclosed: boolean;
-  batchRef?: string;
-  treatmentPct?: number;
-  manufactureDate?: string;
-  lotNumber?: string;
-  shippingNotes?: string;
-  dosesPerPatient: number;
-  description?: string;
-  eligibility?: TrialEligibility | null;
+    id: string;
+    name: string;
+    drug: string;
+    phase: string;
+    condition: string;
+    start: string;
+    end: string;
+    enrollment: number;
+    status: TrialStatus;
+    statusLabel?: string;
+    archived: boolean;
+    created?: string;
+    approvals: TrialApprovals;
+    batchSubmitted: boolean;
+    assignmentsLocked: boolean;
+    notifiedFDA: boolean;
+    disclosed: boolean;
+    batchRef?: string;
+    treatmentPct?: number;
+    manufactureDate?: string;
+    lotNumber?: string;
+    shippingNotes?: string;
+    dosesPerPatient: number;
+    description?: string;
+    eligibility?: TrialEligibility | null;
 }
 
 export interface TrialEligibility {
-  includeIcd: string[];
-  excludeIcd: string[];
-  minAge: number;
-  incompatMeds: string[];
+    includeIcd: string[];
+    excludeIcd: string[];
+    minAge: number;
+    incompatMeds: string[];
 }
 
 export interface TrialEnrollment {
-  eligible: boolean;
-  doses: number;
-  appointments: Appointment[];
+    eligible: boolean;
+    doses: number;
+    appointments: Appointment[];
 }
 
 export type TrialEnrollmentMap = Record<string, TrialEnrollment>;
