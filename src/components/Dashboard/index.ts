@@ -1,9 +1,5 @@
-import Dashboard from "./Dashboard.vue";
-import NewStudy from "../ActionButtons/NewStudy.vue";
-import SortTabs from "./SortTabs.vue";
-
-export {
-    Dashboard,
-    NewStudy,
-    SortTabs,
-};
+export { default as DataCard } from "./DataCard.vue";
+export { default as DataTable } from "./DataTable.vue";
+export { default as DetailGrid } from "./DetailGrid.vue";
+export { default as ProgressBar } from "./ProgressBar.vue";
+export { default as StatCard } from "./StatCard.vue";
