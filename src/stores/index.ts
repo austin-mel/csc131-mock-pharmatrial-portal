@@ -1,6 +1,4 @@
-import { createPinia } from "pinia";
-
-export * from './auth.store';
-export * from "./dark-mode.store";
-
-export const pinia = createPinia();
+export * from "./auth.store";
+export * from "./patients.store";
+export * from "./trials.store";
+export * from "./ui.store";

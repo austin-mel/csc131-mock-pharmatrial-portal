@@ -1,0 +1,123 @@
+<script setup lang="ts">
+import {
+    ActionButton,
+    FormField,
+    FormInput,
+    FormRow,
+    FormSelect,
+    FormTextarea,
+    ModalShell,
+} from "@/components";
+import { ref, watch } from "vue";
+import { useTrialsStore, useUiStore } from "@/stores";
+
+const props = defineProps<{ open: boolean }>();
+const emit = defineEmits<{ close: [] }>();
+const trials = useTrialsStore();
+const ui = useUiStore();
+const name = ref("");
+const drug = ref("");
+const phase = ref("Phase 3");
+const condition = ref("");
+const enrollment = ref(100);
+const dosesPerPatient = ref(5);
+const start = ref("2023-07-01");
+const end = ref("2023-12-31");
+const description = ref("");
+watch(
+    () => props.open,
+    (open) => {
+        if (!open) return;
+        name.value = "";
+        drug.value = "";
+        phase.value = "Phase 3";
+        condition.value = "";
+        enrollment.value = 100;
+        dosesPerPatient.value = 5;
+        start.value = "2023-07-01";
+        end.value = "2023-12-31";
+        description.value = "";
+    },
+);
+function submit() {
+    if (!name.value.trim() || !drug.value.trim()) {
+        ui.pushToast("Trial name and drug name are required.", "error");
+        return;
+    }
+    const trial = trials.createTrial({
+        name: name.value.trim(),
+        drug: drug.value.trim(),
+        phase: phase.value,
+        condition: condition.value,
+        start: start.value,
+        end: end.value,
+        enrollment: Number(enrollment.value) || 100,
+        dosesPerPatient: Number(dosesPerPatient.value) || 5,
+        description: description.value,
+    });
+    ui.pushToast(`${trial.name} was submitted for approval.`, "success");
+    emit("close");
+}
+</script>
+
+<template>
+    <ModalShell
+        :open="open"
+        title="Create New Clinical Trial"
+        wide
+        @close="$emit('close')"
+    >
+        <p
+            class="mb-4 rounded-md border border-rule bg-bg px-3 py-2 text-sm text-muted"
+        >
+            Create a new clinical trial and submit for FDA & Jane Hopkins
+            approval.
+        </p>
+        <FormField label="Trial Name">
+            <FormInput
+                v-model="name"
+                placeholder="e.g. Phase 3 Antiviral Regimen B"
+            />
+        </FormField>
+        <FormRow>
+            <FormField label="Drug Name">
+                <FormInput v-model="drug" placeholder="e.g. BAV-AV8" />
+            </FormField>
+            <FormField label="Phase">
+                <FormSelect v-model="phase">
+                    <option>Phase 1</option>
+                    <option>Phase 2</option>
+                    <option>Phase 3</option>
+                </FormSelect>
+            </FormField>
+        </FormRow>
+        <FormField label="Condition Under Study">
+            <FormInput v-model="condition" />
+        </FormField>
+        <FormRow>
+            <FormField label="Target Enrollment">
+                <FormInput v-model="enrollment" type="number" />
+            </FormField>
+            <FormField label="Doses Per Patient">
+                <FormInput v-model="dosesPerPatient" type="number" />
+            </FormField>
+        </FormRow>
+        <FormRow>
+            <FormField label="Start Date">
+                <FormInput v-model="start" type="date" />
+            </FormField>
+            <FormField label="Estimated End Date">
+                <FormInput v-model="end" type="date" />
+            </FormField>
+        </FormRow>
+        <FormField label="Description / Objectives">
+            <FormTextarea v-model="description" />
+        </FormField>
+        <template #footer>
+            <ActionButton @click="$emit('close')"> Cancel </ActionButton>
+            <ActionButton variant="bav" @click="submit">
+                Submit for Approval
+            </ActionButton>
+        </template>
+    </ModalShell>
+</template>
