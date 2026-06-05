@@ -19,7 +19,7 @@ const labels: Record<TrialTab, string> = {
 
 <template>
   <div
-    class="flex w-full shrink-0 justify-center overflow-x-auto overflow-y-hidden border-b border-rule bg-surface px-2 sm:px-4 md:justify-start md:px-7"
+    class="flex w-full shrink-0 justify-start overflow-x-auto overflow-y-hidden border-b border-rule bg-surface px-2 [-webkit-overflow-scrolling:touch] sm:px-4 md:px-7"
   >
     <button
       v-for="tab in tabs"

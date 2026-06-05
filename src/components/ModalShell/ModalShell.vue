@@ -27,29 +27,29 @@ function onBackdropPointerUp(event: PointerEvent) {
     @pointerup="onBackdropPointerUp"
   >
     <section
-      class="max-h-[94vh] w-full overflow-auto rounded-t-lg bg-white shadow-[0_8px_48px_rgba(0,0,0,.15)] sm:max-h-[90vh] sm:w-[580px] sm:max-w-[95vw] sm:rounded-lg"
+      class="flex max-h-[94dvh] w-full min-w-0 flex-col overflow-hidden rounded-t-lg bg-surface shadow-app-lg sm:max-h-[90dvh] sm:w-[580px] sm:max-w-[95vw] sm:rounded-lg"
       :class="{ 'sm:w-[740px]': wide }"
     >
       <header
-        class="flex items-center justify-between gap-3 border-b border-[#dedad3] px-4 py-4 sm:px-[22px] sm:py-[17px]"
+        class="flex shrink-0 items-center justify-between gap-3 border-b border-rule px-4 py-4 sm:px-[22px] sm:py-[17px]"
       >
-        <h2 class="min-w-0 font-['DM_Serif_Display',serif] text-[19px] font-normal">
+        <h2 class="min-w-0 break-words font-serif text-[19px] font-normal leading-tight text-ink">
           {{ title }}
         </h2>
         <button
-          class="grid size-8 place-items-center border-0 bg-transparent text-[#6b6560] hover:text-[#1a1714]"
+          class="grid size-9 shrink-0 place-items-center rounded border-0 bg-transparent text-muted hover:bg-bg hover:text-ink"
           aria-label="Close"
           @click="$emit('close')"
         >
           <SvgIcon name="close" />
         </button>
       </header>
-      <main class="p-4 sm:p-[22px]">
+      <main class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-[22px]">
         <slot />
       </main>
       <footer
         v-if="$slots.footer"
-        class="flex flex-col-reverse gap-2.5 border-t border-[#dedad3] px-4 py-[13px] sm:flex-row sm:justify-end sm:px-[22px]"
+        class="flex shrink-0 flex-col-reverse gap-2.5 border-t border-rule px-4 py-[13px] sm:flex-row sm:justify-end sm:px-[22px]"
       >
         <slot name="footer" />
       </footer>

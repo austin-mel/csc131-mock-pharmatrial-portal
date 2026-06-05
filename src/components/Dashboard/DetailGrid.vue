@@ -7,14 +7,14 @@ defineProps<{ items: Array<{ label: string; value: string | number }> }>();
     <div
       v-for="item in items"
       :key="item.label"
-      class="min-w-0 border-b border-[#dedad3] px-[18px] py-3 max-[640px]:px-4"
+      class="min-w-0 border-b border-rule px-[18px] py-3 max-[640px]:px-4"
     >
       <div
-        class="mb-0.5 font-['DM_Mono',monospace] text-[10px] uppercase tracking-[.12em] text-[#6b6560]"
+        class="mb-0.5 font-mono text-[10px] uppercase tracking-[.12em] text-muted"
       >
         {{ item.label }}
       </div>
-      <div class="break-words text-[13px] font-medium">{{ item.value }}</div>
+      <div class="break-words text-[13px] font-medium text-ink">{{ item.value }}</div>
     </div>
   </div>
 </template>

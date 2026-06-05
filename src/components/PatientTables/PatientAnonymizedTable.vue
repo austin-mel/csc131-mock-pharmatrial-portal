@@ -50,7 +50,7 @@ function display(patient: Patient) {
     <template #header>
       <StatusBadge tone="blue">Anonymized</StatusBadge>
     </template>
-    <DataTable>
+    <DataTable class="max-[520px]:hidden">
       <thead>
         <tr>
           <th>UUID</th>
@@ -65,7 +65,7 @@ function display(patient: Patient) {
         <tr
           v-for="patient in patients"
           :key="patient.id"
-          class="cursor-pointer hover:bg-[#faf9f7]"
+          class="cursor-pointer hover:bg-bg"
           @click="$emit('detail', patient.id)"
         >
           <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
@@ -92,5 +92,45 @@ function display(patient: Patient) {
         </tr>
       </tbody>
     </DataTable>
+    <div class="hidden gap-3 p-3 max-[520px]:grid">
+      <button
+        v-for="patient in patients"
+        :key="patient.id"
+        class="rounded-md border border-rule bg-surface p-3 text-left shadow-sm"
+        type="button"
+        @click="$emit('detail', patient.id)"
+      >
+        <div class="mb-2 flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="font-mono text-xs text-fda">{{ patient.id }}</div>
+            <div v-if="showClinicalData" class="mt-1 text-[13px] text-ink">{{ display(patient).icdCodes }}</div>
+          </div>
+          <StatusBadge :tone="statusTone(patient.id)">
+            {{ statusLabel(patient.id) }}
+          </StatusBadge>
+        </div>
+        <div class="grid gap-2 text-[13px] text-muted">
+          <div>
+            <span class="font-mono text-[10px] uppercase tracking-[.12em]">Eligibility</span>
+            <div>
+              <StatusBadge :tone="enrollments[patient.id]?.eligible ? 'green' : 'gray'">
+                {{ display(patient).eligibilityLabel }}
+              </StatusBadge>
+            </div>
+          </div>
+          <div>
+            <span class="font-mono text-[10px] uppercase tracking-[.12em]">Doses</span>
+            <DoseBar
+              :doses="enrollments[patient.id]?.doses ?? 0"
+              :total="trial.dosesPerPatient"
+            />
+          </div>
+          <div v-if="showTracking">
+            <span class="font-mono text-[10px] uppercase tracking-[.12em]">Tracking ID</span>
+            <div class="font-mono text-xs text-fda">{{ trial.disclosed ? display(patient).trackingId : "-" }}</div>
+          </div>
+        </div>
+      </button>
+    </div>
   </DataCard>
 </template>

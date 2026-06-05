@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { SvgIcon } from "@/assets";
 import { ApprovalBanner, CreateTrialModal, ToastStack, TopNav, TrialSidebar, TrialWorkspace } from "@/components";
 import { allEligibleDosed, needsReview } from "@/composables";
 import { useAuthStore, usePatientsStore, useTrialsStore } from "@/stores";
@@ -32,23 +31,15 @@ function jumpToReview() {
 
 <template>
   <div class="flex min-h-screen min-w-0 flex-col">
-    <TopNav />
+    <TopNav @menu="sidebarOpen = true" />
     <ApprovalBanner
       :count="reviewCount"
       @jump="jumpToReview"
     />
     <div class="relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
-      <button
-        class="absolute left-3 top-3 z-[360] grid size-10 place-items-center rounded-md border border-rule bg-surface text-ink shadow-app md:hidden"
-        type="button"
-        aria-label="Open clinical trials menu"
-        @click="sidebarOpen = true"
-      >
-        <SvgIcon name="menu" />
-      </button>
       <div
         v-if="sidebarOpen"
-        class="fixed inset-0 z-[390] bg-black/35 md:hidden"
+        class="fixed inset-0 z-[390] bg-black/35 lg:hidden"
         @click="sidebarOpen = false"
       ></div>
       <TrialSidebar

@@ -26,25 +26,25 @@ function signIn() {
 
 <template>
   <div
-    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1a1714] px-3 py-6"
+    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink px-3 py-6"
   >
     <section
-      class="relative z-[1] w-[440px] max-w-full rounded-lg bg-white px-6 py-8 shadow-[0_8px_48px_rgba(0,0,0,.15)] sm:px-10 sm:py-11"
+      class="relative z-[1] w-[440px] max-w-full rounded-lg bg-surface px-4 py-5 shadow-app-lg xs:px-5 xs:py-7 sm:px-10 sm:py-11"
     >
       <div
-        class="mb-1 font-['DM_Serif_Display',serif] text-[22px] text-[#1a1714]"
+        class="mb-1 font-serif text-[19px] leading-tight text-ink xs:text-[22px]"
       >
         Clinical Trial
-        <span class="italic text-[#2a5c8f]">
+        <span class="italic text-fda">
           Data Exchange
         </span>
       </div>
       <div
-        class="mb-7 font-['DM_Mono',monospace] text-[10px] uppercase tracking-[.14em] text-[#6b6560]"
+        class="mb-4 font-mono text-[9px] uppercase tracking-[.12em] text-muted xs:mb-7 xs:text-[10px] xs:tracking-[.14em]"
       >
         CSUS Dream Team · Sponsored by Vendia
       </div>
-      <div class="mb-[22px] grid grid-cols-2 gap-2.5 max-[420px]:grid-cols-1">
+      <div class="mb-4 grid grid-cols-2 gap-2 xs:mb-[22px] xs:gap-2.5">
         <PortalCard
           v-for="portal in auth.portals"
           :key="portal.id"
@@ -54,37 +54,37 @@ function signIn() {
         />
       </div>
       <label
-        class="mb-[5px] block text-[11px] font-semibold uppercase tracking-[.08em] text-[#6b6560]"
+        class="mb-[5px] block text-[11px] font-semibold uppercase tracking-[.08em] text-muted"
       >
         Email Address
       </label>
       <input
         v-model="email"
-        class="mb-3.5 w-full rounded-[5px] border-[1.5px] border-[#dedad3] bg-[#faf9f7] px-[13px] py-2.5 text-sm text-[#1a1714]"
+        class="mb-3.5 min-h-10 w-full rounded-[5px] border-[1.5px] border-rule bg-bg px-[13px] py-2.5 text-base text-ink focus:border-fda focus:bg-surface focus:outline-none sm:text-sm"
         type="email"
         placeholder="username@institution.org"
       />
       <label
-        class="mb-[5px] block text-[11px] font-semibold uppercase tracking-[.08em] text-[#6b6560]"
+        class="mb-[5px] block text-[11px] font-semibold uppercase tracking-[.08em] text-muted"
       >
         Password
       </label>
       <input
         v-model="password"
-        class="mb-3.5 w-full rounded-[5px] border-[1.5px] border-[#dedad3] bg-[#faf9f7] px-[13px] py-2.5 text-sm text-[#1a1714]"
+        class="mb-3.5 min-h-10 w-full rounded-[5px] border-[1.5px] border-rule bg-bg px-[13px] py-2.5 text-base text-ink focus:border-fda focus:bg-surface focus:outline-none sm:text-sm"
         type="password"
         placeholder="password"
       />
       <p
         v-if="auth.error"
-        class="mb-3 text-center text-xs font-semibold text-[#c0392b]"
+        class="mb-3 text-center text-xs font-semibold text-bav"
       >
         {{ auth.error }}
       </p>
       <ActionButton variant="primary" block @click="signIn">
         Sign In
       </ActionButton>
-      <p class="mt-3 text-center text-[11px] text-[#6b6560]">
+      <p class="mt-3 text-center text-[11px] text-muted">
         Use the provided portal demo credentials to login.
       </p>
     </section>

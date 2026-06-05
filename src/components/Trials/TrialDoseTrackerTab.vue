@@ -70,7 +70,7 @@ function patientDisplay(patient: Patient) {
       <div class="flex w-full justify-center md:w-auto md:justify-end">
         <input
           v-model="query"
-          class="w-full min-w-0 max-w-[340px] rounded-[5px] border-[1.5px] border-rule bg-[#faf9f7] px-4 py-3 text-center text-[15px] md:w-[280px] md:text-left"
+          class="min-h-10 w-full min-w-0 max-w-[340px] rounded-[5px] border-[1.5px] border-rule bg-bg px-4 py-3 text-center text-base text-ink focus:border-fda focus:bg-surface focus:outline-none md:w-[280px] md:text-left"
           placeholder="Search patients..."
         />
       </div>

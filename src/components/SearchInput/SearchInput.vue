@@ -8,7 +8,7 @@ const model = defineModel<string>({ default: "" });
 <template>
   <input
     v-model="model"
-    class="w-full rounded-[5px] border-[1.5px] border-[#dedad3] bg-[#faf9f7] px-[9px] py-[7px] text-xs text-[#1a1714]"
+    class="min-h-10 w-full min-w-0 rounded-[5px] border-[1.5px] border-rule bg-bg px-3 py-[7px] text-base text-ink focus:border-fda focus:bg-surface focus:outline-none sm:text-xs"
     :placeholder="placeholder"
   />
 </template>

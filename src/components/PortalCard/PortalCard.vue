@@ -19,8 +19,8 @@ const labelClasses = {
 
 <template>
   <button
-    class="min-w-0 rounded-md border-2 p-[13px] text-left transition-all duration-150"
-    :class="selected ? selectedClasses[portal.id] : 'border-rule bg-[#faf9f7]'"
+    class="min-w-0 rounded-md border-2 p-2 text-left transition-all duration-150 xs:p-[13px]"
+    :class="selected ? selectedClasses[portal.id] : 'border-rule bg-bg'"
     type="button"
     @click="$emit('select', portal.id)"
   >

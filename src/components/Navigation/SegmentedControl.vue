@@ -13,8 +13,8 @@ const model = defineModel<string>({ required: true });
       type="button"
       :class="
         model === option.value
-          ? 'border-[#1a1714] bg-[#1a1714] text-white'
-          : 'border-[#dedad3] bg-[#faf9f7] text-[#6b6560]'
+          ? 'border-ink bg-ink text-white'
+          : 'border-rule bg-bg text-muted'
       "
       @click="model = option.value"
     >

@@ -7,7 +7,7 @@ import PatientTable from "@/components/PatientTables/PatientTable.vue";
 import PaginationControls from "@/components/Navigation/PaginationControls.vue";
 import StatCard from "@/components/Dashboard/StatCard.vue";
 import { SvgIcon } from "@/assets";
-import { canAddPatients } from "@/composables";
+import { canAddPatients, totalDosesGiven } from "@/composables";
 import { useAuthStore, useUiStore } from "@/stores";
 import { canShowPatientPii } from "@/utils";
 import type { Patient, Trial, TrialAssignmentMap, TrialEnrollmentMap } from "@/types";
@@ -31,7 +31,6 @@ const canAdd = computed(() => canAddPatients(props.trial, auth.selectedPortalId)
 const canCsv = computed(() => canAdd.value && (auth.selectedPortalId === "jh-admin" || auth.selectedPortalId === "jh-doctor"));
 const canEditPatients = computed(() => pii.value && props.trial.status !== "complete");
 const canDeletePatients = computed(() => auth.selectedPortalId === "jh-admin" && props.trial.status !== "complete");
-const showEligibilityReview = computed(() => auth.selectedPortalId !== "jh-doctor");
 const rows = computed(() => props.patients.filter((patient) => props.enrollments[patient.id]));
 const filteredRows = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -50,6 +49,8 @@ const completedCount = computed(() =>
       (props.enrollments[patient.id]?.doses ?? 0) >= props.trial.dosesPerPatient,
   ).length,
 );
+const totalDoses = computed(() => totalDosesGiven(rows.value, props.enrollments));
+const requiredDoses = computed(() => eligibleCount.value * props.trial.dosesPerPatient);
 
 watch([query, rows], () => {
   page.value = 1;
@@ -72,7 +73,7 @@ function changePage(delta: number) {
       <div class="flex w-full flex-wrap items-center justify-center gap-2 md:w-auto md:justify-end">
         <input
           v-model="query"
-          class="w-full min-w-0 max-w-[340px] rounded-[5px] border-[1.5px] border-rule bg-[#faf9f7] px-4 py-3 text-center text-[15px] md:w-[280px] md:text-left"
+          class="min-h-10 w-full min-w-0 max-w-[340px] rounded-[5px] border-[1.5px] border-rule bg-bg px-4 py-3 text-center text-base text-ink focus:border-fda focus:bg-surface focus:outline-none md:w-[280px] md:text-left"
           placeholder="Search patients..."
         />
         <ActionButton v-if="canCsv" @click="ui.showModal('patient-csv')">
@@ -88,17 +89,16 @@ function changePage(delta: number) {
     <div v-if="!canAdd && pii" class="mb-5 rounded-md border border-rule bg-bg px-3 py-2 text-sm text-muted">
       {{ trial.notifiedFDA ? "Patient roster is locked because results have been sent to the FDA." : "Patient enrollment is locked once a trial is active or completed." }}
     </div>
-    <div class="mb-5 grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
+    <div class="mb-5 grid grid-cols-2 gap-3 max-[640px]:grid-cols-1">
       <StatCard label="Enrolled">{{ rows.length }}</StatCard>
-      <StatCard :label="showEligibilityReview ? 'Eligible' : 'Treatment Patients'">{{ eligibleCount }}</StatCard>
-      <StatCard label="Completed Doses">{{ completedCount }}</StatCard>
+      <StatCard label="Completed Doses">{{ totalDoses }}/{{ requiredDoses }}</StatCard>
     </div>
     <PatientTable
       v-if="pii"
       :patients="pagedRows"
       :enrollments="enrollments"
       :trial="trial"
-      :show-eligibility="showEligibilityReview"
+      :show-eligibility="auth.selectedPortalId !== 'jh-doctor'"
       :can-edit="canEditPatients"
       :can-delete="canDeletePatients"
       @detail="ui.showModal('patient-detail', $event)"

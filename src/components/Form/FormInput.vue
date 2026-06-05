@@ -16,7 +16,7 @@ const model = defineModel<string | number | null>();
 <template>
   <input
     v-model="model"
-    class="w-full rounded-[5px] border-[1.5px] border-[#dedad3] bg-[#faf9f7] px-3 py-[9px] text-[13px] text-[#1a1714] focus:border-[#2a5c8f] focus:bg-white focus:outline-none"
+    class="min-h-10 w-full min-w-0 rounded-[5px] border-[1.5px] border-rule bg-bg px-3 py-[9px] text-base text-ink focus:border-fda focus:bg-surface focus:outline-none sm:text-[13px]"
     :type="type"
     :placeholder="placeholder"
     :readonly="readonly"

@@ -32,9 +32,7 @@ const canDelete = computed(() => auth.selectedPortalId === "jh-admin" && props.t
 const canLogAppointment = computed(
   () => auth.selectedPortalId === "jh-doctor" && props.trial.status !== "complete" && Boolean(enrollment.value?.eligible),
 );
-const bannerClass = computed(() =>
-  enrollment.value?.eligible ? "bg-[linear-gradient(135deg,#1e7e4e,#155d38)]" : "bg-[linear-gradient(135deg,#a83232,#6f1d1d)]",
-);
+const bannerClass = computed(() => (enrollment.value?.eligible ? "bg-jh" : "bg-bav"));
 const appointments = computed(() =>
   [...(enrollment.value?.appointments ?? [])].sort((a, b) =>
     `${b.date} ${b.time ?? ""}`.localeCompare(`${a.date} ${a.time ?? ""}`),
@@ -150,7 +148,7 @@ function changeAppointmentPage(delta: number) {
         <span class="font-mono text-xs text-fda">{{ appointmentPage }}/{{ appointments.length }}</span>
       </template>
       <div class="p-[18px]">
-        <div class="mb-3 rounded-md border border-rule bg-[#faf9f7] p-4">
+        <div class="mb-3 rounded-md border border-rule bg-bg p-4">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <strong>{{ currentAppointment?.type }}</strong>
             <span class="font-mono text-xs text-fda">{{ currentAppointment?.date }} {{ currentAppointment?.time ?? "" }}</span>
