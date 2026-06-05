@@ -7,9 +7,14 @@ import DataTable from "@/components/Dashboard/DataTable.vue";
 import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
 import { allEligibleDosed, completedDoseCount } from "@/composables";
 import { useAuthStore, useUiStore } from "@/stores";
-import type { Patient, Trial, TrialEnrollmentMap } from "@/types";
+import type { Patient, Trial, TrialAssignmentMap, TrialEnrollmentMap } from "@/types";
 
-const props = defineProps<{ trial: Trial; patients: Patient[]; enrollments: TrialEnrollmentMap }>();
+const props = defineProps<{
+  trial: Trial;
+  patients: Patient[];
+  enrollments: TrialEnrollmentMap;
+  assignments: TrialAssignmentMap;
+}>();
 
 const auth = useAuthStore();
 const ui = useUiStore();
@@ -27,6 +32,18 @@ const message = computed(() => {
   if (!allDone.value) return `Not ready - ${completed.value}/${props.patients.length} eligible patients have completed all doses.`;
   return "All eligible patients have completed dosing. You may now notify the FDA.";
 });
+
+function assignmentLabel(patientId: string) {
+  const assignment = props.assignments[patientId];
+  if (!assignment) return "Unassigned";
+  return assignment.drug === "bavaria" ? "Bavaria (Treatment)" : "Placebo (Control)";
+}
+
+function assignmentTone(patientId: string) {
+  const assignment = props.assignments[patientId];
+  if (!assignment) return "gray";
+  return assignment.drug === "bavaria" ? "red" : "blue";
+}
 </script>
 
 <template>
@@ -52,30 +69,31 @@ const message = computed(() => {
     >
       {{ message }}
     </div>
-    <DataCard title="Results Preview (Anonymized)">
-      <template #header>
-        <StatusBadge>No PII</StatusBadge>
-      </template>
+    <DataCard title="Disclosure Preview">
       <DataTable>
         <thead>
           <tr>
+            <th>Patient</th>
             <th>UUID</th>
-            <th>Doses</th>
-            <th>Status</th>
+            <th>DOB</th>
+            <th>Group</th>
+            <th>Tracking ID</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="!patients.length">
-            <td colspan="3" class="text-muted">No eligible patients available.</td>
+            <td colspan="5" class="text-muted">No eligible patients available.</td>
           </tr>
           <tr v-for="patient in patients" :key="patient.id">
+            <td>{{ patient.name }}</td>
             <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
-            <td>{{ enrollments[patient.id]?.doses ?? 0 }}/{{ trial.dosesPerPatient }}</td>
+            <td>{{ patient.dob }}</td>
             <td>
-              <StatusBadge :tone="(enrollments[patient.id]?.doses ?? 0) >= trial.dosesPerPatient ? 'green' : 'yellow'">
-                {{ (enrollments[patient.id]?.doses ?? 0) >= trial.dosesPerPatient ? "Complete" : "In Progress" }}
+              <StatusBadge :tone="assignmentTone(patient.id)">
+                {{ assignmentLabel(patient.id) }}
               </StatusBadge>
             </td>
+            <td class="font-mono text-xs text-fda">{{ assignments[patient.id]?.trackingId ?? "-" }}</td>
           </tr>
         </tbody>
       </DataTable>

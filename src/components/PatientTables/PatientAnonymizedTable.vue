@@ -6,14 +6,18 @@ import StatusBadge from "@/components/StatusBadge/StatusBadge.vue";
 import { buildAnonymizedPatientDisplay } from "@/utils";
 import type { Patient, Trial, TrialAssignmentMap, TrialEnrollmentMap } from "@/types";
 
-const props = defineProps<{
-  patients: Patient[];
-  enrollments: TrialEnrollmentMap;
-  trial: Trial;
-  assignments?: TrialAssignmentMap;
-  showTracking?: boolean;
-  showClinicalData?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    patients: Patient[];
+    enrollments: TrialEnrollmentMap;
+    trial: Trial;
+    assignments?: TrialAssignmentMap;
+    showTracking?: boolean;
+    showClinicalData?: boolean;
+    canOpenDetail?: boolean;
+  }>(),
+  { canOpenDetail: true },
+);
 defineEmits<{ detail: [id: string] }>();
 
 function statusLabel(patientId: string) {
@@ -65,8 +69,8 @@ function display(patient: Patient) {
         <tr
           v-for="patient in patients"
           :key="patient.id"
-          class="cursor-pointer hover:bg-bg"
-          @click="$emit('detail', patient.id)"
+          :class="canOpenDetail ? 'cursor-pointer hover:bg-bg' : ''"
+          @click="canOpenDetail && $emit('detail', patient.id)"
         >
           <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
           <td v-if="showClinicalData">{{ display(patient).icdCodes }}</td>
@@ -98,6 +102,7 @@ function display(patient: Patient) {
         :key="patient.id"
         class="rounded-md border border-rule bg-surface p-3 text-left shadow-sm"
         type="button"
+        :disabled="!canOpenDetail"
         @click="$emit('detail', patient.id)"
       >
         <div class="mb-2 flex items-start justify-between gap-3">

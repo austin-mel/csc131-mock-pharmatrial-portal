@@ -35,16 +35,8 @@ const message = computed(() => {
   return "All conditions met. You may now publish the final report.";
 });
 
-function assignmentLabel(patientId: string) {
-  const assignment = props.assignments[patientId];
-  if (!assignment) return "Unassigned";
-  return assignment.drug === "bavaria" ? "Bavaria (Treatment)" : "Placebo (Control)";
-}
-
-function assignmentTone(patientId: string) {
-  const assignment = props.assignments[patientId];
-  if (!assignment) return "gray";
-  return assignment.drug === "bavaria" ? "red" : "blue";
+function patientComplete(patientId: string) {
+  return (props.enrollments[patientId]?.doses ?? 0) >= props.trial.dosesPerPatient;
 }
 </script>
 
@@ -71,31 +63,30 @@ function assignmentTone(patientId: string) {
     >
       {{ message }}
     </div>
-    <DataCard title="Disclosure Preview">
+    <DataCard title="Results Preview (Anonymized)">
+      <template #header>
+        <StatusBadge>No PII</StatusBadge>
+      </template>
       <DataTable>
         <thead>
           <tr>
-            <th>Patient</th>
             <th>UUID</th>
-            <th>DOB</th>
-            <th>Group</th>
-            <th>Tracking ID</th>
+            <th>Doses</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="!patients.length">
-            <td colspan="5" class="text-muted">No eligible patients available.</td>
+            <td colspan="3" class="text-muted">No eligible patients available.</td>
           </tr>
           <tr v-for="patient in patients" :key="patient.id">
-            <td>{{ patient.name }}</td>
             <td class="font-mono text-xs text-fda">{{ patient.id }}</td>
-            <td>{{ patient.dob }}</td>
+            <td>{{ enrollments[patient.id]?.doses ?? 0 }}/{{ trial.dosesPerPatient }}</td>
             <td>
-              <StatusBadge :tone="assignmentTone(patient.id)">
-                {{ assignmentLabel(patient.id) }}
+              <StatusBadge :tone="patientComplete(patient.id) ? 'green' : 'yellow'">
+                {{ patientComplete(patient.id) ? "Complete" : "In Progress" }}
               </StatusBadge>
             </td>
-            <td class="font-mono text-xs text-fda">{{ assignments[patient.id]?.trackingId ?? "-" }}</td>
           </tr>
         </tbody>
       </DataTable>

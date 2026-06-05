@@ -169,6 +169,7 @@ function deletePatient(id: string) {
         :trial="trial"
         :patients="eligibleTrialPatients"
         :enrollments="enrollments"
+        :assignments="assignments"
       />
       <TrialBatchTab
         v-else-if="ui.activeTab === 'batch'"
