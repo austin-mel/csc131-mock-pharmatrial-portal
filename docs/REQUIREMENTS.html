@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Clinical Trial Data Exchange System — Project Description &amp; Outline</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:        #f0ede8;
+  --surface:   #faf9f7;
+  --surface2:  #ffffff;
+  --ink:       #0f1923;
+  --ink-mid:   #3a4450;
+  --ink-light: #7a8694;
+  --rule:      #ddd9d2;
+  --jh:        #1a6b4a;
+  --fda:       #1d4e89;
+  --bav:       #8b1a1a;
+  --pill-jh:   #e4f3ec;
+  --pill-fda:  #deeaf8;
+  --pill-bav:  #f7e4e4;
+  --col-w:     220px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Epilogue', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--ink);
+  color: #fff;
+  padding: 72px 64px 60px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  right: -80px; top: -80px;
+  width: 480px; height: 480px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.05);
+  pointer-events: none;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  right: 80px; top: 80px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.04);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero-eyebrow::after {
+  content: '';
+  display: block;
+  width: 36px; height: 1px;
+  background: rgba(255,255,255,.16);
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(36px, 5.5vw, 60px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  max-width: 620px;
+  margin-bottom: 44px;
+}
+.hero h1 em {
+  font-style: italic;
+  font-family: 'Epilogue', sans-serif;
+  font-weight: 300;
+  color: rgba(255,255,255,.3);
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: 28px;
+}
+.hero-meta-item {
+  padding: 10px 28px 10px 0;
+  margin-right: 28px;
+  border-right: 1px solid rgba(255,255,255,.1);
+}
+.hero-meta-item:last-child { border-right: none; }
+.hm-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.28);
+  margin-bottom: 3px;
+}
+.hm-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.82);
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: var(--col-w) 1fr;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: sticky;
+  top: 36px;
+  padding: 48px 28px 48px 0;
+  align-self: start;
+}
+.nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 14px;
+}
+.nav-list { list-style: none; }
+.nav-list li { margin-bottom: 1px; }
+.nav-list a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink-light);
+  font-size: 12.5px;
+  padding: 5px 0;
+  transition: color .15s;
+}
+.nav-list a:hover { color: var(--ink); }
+.nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--rule);
+  width: 18px;
+  flex-shrink: 0;
+  transition: color .15s;
+}
+.nav-list a:hover .nav-num { color: var(--ink-light); }
+
+/* ── MAIN ── */
+.main {
+  padding: 48px 0 96px 44px;
+  border-left: 1px solid var(--rule);
+}
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 68px; }
+.section:last-child { margin-bottom: 0; }
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+.section-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-light);
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.divider {
+  height: 1px;
+  background: var(--rule);
+  margin: 14px 0 22px;
+}
+.prose {
+  color: var(--ink-mid);
+  margin-bottom: 12px;
+  font-size: 14.5px;
+}
+.prose strong { color: var(--ink); font-weight: 500; }
+
+/* ── SUB LABEL ── */
+.sub-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin: 26px 0 12px;
+}
+
+/* ── CARDS ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  gap: 10px;
+}
+.card {
+  background: var(--surface2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 17px 19px;
+  transition: border-color .15s;
+}
+.card:hover { border-color: #aaa49a; }
+.card-type {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 6px;
+}
+.card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--ink);
+}
+.card p { font-size: 12.5px; color: var(--ink-light); line-height: 1.6; margin: 0; }
+
+/* ── TAGS ── */
+.tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.tag {
+  background: var(--surface2);
+  border: 1px solid var(--rule);
+  color: var(--ink-mid);
+  font-size: 11.5px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+.tag.out {
+  text-decoration: line-through;
+  color: var(--ink-light);
+  background: transparent;
+}
+
+/* ── PERSONAS ── */
+.persona-list { display: flex; flex-direction: column; gap: 9px; }
+.persona {
+  background: var(--surface2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+}
+.persona-id {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid rgba(255,255,255,.14);
+}
+.pid-org {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 4px;
+}
+.pid-role {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.pid-jh  { background: var(--jh); }
+.pid-fda { background: var(--fda); }
+.pid-bav { background: var(--bav); }
+.persona-body {
+  padding: 14px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-content: center;
+}
+.ability {
+  font-size: 12px;
+  color: var(--ink-mid);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 3px 9px;
+  line-height: 1.5;
+}
+.ability.no {
+  color: #9a2e18;
+  background: #fff1ee;
+  border-color: #f5c5bc;
+}
+
+/* ── REQ TABLE ── */
+.req-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.req-table thead tr { border-bottom: 2px solid var(--ink); }
+.req-table thead th {
+  padding: 7px 13px 10px;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  font-weight: 500;
+}
+.req-table tbody tr { border-bottom: 1px solid var(--rule); transition: background .1s; }
+.req-table tbody tr:hover { background: var(--surface2); }
+.req-table tbody td { padding: 10px 13px; vertical-align: top; color: var(--ink-mid); }
+.req-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+  letter-spacing: .03em;
+}
+.b-jh  { background: var(--pill-jh);  color: var(--jh); }
+.b-fda { background: var(--pill-fda); color: var(--fda); }
+.b-bav { background: var(--pill-bav); color: var(--bav); }
+.b-all { background: #ece8f5; color: #4a2d8a; }
+
+/* ── SECURITY ── */
+.sec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sec-item {
+  background: var(--surface2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 17px 19px;
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+}
+.sec-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  background: var(--ink);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sec-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--ink);
+}
+.sec-desc { font-size: 12.5px; color: var(--ink-light); line-height: 1.6; margin: 0; }
+
+/* ── ARCH ── */
+.arch-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.arch-col { padding: 18px 20px; background: var(--surface2); }
+.arch-col + .arch-col { border-left: 1px solid var(--rule); }
+.arch-col-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--rule);
+}
+.arch-item {
+  font-size: 12.5px;
+  color: var(--ink-mid);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.arch-item::before {
+  content: '';
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--rule);
+  flex-shrink: 0;
+}
+.arch-item:last-child { border-bottom: none; }
+
+/* ── FIELD GRID ── */
+.field-legend {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--ink-light);
+  font-family: 'JetBrains Mono', monospace;
+}
+.field-legend span { display: flex; align-items: center; gap: 6px; }
+.ldot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(162px, 1fr));
+  gap: 5px;
+}
+.field-chip {
+  background: var(--surface2);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--ink-mid);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.fdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.fdot-pii   { background: var(--bav); }
+.fdot-anon  { background: var(--fda); }
+.fdot-trial { background: var(--jh); }
+
+/* ── ELIGIBILITY ── */
+.elig-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+.elig-card { background: var(--surface2); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.elig-top {
+  padding: 7px 13px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.elig-top.incl { background: var(--pill-jh); color: var(--jh); }
+.elig-top.excl { background: var(--pill-bav); color: var(--bav); }
+.elig-body { padding: 12px 13px; }
+.elig-body h4 { font-family: 'Syne', sans-serif; font-size: 12.5px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
+.elig-body p { font-size: 12px; color: var(--ink-light); margin: 0; line-height: 1.55; }
+
+/* ── STACK TABLE ── */
+.stack-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.stack-table tbody tr { border-bottom: 1px solid var(--rule); }
+.stack-table tbody tr:last-child { border-bottom: none; }
+.stack-table td { padding: 12px 13px; vertical-align: top; }
+.s-layer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  white-space: nowrap;
+  width: 118px;
+}
+.s-tech {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  width: 155px;
+}
+.s-desc { color: var(--ink-mid); font-size: 13px; }
+
+/* ── TEAM ── */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 9px;
+}
+.team-card {
+  background: var(--surface2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 15px 17px;
+}
+.team-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 4px;
+}
+.team-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.team-skills { font-size: 11.5px; color: var(--ink-light); line-height: 1.5; }
+
+/* ── GUIDELINES ── */
+.guidelines { display: flex; flex-direction: column; }
+.guideline {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.guideline:last-child { border-bottom: none; }
+.g-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-light); margin-top: 2px; }
+.g-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.g-desc { font-size: 13px; color: var(--ink-light); line-height: 1.6; }
+
+/* ── MILESTONE ── */
+.milestone-bar {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+}
+.mb-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: 4px; }
+.mb-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
+.mb-date { font-family: 'JetBrains Mono', monospace; font-size: 18px; color: rgba(255,255,255,.7); white-space: nowrap; }
+
+/* ── CLIENT ── */
+.client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 10px; }
+.client-card { background: var(--surface2); border: 1px solid var(--rule); border-radius: 8px; padding: 19px 21px; }
+.c-role { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 5px; }
+.c-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+.c-desc { font-size: 12.5px; color: var(--ink-light); line-height: 1.6; margin: 0; }
+
+/* ── FOOTER ── */
+.site-footer {
+  border-top: 1px solid var(--rule);
+  padding: 22px 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; padding: 0 20px; }
+  .sidebar { display: none; }
+  .main { padding: 36px 0 60px; border-left: none; }
+  .hero { padding: 48px 24px 40px; }
+  .hero-meta-item { border-right: none; margin-right: 0; padding-right: 0; }
+  .arch-strip { grid-template-columns: 1fr; }
+  .arch-col + .arch-col { border-left: none; border-top: 1px solid var(--rule); }
+  .persona { grid-template-columns: 1fr; }
+  .persona-id { border-right: none; border-bottom: 1px solid rgba(255,255,255,.14); }
+  .sec-grid { grid-template-columns: 1fr; }
+  .elig-grid { grid-template-columns: 1fr 1fr; }
+  .site-footer { flex-direction: column; gap: 6px; text-align: center; padding: 18px 20px; }
+  .milestone-bar { flex-direction: column; gap: 10px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-eyebrow">Project Description &amp; Outline &nbsp;·&nbsp; Dream Team &nbsp;·&nbsp; CSUS CECS</div>
+  <h1>Clinical Trial<br><em>Data Exchange</em><br>System</h1>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hm-label">Team</div><div class="hm-value">Dream Team</div></div>
+    <div class="hero-meta-item"><div class="hm-label">Client</div><div class="hm-value">Chris Grove</div></div>
+    <div class="hero-meta-item"><div class="hm-label">Institution</div><div class="hm-value">California State University, Sacramento</div></div>
+    <div class="hero-meta-item"><div class="hm-label">Target Delivery</div><div class="hm-value">April 6, 2023</div></div>
+    <div class="hero-meta-item"><div class="hm-label">Document</div><div class="hm-value">Project Description &amp; Outline v2.0</div></div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR NAV -->
+  <aside class="sidebar">
+    <div class="nav-label">Contents</div>
+    <ul class="nav-list">
+      <li><a href="#s01"><span class="nav-num">01</span>Executive Summary</a></li>
+      <li><a href="#s02"><span class="nav-num">02</span>Project Scope</a></li>
+      <li><a href="#s03"><span class="nav-num">03</span>Stakeholders</a></li>
+      <li><a href="#s04"><span class="nav-num">04</span>Functional Requirements</a></li>
+      <li><a href="#s05"><span class="nav-num">05</span>Non-Functional &amp; Security</a></li>
+      <li><a href="#s06"><span class="nav-num">06</span>System Architecture</a></li>
+      <li><a href="#s07"><span class="nav-num">07</span>Data Design</a></li>
+      <li><a href="#s08"><span class="nav-num">08</span>User Stories</a></li>
+      <li><a href="#s09"><span class="nav-num">09</span>Technology Stack</a></li>
+      <li><a href="#s10"><span class="nav-num">10</span>Assumptions &amp; Constraints</a></li>
+      <li><a href="#s11"><span class="nav-num">11</span>Team &amp; Guidelines</a></li>
+      <li><a href="#s12"><span class="nav-num">12</span>Client &amp; Support</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- 01 -->
+    <section class="section" id="s01">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2>Executive Summary</h2>
+      </div>
+      <div class="divider"></div>
+      <p class="prose">In the United States, pharmaceutical companies must conduct multi-phase clinical trials before the FDA approves a new medication. These trials require controlled exchange of sensitive data among three parties — the healthcare provider, the pharmaceutical company, and the FDA — while preserving patient privacy and preventing premature access to blinded results.</p>
+      <p class="prose">This project currently delivers a <strong>front-end proof-of-concept portal</strong> for the FDA, Bavaria (a pharmaceutical company), and Jane Hopkins Hospital (a healthcare provider). The app demonstrates the clinical trial lifecycle through role-selected demo portals, seeded trial and patient data, scoped UI permissions, and simulated workflow state managed entirely in the browser.</p>
+      <p class="prose">The implementation is built with <strong>Vue 3</strong>, <strong>TypeScript</strong>, <strong>Pinia</strong>, <strong>Vue Router</strong>, <strong>Tailwind CSS</strong>, and <strong>Vite</strong>. It models trial creation, staged approvals, patient enrollment, eligibility checks, appointment and dose logging, Bavaria batch submission, FDA treatment assignment, JH completion notification, final FDA disclosure, and post-trial reporting.</p>
+    </section>
+
+    <!-- 02 -->
+    <section class="section" id="s02">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2>Project Scope</h2>
+      </div>
+      <div class="divider"></div>
+      <p class="prose">The current app supports a simulated blinded clinical trial lifecycle: trial creation, approval review, patient enrollment and eligibility verification, appointment and dose tracking, drug batch submission, FDA assignment, completion notification, final disclosure, and reporting across four role-selected demo portals.</p>
+
+      <div class="sub-label">In Scope</div>
+      <div class="card-grid">
+        <div class="card"><div class="card-type">Portal</div><h4>Jane Hopkins Hospital</h4><p>Doctor and Admin role views for patient management, CSV import, appointments, dose tracking, eligibility, and FDA completion notification.</p></div>
+        <div class="card"><div class="card-type">Portal</div><h4>FDA Administration</h4><p>Trial approval, eligibility criteria definition, eligible patient review, treatment assignment, and end-of-trial disclosure.</p></div>
+        <div class="card"><div class="card-type">Portal</div><h4>Bavaria Pharma</h4><p>Trial creation, batch submission, privacy-preserving trial monitoring, archive review, and post-disclosure reports.</p></div>
+        <div class="card"><div class="card-type">Implementation</div><h4>Vue + Pinia Demo App</h4><p>Single-page Vite application with seeded data, Pinia stores, Vue Router routes, reusable components, and Vitest/Playwright coverage.</p></div>
+        <div class="card"><div class="card-type">Feature</div><h4>Seeded Trial Data</h4><p>Multiple synthetic trial states, synthetic patient records, ICD-10 eligibility criteria, assignment maps, and 5-dose progress tracking.</p></div>
+        <div class="card"><div class="card-type">Feature</div><h4>Role-Scoped UI Access</h4><p>Portal-specific tabs, actions, and display fields demonstrate how each persona sees only the data needed for their workflow.</p></div>
+      </div>
+
+      <div class="sub-label">Out of Scope</div>
+      <div class="tag-row">
+        <span class="tag out">Real patient data</span>
+        <span class="tag out">Full FDA regulatory compliance</span>
+        <span class="tag out">Phase 1 / Phase 2 trials</span>
+        <span class="tag out">Mobile native apps</span>
+        <span class="tag out">Payment or billing systems</span>
+        <span class="tag out">EHR integration</span>
+        <span class="tag out">Production deployment</span>
+        <span class="tag out">Backend API persistence</span>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="section" id="s03">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2>Stakeholders &amp; User Personas</h2>
+      </div>
+      <div class="divider"></div>
+      <p class="prose">Four distinct user personas access the app through the demo login screen. Each persona is scoped to specific tabs, actions, and displayed fields by the Vue access rules and Pinia workflow state.</p>
+
+      <div class="persona-list">
+        <div class="persona">
+          <div class="persona-id pid-jh"><div class="pid-org">Jane Hopkins</div><div class="pid-role">Doctor</div></div>
+          <div class="persona-body">
+            <span class="ability">View full patient roster with PII</span>
+            <span class="ability">Add, import, and edit patient records</span>
+            <span class="ability">Create and log appointments</span>
+            <span class="ability">Record and track dose administrations</span>
+            <span class="ability no">✕ Cannot see treatment vs. control group</span>
+          </div>
+        </div>
+        <div class="persona">
+          <div class="persona-id pid-jh"><div class="pid-org">Jane Hopkins</div><div class="pid-role">Admin</div></div>
+          <div class="persona-body">
+            <span class="ability">Review and enroll eligible patients</span>
+            <span class="ability">Confirm all 5 doses administered</span>
+            <span class="ability">Notify FDA of trial completion</span>
+            <span class="ability">View final report after FDA disclosure</span>
+            <span class="ability no">✕ Cannot see drug assignments</span>
+          </div>
+        </div>
+        <div class="persona">
+          <div class="persona-id pid-fda"><div class="pid-org">FDA</div><div class="pid-role">Admin</div></div>
+          <div class="persona-body">
+            <span class="ability">Approve or reject pending trials</span>
+            <span class="ability">Define patient eligibility parameters</span>
+            <span class="ability">Assign Bavaria vs. placebo to patient UUIDs</span>
+            <span class="ability">Maintain private treatment/control mapping</span>
+            <span class="ability">Disclose assignments at trial end</span>
+            <span class="ability">View anonymized patient and report data</span>
+          </div>
+        </div>
+        <div class="persona">
+          <div class="persona-id pid-bav"><div class="pid-org">Bavaria</div><div class="pid-role">Admin</div></div>
+          <div class="persona-body">
+            <span class="ability">Create new trial drafts</span>
+            <span class="ability">Submit drug batch details after approvals</span>
+            <span class="ability">Monitor trial status without PII</span>
+            <span class="ability">View post-trial report after disclosure</span>
+            <span class="ability no">✕ Cannot see patient PII or early results</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="section" id="s04">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2>Functional Requirements</h2>
+      </div>
+      <div class="divider"></div>
+      <p class="prose">Current requirements are derived from the Vue app's implemented views, stores, modals, access helpers, and automated tests.</p>
+
+      <table class="req-table">
+        <thead>
+          <tr><th style="width:50px">ID</th><th>Description</th><th style="width:108px">Owner</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="req-id">FR1</td><td>Users must be able to select Jane Hopkins Doctor, Jane Hopkins Admin, FDA Admin, or Bavaria Admin and enter the demo workspace through the login screen.</td><td><span class="badge b-all">All</span></td></tr>
+          <tr><td class="req-id">FR2</td><td>Jane Hopkins Doctor must be able to view PII, add/import/edit patients, create appointments, and record dose administrations with running dose counts.</td><td><span class="badge b-jh">JH Doctor</span></td></tr>
+          <tr><td class="req-id">FR3</td><td>Jane Hopkins Admin must be able to review enrolled patients, approve eligible trials after patients are assigned, track dose completion, and notify FDA when all eligible patients complete dosing.</td><td><span class="badge b-jh">JH Admin</span></td></tr>
+          <tr><td class="req-id">FR4</td><td>Bavaria Admin must be able to create trial drafts and submit batch metadata after FDA and Jane Hopkins approvals are complete.</td><td><span class="badge b-bav">Bavaria</span></td></tr>
+          <tr><td class="req-id">FR5</td><td>Bavaria Admin must be able to monitor active trials without patient PII and view archived, rejected, active, and completed trial states.</td><td><span class="badge b-bav">Bavaria</span></td></tr>
+          <tr><td class="req-id">FR6</td><td>Bavaria, FDA, and Jane Hopkins users must be able to view post-trial report data after FDA publishes final disclosure.</td><td><span class="badge b-all">All</span></td></tr>
+          <tr><td class="req-id">FR7</td><td>FDA Admin must be able to approve or reject pending trials, define eligibility criteria, and assign Bavaria vs. placebo treatments to eligible patient UUIDs after Bavaria submits a batch.</td><td><span class="badge b-fda">FDA</span></td></tr>
+          <tr><td class="req-id">FR8</td><td>FDA Admin must be able to publish final disclosure only after assignments are locked, Jane Hopkins has notified FDA, and eligible patients have completed the required dose count.</td><td><span class="badge b-fda">FDA</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-label">Alternate Flows</div>
+      <div class="tag-row">
+        <span class="tag">Role-specific tab visibility</span>
+        <span class="tag">Rejected trial lockout</span>
+        <span class="tag">Archive toggle for complete/rejected trials</span>
+        <span class="tag">CSV rows rejected when required columns are missing</span>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="section" id="s05">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2>Non-Functional Requirements &amp; Security</h2>
+      </div>
+      <div class="divider"></div>
+
+      <div class="sub-label">Non-Functional Requirements</div>
+      <div class="card-grid" style="grid-template-columns: repeat(3,1fr);">
+        <div class="card"><div class="card-type">NFR1</div><h4>Responsiveness &amp; Performance</h4><p>UI must be responsive across device sizes. Demo state updates should reflect immediately in the active workspace.</p></div>
+        <div class="card"><div class="card-type">NFR2</div><h4>Usability</h4><p>Interfaces must be intuitive for non-technical users. Clear navigation per portal.</p></div>
+        <div class="card"><div class="card-type">NFR3</div><h4>Accessibility</h4><p>Meets baseline accessibility standards including readable contrast ratios and semantic HTML.</p></div>
+      </div>
+
+      <div class="sub-label">Security Requirements</div>
+      <div class="sec-grid">
+        <div class="sec-item">
+          <span class="sec-badge">S1</span>
+          <div><div class="sec-title">PII Confidentiality</div><p class="sec-desc">Patient PII (name, DOB, address, insurance number, etc.) is hidden from FDA and Bavaria views in the demo UI. Jane Hopkins roles retain full patient views for clinical workflows.</p></div>
+        </div>
+        <div class="sec-item">
+          <span class="sec-badge">S2</span>
+          <div><div class="sec-title">Blinded Treatment Assignment</div><p class="sec-desc">Jane Hopkins (Doctor and Admin) must not be able to determine whether a patient is receiving the Bavaria drug or the placebo until the FDA discloses assignments at trial end.</p></div>
+        </div>
+        <div class="sec-item">
+          <span class="sec-badge">S3</span>
+          <div><div class="sec-title">Role-Based Access Control</div><p class="sec-desc">Jane Hopkins Doctor, Jane Hopkins Admin, FDA Admin, and Bavaria Admin profiles have distinct tab visibility and action availability through the app's access helper logic.</p></div>
+        </div>
+        <div class="sec-item">
+          <span class="sec-badge">S4</span>
+          <div><div class="sec-title">Demo-State Guardrails</div><p class="sec-desc">Trial actions are gated by workflow state: rejected trials stop progression, complete/rejected trials can be archived, FDA disclosure waits for assignments, notification, and dose completion.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="section" id="s06">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2>System Architecture</h2>
+      </div>
+      <div class="divider"></div>
+      <p class="prose">The current implementation is a single-page Vue application. The login screen selects a portal role, Vue Router moves users into the trial workspace, Pinia stores hold seeded trial/patient/assignment state, and composables enforce role-specific tab visibility, workflow actions, privacy views, eligibility checks, reports, appointments, and dose progress.</p>
+
+      <div class="arch-strip">
+        <div class="arch-col">
+          <div class="arch-col-head">Application Layer</div>
+          <div class="arch-item">Vue 3 (Composition API)</div>
+          <div class="arch-item">TypeScript single-file components</div>
+          <div class="arch-item">Tailwind CSS</div>
+          <div class="arch-item">Vue Router login/workspace routes</div>
+          <div class="arch-item">Reusable atoms, molecules, organisms</div>
+        </div>
+        <div class="arch-col">
+          <div class="arch-col-head">State &amp; Workflow Layer</div>
+          <div class="arch-item">Pinia auth, UI, patient, trial stores</div>
+          <div class="arch-item">Role-selected demo session</div>
+          <div class="arch-item">Approval and rejection state machine</div>
+          <div class="arch-item">Batch, assignment, notification, disclosure actions</div>
+          <div class="arch-item">Archive, search, and pagination state</div>
+        </div>
+        <div class="arch-col">
+          <div class="arch-col-head">Seeded Data Layer</div>
+          <div class="arch-item">seedTrials and trial enrollments</div>
+          <div class="arch-item">seedPatients with PII and clinical fields</div>
+          <div class="arch-item">seedAssignments for FDA mapping</div>
+          <div class="arch-item">seedPortals for user personas</div>
+          <div class="arch-item">seedIcdCodes for eligibility entry</div>
+        </div>
+      </div>
+
+      <div class="sub-label">Portal Access Tiers</div>
+      <table class="req-table">
+        <thead>
+          <tr><th>Portal</th><th>Visible Workspace</th><th>Write Permissions</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="badge b-jh">JH Doctor</span></td><td>Overview, patients, appointments, dose tracker, and final report after disclosure</td><td>Edit patient info, upload CSV patients, log appointments, record doses</td></tr>
+          <tr><td><span class="badge b-jh">JH Admin</span></td><td>Overview, patients during approval, dose tracker, FDA notification, and final report after disclosure</td><td>Approve trials, enroll patients, notify FDA when dosing is complete</td></tr>
+          <tr><td><span class="badge b-fda">FDA Admin</span></td><td>Overview, assignments, disclosure, active patient views, and anonymized report data</td><td>Approve/reject trials, set eligibility, assign treatments, publish disclosure</td></tr>
+          <tr><td><span class="badge b-bav">Bavaria Admin</span></td><td>Overview, batch workflow, active trial monitoring, and report after disclosure</td><td>Create trials, submit batches, archive completed/rejected trials</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 07 -->
+    <section class="section" id="s07">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2>Data Design</h2>
+      </div>
+      <div class="divider"></div>
+
+      <div class="sub-label">Patient Record Fields</div>
+      <div class="field-legend">
+        <span><span class="ldot" style="background:var(--bav)"></span>PII — Jane Hopkins only</span>
+        <span><span class="ldot" style="background:var(--fda)"></span>Anonymized — shareable</span>
+        <span><span class="ldot" style="background:var(--jh)"></span>Trial data</span>
+      </div>
+      <div class="field-grid">
+        <div class="field-chip"><span class="fdot fdot-pii"></span>First &amp; Last Name</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Date of Birth</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Address</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Insurance Number</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Patient Photo</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Height / Weight</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Blood Pressure</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Blood Type</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Temperature</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Oxygen Saturation</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Allergies</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Current Medications</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Family History</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Employment Status</div>
+        <div class="field-chip"><span class="fdot fdot-pii"></span>Insurance Status</div>
+        <div class="field-chip"><span class="fdot fdot-anon"></span>UUID (Patient ID)</div>
+        <div class="field-chip"><span class="fdot fdot-anon"></span>ICD-10 Health Codes</div>
+        <div class="field-chip"><span class="fdot fdot-anon"></span>Eligibility Flag</div>
+        <div class="field-chip"><span class="fdot fdot-trial"></span>Appointment Log</div>
+        <div class="field-chip"><span class="fdot fdot-trial"></span>HIV Viral Load</div>
+        <div class="field-chip"><span class="fdot fdot-trial"></span>Dose Count (of 5)</div>
+        <div class="field-chip"><span class="fdot fdot-trial"></span>Adverse Events</div>
+      </div>
+
+      <div class="sub-label">Patient Eligibility Criteria (FDA-defined)</div>
+      <div class="elig-grid">
+        <div class="elig-card"><div class="elig-top incl">Inclusion</div><div class="elig-body"><h4>Required ICD-10 Code</h4><p>FDA approval can define required ICD-10 codes; seed HIV trials default to B20 or Z21 when no custom criteria are present.</p></div></div>
+        <div class="elig-card"><div class="elig-top excl">Exclusion</div><div class="elig-body"><h4>Exclusion ICD-10 Codes</h4><p>Patients with FDA-defined exclusion codes are filtered out by the eligibility helper.</p></div></div>
+        <div class="elig-card"><div class="elig-top excl">Exclusion</div><div class="elig-body"><h4>Minimum Age</h4><p>The eligibility form supports a minimum age threshold, defaulting to 18 in newly approved trials.</p></div></div>
+        <div class="elig-card"><div class="elig-top excl">Exclusion</div><div class="elig-body"><h4>Incompatible Medications</h4><p>Patients whose medication text matches FDA-defined incompatible medications are excluded.</p></div></div>
+      </div>
+
+      <div class="sub-label">Seed Data Spec</div>
+      <div class="tag-row">
+        <span class="tag">Synthetic patients with PII and clinical fields</span>
+        <span class="tag">Seed trials across pending, active, rejected, and complete states</span>
+        <span class="tag">5-dose default completion workflow</span>
+        <span class="tag">Bavaria treatment percentage defaults to 50%</span>
+        <span class="tag">FDA assignments mapped to eligible patient UUIDs</span>
+        <span class="tag">CSV upload creates and enrolls demo patients</span>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="section" id="s08">
+      <div class="section-header">
+        <span class="section-number">08</span>
+        <h2>User Stories</h2>
+      </div>
+      <div class="divider"></div>
+
+      <table class="req-table">
+        <thead>
+          <tr><th style="width:50px">ID</th><th>User Story</th><th style="width:108px">Persona</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="req-id">US1</td><td>As a Jane Hopkins doctor, I want to see all my patients so that I can access their information quickly.</td><td><span class="badge b-jh">JH Doctor</span></td></tr>
+          <tr><td class="req-id">US2</td><td>As a Jane Hopkins doctor, I want to add or bulk import patients so that I can enroll them in the current trial.</td><td><span class="badge b-jh">JH Doctor</span></td></tr>
+          <tr><td class="req-id">US3</td><td>As a Jane Hopkins doctor, I want to edit an existing patient's record so that I can keep information current.</td><td><span class="badge b-jh">JH Doctor</span></td></tr>
+          <tr><td class="req-id">US4</td><td>As a Jane Hopkins doctor, I want to create and log appointments so that I can track scheduled visits and dose administrations.</td><td><span class="badge b-jh">JH Doctor</span></td></tr>
+          <tr><td class="req-id">US5</td><td>As a Jane Hopkins admin, I want to see which patients are eligible to receive drugs so that I can confirm trial participation counts.</td><td><span class="badge b-jh">JH Admin</span></td></tr>
+          <tr><td class="req-id">US6</td><td>As a Jane Hopkins admin, I want to notify FDA after all eligible patients complete dosing so that the final review can proceed.</td><td><span class="badge b-jh">JH Admin</span></td></tr>
+          <tr><td class="req-id">US7</td><td>As an FDA user, I want to approve or reject trials and assign treatment groups so that the blinded workflow can progress.</td><td><span class="badge b-fda">FDA Admin</span></td></tr>
+          <tr><td class="req-id">US8</td><td>As a Bavaria user, I want to create trials, submit batches, and view post-disclosure reports so that I can follow the study without accessing PII.</td><td><span class="badge b-bav">Bavaria</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 09 -->
+    <section class="section" id="s09">
+      <div class="section-header">
+        <span class="section-number">09</span>
+        <h2>Technology Stack</h2>
+      </div>
+      <div class="divider"></div>
+
+      <table class="stack-table">
+        <tbody>
+          <tr><td class="s-layer">Frontend</td><td class="s-tech">Vue 3 + TypeScript</td><td class="s-desc">Composition API single-file components for login, workspace tabs, modals, data tables, forms, and reusable UI primitives.</td></tr>
+          <tr><td class="s-layer">Routing</td><td class="s-tech">Vue Router</td><td class="s-desc">Routes the demo from the portal login page to the trial workspace.</td></tr>
+          <tr><td class="s-layer">State</td><td class="s-tech">Pinia</td><td class="s-desc">Holds auth, selected portal, trial state, patients, assignments, UI modals, toasts, pagination, archive filters, and workflow transitions.</td></tr>
+          <tr><td class="s-layer">Styling</td><td class="s-tech">Tailwind CSS</td><td class="s-desc">Utility-first CSS with custom theme values for FDA, Jane Hopkins, and Bavaria visual roles.</td></tr>
+          <tr><td class="s-layer">Build Tool</td><td class="s-tech">Vite</td><td class="s-desc">Development server and production build pipeline for the Vue application.</td></tr>
+          <tr><td class="s-layer">Testing</td><td class="s-tech">Vitest + Playwright</td><td class="s-desc">Unit tests cover stores, access rules, reports, appointments, dose tracking, CSV behavior, and modals; Playwright covers representative portal flows.</td></tr>
+          <tr><td class="s-layer">Data</td><td class="s-tech">Seed Modules</td><td class="s-desc">In-memory seed files provide portals, trials, patients, ICD codes, and assignments for the proof-of-concept demo.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 10 -->
+    <section class="section" id="s10">
+      <div class="section-header">
+        <span class="section-number">10</span>
+        <h2>Assumptions &amp; Constraints</h2>
+      </div>
+      <div class="divider"></div>
+
+      <div class="sub-label">Project Assumptions</div>
+      <div class="card-grid">
+        <div class="card"><div class="card-type">Trial Scope</div><h4>Clinical Trial Demo</h4><p>The app models antiviral trial workflows and related approval, dosing, assignment, and disclosure states.</p></div>
+        <div class="card"><div class="card-type">Simplification</div><h4>Front-End Simulation</h4><p>State is held in Pinia and seeded modules; refreshes reset demo changes unless persistence is added later.</p></div>
+        <div class="card"><div class="card-type">Scale</div><h4>Seeded Records</h4><p>The workspace includes multiple sample trials and synthetic patient records to exercise status, privacy, and workflow views.</p></div>
+        <div class="card"><div class="card-type">Dose Tracking</div><h4>Configurable Dose Count</h4><p>Most trial flows use a 5-dose target, while created trials can specify a dose count in the trial modal.</p></div>
+      </div>
+
+      <div class="sub-label">Team Constraints</div>
+      <div class="tag-row">
+        <span class="tag">All members new to Vue 3</span>
+        <span class="tag">All members new to Tailwind CSS</span>
+        <span class="tag">No backend API in current implementation</span>
+        <span class="tag">No production database persistence</span>
+        <span class="tag">Demo login does not validate credentials</span>
+        <span class="tag">Trial and error learning approach</span>
+        <span class="tag">Proof-of-concept only — not production-ready</span>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="section" id="s11">
+      <div class="section-header">
+        <span class="section-number">11</span>
+        <h2>Team &amp; Project Guidelines</h2>
+      </div>
+      <div class="divider"></div>
+
+      <div class="sub-label">Team Members</div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-role">Team Lead</div><div class="team-name">Austin Melendez</div><div class="team-skills">C#, Java, HTML, Python, CSS, MySQL</div></div>
+        <div class="team-card"><div class="team-role">Member</div><div class="team-name">Matthew Ryan</div><div class="team-skills">Java, C++, HTML, CSS, Node.js</div></div>
+        <div class="team-card"><div class="team-role">Member</div><div class="team-name">Danny Phan</div><div class="team-skills">C++, Java, JS, HTML, CSS, PHP, MS SQL, Git</div></div>
+        <div class="team-card"><div class="team-role">Member</div><div class="team-name">Joshua Langley</div><div class="team-skills">Java, C++, HTML, CSS (4+ years)</div></div>
+        <div class="team-card"><div class="team-role">Member</div><div class="team-name">Nonika Kathyal</div><div class="team-skills">Java, C++, JS; Agile/Kanban experience</div></div>
+        <div class="team-card"><div class="team-role">Member</div><div class="team-name">Warisara Lee</div><div class="team-skills">Java, C++, Python, NetBeans</div></div>
+      </div>
+
+      <div class="sub-label">Operating Guidelines</div>
+      <div class="guidelines">
+        <div class="guideline"><div class="g-num">01</div><div><div class="g-title">Biweekly Check-ins</div><div class="g-desc">Team meets on Monday, Wednesday, and/or Friday afternoons/evenings to review overall project status and each subgroup's individual progress.</div></div></div>
+        <div class="guideline"><div class="g-num">02</div><div><div class="g-title">Weekly Personal Progress Documentation</div><div class="g-desc">Each member documents their individual progress at least once per calendar week in the shared project record.</div></div></div>
+        <div class="guideline"><div class="g-num">03</div><div><div class="g-title">Tech Session Coverage</div><div class="g-desc">At least one team member attends each scheduled tech session, takes notes, and relays questions and answers to the full team.</div></div></div>
+        <div class="guideline"><div class="g-num">04</div><div><div class="g-title">Early Completion Buffer</div><div class="g-desc">Internal deadline is set ahead of the official due date to allow time for limit testing and last-minute bug fixes.</div></div></div>
+      </div>
+
+      <div class="milestone-bar">
+        <div>
+          <div class="mb-label">Personal Team Deadline</div>
+          <div class="mb-title">Full feature-complete build — all portals functional, security demonstrations ready</div>
+        </div>
+        <div class="mb-date">Apr 6, 2023</div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="section" id="s12">
+      <div class="section-header">
+        <span class="section-number">12</span>
+        <h2>Client &amp; Support</h2>
+      </div>
+      <div class="divider"></div>
+
+      <div class="client-grid">
+        <div class="client-card"><div class="c-role">Client / Instructor</div><div class="c-name">Chris Grove</div><p class="c-desc">Part-time professor at CSUS; Software Manager at Micron. Primary project evaluator and stakeholder.</p></div>
+        <div class="client-card"><div class="c-role">Technical Support</div><div class="c-name">Elliot Turner</div><p class="c-desc">Graduating Sac State student providing technical support for the project.</p></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <span>Clinical Trial Data Exchange System</span>
+  <span>Dream Team &nbsp;·&nbsp; CSUS College of Engineering &amp; Computer Science</span>
+  <span>Project Description &amp; Outline v2.0</span>
+</footer>
+
+</body>
+</html>

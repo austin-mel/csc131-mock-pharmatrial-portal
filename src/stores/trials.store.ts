@@ -5,10 +5,13 @@ import {
     logAppointment as applyAppointment,
     trialStatusLabel,
 } from "@/composables";
+import { pharmatrialApi, type BackendSnapshotDto } from "@/api";
 import { seedAssignments, seedTrialPatients, seedTrials } from "@/data";
 import { useAuthStore } from "./auth.store";
+import { usePatientsStore } from "./patients.store";
 import type {
     AppointmentDraft,
+    Patient,
     PortalId,
     Trial,
     TrialAssignmentMap,
@@ -49,6 +52,7 @@ export interface CreateTrialDraft {
 
 export const useTrialsStore = defineStore("trials", () => {
     const auth = useAuthStore();
+    const patientsStore = usePatientsStore();
     const trials = ref<Trial[]>(structuredClone(seedTrials));
     const trialPatients = ref<TrialPatientsByTrial>(
         structuredClone(seedTrialPatients),
@@ -61,6 +65,7 @@ export const useTrialsStore = defineStore("trials", () => {
     const sidebarSearch = ref("");
     const sidebarPage = ref(1);
     const showingArchived = ref(false);
+    const apiFallback = ref(pharmatrialApi.fallbackActive);
 
     const currentTrial = computed(() => {
         const trial = trials.value.find(
@@ -203,6 +208,38 @@ export const useTrialsStore = defineStore("trials", () => {
         );
     }
 
+    function applySnapshot(snapshot: BackendSnapshotDto) {
+        trials.value = snapshot.trials;
+        trialPatients.value = snapshot.trialPatients;
+        assignments.value = snapshot.assignments;
+        patientsStore.patients = snapshot.patients;
+        apiFallback.value = pharmatrialApi.fallbackActive;
+        ensureSelectedTrialVisible();
+    }
+
+    async function hydrateFromApi() {
+        if (pharmatrialApi.fallbackActive) {
+            apiFallback.value = true;
+            return false;
+        }
+
+        try {
+            applySnapshot(await pharmatrialApi.snapshot());
+            return true;
+        } catch {
+            apiFallback.value = true;
+            return false;
+        }
+    }
+
+    function applyWorkflowSnapshot(promise: Promise<BackendSnapshotDto>) {
+        void promise
+            .then(applySnapshot)
+            .catch(() => {
+                apiFallback.value = true;
+            });
+    }
+
     function enrollmentsFor(trialId: string) {
         return trialPatients.value[trialId] ?? {};
     }
@@ -215,6 +252,7 @@ export const useTrialsStore = defineStore("trials", () => {
         trialId: string,
         patientId: string,
         eligible: boolean,
+        syncApi = true,
     ) {
         const trial = trials.value.find((item) => item.id === trialId);
         if (trial?.status === "rejected") return false;
@@ -227,6 +265,11 @@ export const useTrialsStore = defineStore("trials", () => {
             appointments: [],
         };
         trialPatients.value[trialId][patientId].eligible = eligible;
+        const patient = patientsStore.getPatient(patientId);
+        if (syncApi && patient && !pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(
+                pharmatrialApi.enrollPatient(trialId, patient, eligible),
+            );
         return true;
     }
 
@@ -237,6 +280,33 @@ export const useTrialsStore = defineStore("trials", () => {
         Object.values(assignments.value).forEach((trialAssignments) => {
             delete trialAssignments[patientId];
         });
+    }
+
+    function importPatients(
+        trialId: string,
+        rows: Array<{ patientId: string; eligible: boolean }>,
+    ) {
+        rows.forEach((row) =>
+            enrollPatient(trialId, row.patientId, row.eligible, false),
+        );
+        if (!pharmatrialApi.fallbackActive) {
+            applyWorkflowSnapshot(
+                pharmatrialApi.importPatients(
+                    trialId,
+                    rows
+                        .map((row) => {
+                            const patient = patientsStore.getPatient(row.patientId);
+                            return patient
+                                ? { patient, eligible: row.eligible }
+                                : null;
+                        })
+                        .filter(
+                            (row): row is { patient: Patient; eligible: boolean } =>
+                                Boolean(row),
+                        ),
+                ),
+            );
+        }
     }
 
     function logAppointment(
@@ -255,7 +325,12 @@ export const useTrialsStore = defineStore("trials", () => {
             return false;
         if (!enrollment?.eligible) return false;
 
-        return applyAppointment(enrollment, trial.dosesPerPatient, draft);
+        const saved = applyAppointment(enrollment, trial.dosesPerPatient, draft);
+        if (saved && !pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(
+                pharmatrialApi.logAppointment(trialId, patientId, draft),
+            );
+        return saved;
     }
 
     function recordAudit(
@@ -304,6 +379,14 @@ export const useTrialsStore = defineStore("trials", () => {
         assignments.value[trial.id] = {};
         currentTrialId.value = trial.id;
         showingArchived.value = false;
+        if (!pharmatrialApi.fallbackActive)
+            void pharmatrialApi
+                .createTrial(draft)
+                .then(() => pharmatrialApi.snapshot())
+                .then(applySnapshot)
+                .catch(() => {
+                    apiFallback.value = true;
+                });
         return trial;
     }
 
@@ -342,6 +425,8 @@ export const useTrialsStore = defineStore("trials", () => {
 
         trial.statusLabel = trialStatusLabel(trial);
         recordAudit(portalId, "trial.approve", trialId);
+        if (!pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(pharmatrialApi.approveTrial(trialId, eligibility));
         return true;
     }
 
@@ -363,6 +448,8 @@ export const useTrialsStore = defineStore("trials", () => {
         trial.status = "rejected";
         trial.statusLabel = trialStatusLabel(trial);
         recordAudit(portalId, "trial.reject", trialId);
+        if (!pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(pharmatrialApi.rejectTrial(trialId));
         return true;
     }
 
@@ -402,6 +489,8 @@ export const useTrialsStore = defineStore("trials", () => {
         trial.statusLabel = trialStatusLabel(trial);
         assignments.value[trialId] = {};
         recordAudit(actorPortalId, "trial.submit_batch", trialId);
+        if (!pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(pharmatrialApi.submitBatch(trialId, draft));
         return true;
     }
 
@@ -434,6 +523,8 @@ export const useTrialsStore = defineStore("trials", () => {
         trial.status = "active";
         trial.statusLabel = trialStatusLabel(trial);
         recordAudit(actorPortalId, "trial.lock_assignments", trialId);
+        if (!pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(pharmatrialApi.saveAssignments(trialId, draft));
         return true;
     }
 
@@ -451,6 +542,8 @@ export const useTrialsStore = defineStore("trials", () => {
         trial.notifiedFDA = true;
         trial.statusLabel = trialStatusLabel(trial);
         recordAudit(actorPortalId, "trial.notify_fda", trialId);
+        if (!pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(pharmatrialApi.notifyFda(trialId));
         return true;
     }
 
@@ -474,6 +567,8 @@ export const useTrialsStore = defineStore("trials", () => {
         trial.status = "complete";
         trial.statusLabel = trialStatusLabel(trial);
         recordAudit(actorPortalId, "trial.disclose_report", trialId);
+        if (!pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(pharmatrialApi.discloseTrial(trialId));
         return true;
     }
 
@@ -483,6 +578,10 @@ export const useTrialsStore = defineStore("trials", () => {
 
         trial.archived = !trial.archived;
         showingArchived.value = trial.archived;
+        if (!pharmatrialApi.fallbackActive)
+            applyWorkflowSnapshot(
+                pharmatrialApi.archiveTrial(trial.id, trial.archived),
+            );
         return true;
     }
 
@@ -495,6 +594,7 @@ export const useTrialsStore = defineStore("trials", () => {
             return false;
 
         trials.value.splice(index, 1);
+        if (!pharmatrialApi.fallbackActive) void pharmatrialApi.deleteTrial(trialId);
 
         if (currentTrialId.value === trialId) {
             const matchingTabTrial = trials.value.find(
@@ -529,6 +629,7 @@ export const useTrialsStore = defineStore("trials", () => {
         sidebarSearch,
         sidebarPage,
         showingArchived,
+        apiFallback,
         filteredTrials,
         visibleTrials,
         pageCount,
@@ -536,10 +637,12 @@ export const useTrialsStore = defineStore("trials", () => {
         setSearch,
         setArchiveFilter,
         changePage,
+        hydrateFromApi,
         enrollmentsFor,
         assignmentsFor,
         enrollPatient,
         removePatientReferences,
+        importPatients,
         logAppointment,
         createTrial,
         approveTrial,

@@ -190,12 +190,19 @@ export function usePatientCsvUpload(trial: () => Trial) {
         validRows.value.forEach((row) => {
             if (!row.patient) return;
             patients.upsertPatient(row.patient);
-            trials.enrollPatient(
-                trial().id,
-                row.patient.id,
-                checkEligibility(row.patient, trial()),
-            );
         });
+        trials.importPatients(
+            trial().id,
+            validRows.value
+                .filter(
+                    (row): row is PatientCsvPreviewRow & { patient: Patient } =>
+                        Boolean(row.patient),
+                )
+                .map((row) => ({
+                    patientId: row.patient.id,
+                    eligible: checkEligibility(row.patient, trial()),
+                })),
+        );
         ui.pushToast(
             `Imported ${validRows.value.length} patients (${eligibleCount.value} eligible).`,
             "success",
