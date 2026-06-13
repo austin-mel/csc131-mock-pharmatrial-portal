@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { pharmatrialApi, setAuthToken } from "@/api";
 import { seedPortals } from "@/data";
 import type { Portal, PortalId } from "@/types";
 
@@ -31,11 +32,31 @@ export const useAuthStore = defineStore("auth", () => {
         selectedPortalId.value = portalId;
     }
 
-    function login(
+    async function login(
         email = demoCredentials[selectedPortalId.value].email,
         password = demoCredentials[selectedPortalId.value].password,
     ) {
         const credentials = demoCredentials[selectedPortalId.value];
+        if (!pharmatrialApi.fallbackActive) {
+            try {
+                await pharmatrialApi.login(
+                    selectedPortalId.value,
+                    email,
+                    password,
+                );
+                loggedIn.value = true;
+                error.value = null;
+                return true;
+            } catch {
+                setAuthToken(null);
+                if (!pharmatrialApi.fallbackActive) {
+                    loggedIn.value = false;
+                    error.value = "Invalid email or password for selected portal!";
+                    return false;
+                }
+            }
+        }
+
         if (
             email.trim().toLowerCase() !== credentials.email ||
             password !== credentials.password
@@ -52,6 +73,7 @@ export const useAuthStore = defineStore("auth", () => {
     function logout() {
         loggedIn.value = false;
         error.value = null;
+        setAuthToken(null);
     }
 
     return {

@@ -18,8 +18,8 @@ watch(
         password.value = demoCredentials[portalId].password;
     },
 );
-function signIn() {
-    auth.login(email.value, password.value);
+async function signIn() {
+    await auth.login(email.value, password.value);
 }
 </script>
 

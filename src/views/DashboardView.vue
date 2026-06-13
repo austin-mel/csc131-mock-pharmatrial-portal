@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import {
     ApprovalBanner,
     CreateTrialModal,
@@ -17,6 +17,10 @@ const patients = usePatientsStore();
 const trials = useTrialsStore();
 const sidebarOpen = ref(false);
 const createModalOpen = ref(false);
+
+onMounted(() => {
+    void trials.hydrateFromApi();
+});
 
 function trialNeedsReview(trial: Trial) {
     return needsReview(
