@@ -7,139 +7,161 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// =========================================
-// =============== TRIAL ===================
-// =========================================
-model Trial {
-  id          String    @id @default(uuid())
-  name        String
-  drug_id     String
-  status      String    @default("pending")
-  active      Boolean   @default(false)
-  completed   Boolean   @default(false)
-  rejected    Boolean   @default(false)
+model PortalUser {
+  id           String   @id @default(uuid())
+  portalId     String   @map("portal_id")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  displayName  String   @map("display_name")
+  role         String
+  organization String
+  createdAt    DateTime @default(now()) @map("created_at")
+  audits       AuditEvent[]
 
-  approvals   Json
-  distributed Json
-  patients    Patient[]
-
-  @@index([id])
-  @@map("trials") // map to lowercase table
+  @@index([portalId])
+  @@map("portal_users")
 }
 
-// =========================================
-// =============== PATIENT =================
-// =========================================
+model Trial {
+  id                String       @id @default(uuid())
+  name              String
+  drug              String
+  phase             String
+  condition         String
+  start             DateTime
+  end               DateTime
+  enrollmentTarget  Int          @map("enrollment_target")
+  status            String       @default("pending-approval")
+  statusLabel       String?      @map("status_label")
+  archived          Boolean      @default(false)
+  createdAt         DateTime     @default(now()) @map("created_at")
+  approvals         Json
+  batchSubmitted    Boolean      @default(false) @map("batch_submitted")
+  assignmentsLocked Boolean      @default(false) @map("assignments_locked")
+  notifiedFDA       Boolean      @default(false) @map("notified_fda")
+  disclosed         Boolean      @default(false)
+  dosesPerPatient   Int          @default(1) @map("doses_per_patient")
+  description       String?
+  eligibility       Json?
+  enrollments       Enrollment[]
+  batch             Batch?
+  assignments       Assignment[]
+  reports           TrialReport[]
+
+  @@index([status, archived])
+  @@map("trials")
+}
+
 model Patient {
-  id            String   @id @default(uuid())
-  first_name    String
-  last_name     String
-  study_id      String
-  drug_id       String?
-  dob           DateTime
-  address       String
-  insurance_num String
-  height        Float
-  weight        Float
-  blood         String
-  employed      Boolean
-  insured       Boolean
-  eligibility   Boolean
-  dose          Float
-  phone_number  String
-  email         String
+  id          String       @id @default(uuid())
+  name        String
+  dob         DateTime
+  icdCodes    Json         @map("icd_codes")
+  bloodType   String       @map("blood_type")
+  bp          String?
+  oxygen      Int?
+  meds        String?
+  allergy     String?
+  height      Float?
+  weight      Float?
+  address     String?
+  insuranceId String?      @map("insurance_id")
+  employment  String?
+  temperature String?
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  enrollments Enrollment[]
 
-  trial         Trial       @relation(fields: [study_id], references: [id])
-  allergies     Allergy[]
-  medications   Medication[]
-  history       History[]
-  icdcodes      IcdCode[]
-  appointments  Appointment[]
-
-  @@index([id])
   @@map("patients")
 }
 
-// =========================================
-// =============== ALLERGY =================
-// =========================================
-model Allergy {
-  id         Int      @id @default(autoincrement())
-  name       String
-  reactions  String
-  patient_id String
-  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+model Enrollment {
+  id           String        @id @default(uuid())
+  trialId      String        @map("trial_id")
+  patientId    String        @map("patient_id")
+  eligible     Boolean       @default(false)
+  doses        Int           @default(0)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  trial        Trial         @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  patient      Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  assignment   Assignment?
 
-  @@map("allergies")
+  @@unique([trialId, patientId])
+  @@index([patientId])
+  @@map("enrollments")
 }
 
-// =========================================
-// =========== MEDICATION ==================
-// =========================================
-model Medication {
-  id         Int      @id @default(autoincrement())
-  name       String
-  purpose    String
-  patient_id String
-  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-
-  @@map("medications")
-}
-
-// =========================================
-// ============== HISTORY ==================
-// =========================================
-model History {
-  id         Int      @id @default(autoincrement())
-  disease    String
-  carrier    String
-  patient_id String
-  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-
-  @@map("history")
-}
-
-// =========================================
-// ============== ICD CODES ================
-// =========================================
-model IcdCode {
-  id         Int      @id @default(autoincrement())
-  code       String
-  patient_id String
-  patient    Patient  @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-
-  @@map("icdcodes")
-}
-
-// =========================================
-// ============= APPOINTMENT ===============
-// =========================================
 model Appointment {
-  id         Int       @id @default(autoincrement())
-  date       DateTime
-  o2         Int
-  bp         String
-  temp       Float
-  hiv        Int
-  doctor     String
-  notes      Json?
-  patient_id String
-  patient    Patient    @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  id              String     @id @default(uuid())
+  enrollmentId    String     @map("enrollment_id")
+  date            DateTime
+  time            String?
+  type            String
+  dose            Boolean    @default(false)
+  bloodTestLevel  Float?     @map("blood_test_level")
+  adverseEvents   Json       @map("adverse_events")
+  note            String
+  createdAt       DateTime   @default(now()) @map("created_at")
+  enrollment      Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
 
+  @@index([enrollmentId])
   @@map("appointments")
 }
 
-// =========================================
-// ================ USER ===================
-// =========================================
-model User {
-  id           String   @id @default(uuid())
-  first_name   String
-  last_name    String
-  phone_number String
-  email        String
-  role         String
-  created_at   DateTime @default(now())
+model Batch {
+  id              String   @id @default(uuid())
+  trialId         String   @unique @map("trial_id")
+  batchRef        String   @map("batch_ref")
+  treatmentPct    Int      @map("treatment_pct")
+  manufactureDate DateTime? @map("manufacture_date")
+  lotNumber       String?  @map("lot_number")
+  shippingNotes   String?  @map("shipping_notes")
+  submittedAt     DateTime @default(now()) @map("submitted_at")
+  trial           Trial    @relation(fields: [trialId], references: [id], onDelete: Cascade)
 
-  @@map("users")
+  @@map("batches")
+}
+
+model Assignment {
+  id           String     @id @default(uuid())
+  trialId      String     @map("trial_id")
+  enrollmentId String     @unique @map("enrollment_id")
+  patientId    String     @map("patient_id")
+  drug         String
+  trackingId   String     @map("tracking_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  trial        Trial      @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@unique([trialId, patientId])
+  @@index([trialId])
+  @@map("assignments")
+}
+
+model TrialReport {
+  id        String   @id @default(uuid())
+  trialId   String   @map("trial_id")
+  rows      Json
+  createdAt DateTime @default(now()) @map("created_at")
+  trial     Trial    @relation(fields: [trialId], references: [id], onDelete: Cascade)
+
+  @@index([trialId])
+  @@map("trial_reports")
+}
+
+model AuditEvent {
+  id        String     @id @default(uuid())
+  actorId   String?    @map("actor_id")
+  actorRole String     @map("actor_role")
+  action    String
+  entityId  String     @map("entity_id")
+  entityType String    @map("entity_type")
+  metadata  Json?
+  createdAt DateTime   @default(now()) @map("created_at")
+  actor     PortalUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorRole])
+  @@map("audit_events")
 }

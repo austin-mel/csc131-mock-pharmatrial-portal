@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import patientRoutes from './patient.routes';
-import trialRoutes from './trial.routes';
+import authRoutes from './auth.routes';
+import workflowRoutes from './workflow.routes';
 
 const router = Router();
 
-router.use('/patients', patientRoutes);
-router.use('/trials', trialRoutes);
+router.use('/auth', authRoutes);
+router.use('/workflow', workflowRoutes);
+router.use('/trials', workflowRoutes);
 
 export default router;
