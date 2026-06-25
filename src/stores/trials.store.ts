@@ -20,6 +20,8 @@ import type {
 } from "@/types";
 
 const SIDEBAR_PAGE_SIZE = 10;
+const TRIAL_ID_PATTERN = /^TRL-(\d{4})-(\d{3})$/;
+const DATA_LOAD_TIMEOUT_MS = 3000;
 
 type TrialAuditAction =
     | "trial.approve"
@@ -66,6 +68,7 @@ export const useTrialsStore = defineStore("trials", () => {
     const sidebarPage = ref(1);
     const showingArchived = ref(false);
     const apiFallback = ref(pharmatrialApi.fallbackActive);
+    const apiHydrating = ref(!pharmatrialApi.fallbackActive);
 
     const currentTrial = computed(() => {
         const trial = trials.value.find(
@@ -214,22 +217,39 @@ export const useTrialsStore = defineStore("trials", () => {
         assignments.value = snapshot.assignments;
         patientsStore.patients = snapshot.patients;
         apiFallback.value = pharmatrialApi.fallbackActive;
+        apiHydrating.value = false;
         ensureSelectedTrialVisible();
     }
 
-    async function hydrateFromApi() {
+    function wait(ms: number) {
+        return new Promise<null>((resolve) => {
+            window.setTimeout(() => resolve(null), ms);
+        });
+    }
+
+    async function hydrateFromApi(timeoutMs = DATA_LOAD_TIMEOUT_MS) {
         if (pharmatrialApi.fallbackActive) {
             apiFallback.value = true;
+            apiHydrating.value = false;
             return false;
         }
 
-        try {
-            applySnapshot(await pharmatrialApi.snapshot());
+        apiFallback.value = false;
+        apiHydrating.value = true;
+
+        const snapshot = await Promise.race([
+            pharmatrialApi.snapshot().catch(() => wait(timeoutMs)),
+            wait(timeoutMs),
+        ]);
+
+        if (snapshot) {
+            applySnapshot(snapshot);
             return true;
-        } catch {
-            apiFallback.value = true;
-            return false;
         }
+
+        apiFallback.value = true;
+        apiHydrating.value = false;
+        return false;
     }
 
     function applyWorkflowSnapshot(promise: Promise<BackendSnapshotDto>) {
@@ -348,10 +368,25 @@ export const useTrialsStore = defineStore("trials", () => {
         });
     }
 
+    function nextTrialId(year = new Date().getFullYear()) {
+        const next =
+            Math.max(
+                0,
+                ...trials.value
+                    .map((trial) => TRIAL_ID_PATTERN.exec(trial.id))
+                    .filter(
+                        (match): match is RegExpExecArray =>
+                            Boolean(match) && Number(match?.[1]) === year,
+                    )
+                    .map((match) => Number(match[2])),
+            ) + 1;
+
+        return `TRL-${year}-${String(next).padStart(3, "0")}`;
+    }
+
     function createTrial(draft: CreateTrialDraft) {
-        const next = trials.value.length + 1;
         const trial: Trial = {
-            id: `TRL-2023-${String(next).padStart(3, "0")}`,
+            id: nextTrialId(),
             name: draft.name,
             drug: draft.drug,
             phase: draft.phase,
@@ -586,6 +621,8 @@ export const useTrialsStore = defineStore("trials", () => {
     }
 
     function deleteTrial(trialId = currentTrialId.value) {
+        if (!trialId) return false;
+
         const index = trials.value.findIndex((item) => item.id === trialId);
         if (index < 0) return false;
 
@@ -630,6 +667,7 @@ export const useTrialsStore = defineStore("trials", () => {
         sidebarPage,
         showingArchived,
         apiFallback,
+        apiHydrating,
         filteredTrials,
         visibleTrials,
         pageCount,

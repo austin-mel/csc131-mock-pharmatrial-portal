@@ -2,7 +2,7 @@
 
 ## Overview
 
-This dictionary documents the data used by the Pharmatrial front-end proof of concept. Current data lives in Pinia stores and seed files. In production, these fields should be persisted through backend services with server-side authorization, encrypted PII, append-only audit logs, and retention policies.
+This dictionary documents the workflow data used by the Pharmatrial frontend and live backend snapshot. In live mode, the backend is the source of truth and the frontend hydrates Pinia stores from `/workflow/snapshot`. In fallback mode, the same data shapes are loaded from seeded TypeScript files in `src/data` so the workflow remains usable without a server.
 
 ## Patient Data
 
@@ -171,7 +171,7 @@ Source type: internal `TrialAuditEvent`
 | `entityType` | `"trial"` | Audited entity type. |
 | `createdAt` | `string` | ISO timestamp. |
 
-Current audit events are in-memory only. Production should persist them as append-only records.
+In fallback mode, audit events are browser-local. In live mode, audit events should be persisted by the backend as append-only records.
 
 ## Enum and State Values
 
@@ -271,14 +271,14 @@ Current audit events are in-memory only. Production should persist them as appen
 | 15 | Trial archived | Bavaria Admin | `archived` toggles for complete or rejected trials. |
 | 16 | Archived rejected trial deleted | Bavaria Admin | Rejected archived trial is removed from demo state. |
 
-## Current Demo vs Production Data Handling
+## Live Backend vs Seeded Fallback Data Handling
 
-| Topic | Current Demo | Production Recommendation |
+| Topic | Live Backend Mode | Seeded Fallback Mode |
 |---|---|---|
-| Persistence | Pinia stores and seed files. | Database-backed API. |
-| Authentication | Demo portal credentials in front-end store. | Secure auth provider with server sessions or tokens. |
-| Authorization | Front-end role helpers. | Server-side RBAC on every API action. |
-| PII | Masked in UI for FDA/Bavaria. | Encrypt at rest, restrict at API and database layers. |
-| Audit | In-memory audit array. | Append-only durable audit table. |
-| Deletion | Bavaria can delete archived rejected demo trials. | Soft deletion with retention and compliance policy. |
-| Reports | Derived in browser after disclosure. | Server-generated or materialized report snapshots with access controls. |
+| Persistence | Database-backed API is the source of truth. | Browser-local Pinia state initialized from `src/data`. |
+| Authentication | `POST /auth/login` returns a bearer token for API requests. | Demo credentials are validated in `auth.store.ts`. |
+| Authorization | Backend should enforce RBAC on every workflow endpoint. | Frontend role helpers constrain available UI actions. |
+| PII | Backend should restrict and protect PII; frontend masks FDA/Bavaria display. | Frontend masking helpers hide Jane Hopkins PII from FDA/Bavaria views. |
+| Audit | Backend should persist durable append-only audit records. | Audit entries are browser-local and reset with the session. |
+| Deletion | Backend should apply retention and compliance policy. | Bavaria can delete archived rejected trials from local demo state. |
+| Reports | Backend snapshot may include persisted or materialized report rows. | Reports are derived in browser after disclosure. |
