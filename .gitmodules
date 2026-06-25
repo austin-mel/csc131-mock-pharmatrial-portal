@@ -1,0 +1,8 @@
+[submodule "front-end"]
+	path = front-end
+	url = https://github.com/austin-mel/csc131.mock.front-end.git
+	branch = apps.front-end
+[submodule "back-end"]
+	path = back-end
+	url = https://github.com/austin-mel/csc131-mock-pharmatrial-portal.git
+	branch = apps.back-end
