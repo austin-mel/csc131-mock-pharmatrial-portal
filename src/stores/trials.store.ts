@@ -621,6 +621,8 @@ export const useTrialsStore = defineStore("trials", () => {
     }
 
     function deleteTrial(trialId = currentTrialId.value) {
+        if (!trialId) return false;
+
         const index = trials.value.findIndex((item) => item.id === trialId);
         if (index < 0) return false;
 
