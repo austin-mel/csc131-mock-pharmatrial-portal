@@ -2,6 +2,7 @@ import { prisma } from '../prisma/client';
 import { PortalRole } from '../middleware/auth';
 
 type ApprovalStatus = 'approved' | 'pending' | 'rejected' | 'blocked';
+const TRIAL_ID_PATTERN = /^TRL-(\d{4})-(\d{3})$/;
 
 interface TrialRecord {
   id: string;
@@ -215,22 +216,42 @@ async function audit(actor: { id: string; portalId: PortalRole }, action: string
   });
 }
 
+async function nextTrialId(year = new Date().getFullYear()) {
+  const existingTrials = (await (prisma as any).trial.findMany({
+    where: { id: { startsWith: `TRL-${year}-` } },
+    select: { id: true },
+  })) as Array<{ id: string }>;
+  const next =
+    Math.max(
+      0,
+      ...existingTrials
+        .map((trial) => TRIAL_ID_PATTERN.exec(trial.id))
+        .filter((match): match is RegExpExecArray => Boolean(match) && Number(match?.[1]) === year)
+        .map((match) => Number(match[2])),
+    ) + 1;
+
+  return `TRL-${year}-${String(next).padStart(3, '0')}`;
+}
+
 export async function snapshot(portalId: PortalRole) {
   const records = (await (prisma as any).trial.findMany({
     include: includeGraph(),
     orderBy: { createdAt: 'desc' },
   })) as TrialRecord[];
   const visibleTrials = records.filter((trial) => canPortalViewTrial(trial, portalId));
-  const patientPairs = visibleTrials.flatMap((trial) =>
-    (trial.enrollments ?? []).map((enrollment) => [enrollment.patientId, patientDto(enrollment.patient, portalId)]),
+  const patientPairs = visibleTrials.flatMap((trial): Array<[string, ReturnType<typeof patientDto>]> =>
+    (trial.enrollments ?? []).map((enrollment) => [
+      enrollment.patientId,
+      patientDto(enrollment.patient, portalId),
+    ]),
   );
 
   return {
     trials: visibleTrials.map((trial) => trialDto(trial, portalId)),
     patients: Array.from(new Map(patientPairs).values()),
-    trialPatients: Object.fromEntries(visibleTrials.map((trial) => [trial.id, enrollmentMap(trial)])),
-    assignments: Object.fromEntries(visibleTrials.map((trial) => [trial.id, assignmentMap(trial, portalId)])),
-    reports: Object.fromEntries(visibleTrials.map((trial) => [trial.id, trial.reports?.[0]?.rows ?? []])),
+    trialPatients: Object.fromEntries(visibleTrials.map((trial) => [trial.id, enrollmentMap(trial)] as const)),
+    assignments: Object.fromEntries(visibleTrials.map((trial) => [trial.id, assignmentMap(trial, portalId)] as const)),
+    reports: Object.fromEntries(visibleTrials.map((trial) => [trial.id, trial.reports?.[0]?.rows ?? []] as const)),
   };
 }
 
@@ -239,6 +260,7 @@ export async function createTrial(actor: { id: string; portalId: PortalRole }, d
 
   const trial = await (prisma as any).trial.create({
     data: {
+      id: await nextTrialId(),
       name: draft.name,
       drug: draft.drug,
       phase: draft.phase,
