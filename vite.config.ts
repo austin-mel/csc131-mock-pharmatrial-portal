@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
+    base: "/csc131-mock-pharmatrial-portal/",
     envDir,
     plugins: [tailwindcss(), vue()],
     resolve: {
