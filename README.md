@@ -26,6 +26,7 @@ The current application is wired to a live backend by default when `VITE_API_URI
 | [FDA Administrator Guide](docs/FDA.md) | Trial approval, eligibility rules, assignments, disclosure, and regulatory review. |
 | [Bavaria Guide](docs/BAVARIA.md) | Trial creation, batch submission, non-PII monitoring, reports, and archive actions. |
 | [Architecture Reference](docs/ARCHITECTURE.md) | Frontend architecture, backend API integration, and fallback behavior. |
+| [Backend Architecture Reference](../csc131.mock.back-end/docs/ARCHITECTURE.md) | Server setup, runtime configuration, and endpoint behavior. |
 | [Data Dictionary](docs/DATA_DICTIONARY.md) | Patient, trial, appointment, state, audit, and lifecycle data definitions. |
 
 ## System Requirements
@@ -55,11 +56,11 @@ Copy-Item environment\.example.front-end.env environment\.front-end.env
 Configure `environment/.front-end.env`:
 
 ```env
-VITE_API_URI=http://localhost:3000
+VITE_API_URI=http://localhost:3000/api
 VITE_DEMO_MODE=false
 ```
 
-Use the base URL for the backend server, without a trailing slash. The frontend trims a trailing slash if one is provided.
+Use the backend API base URL, including `/api` and without a trailing slash. The frontend trims a trailing slash if one is provided.
 
 Start the local development server:
 

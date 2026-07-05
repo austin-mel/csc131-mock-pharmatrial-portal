@@ -25,7 +25,7 @@ Environment variables are loaded from the `environment` directory. The Vite conf
 
 | Variable | Required | Description |
 |---|---:|---|
-| `VITE_API_URI` | Live mode: yes | Base URL for the backend API. A trailing slash is trimmed by the client. |
+| `VITE_API_URI` | Live mode: yes | Base URL for the backend API, including `/api`. A trailing slash is trimmed by the client. |
 | `VITE_DEMO_MODE` | No | Set to `true` to force seeded fallback mode even when `VITE_API_URI` is set. |
 
 ## Application Flow
