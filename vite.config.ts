@@ -25,10 +25,20 @@ function loadCustomEnvFile(filePath: string) {
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const envDir = path.resolve(__dirname, "environment");
+  const customEnv =
+    mode === "e2e"
+      ? {}
+      : loadCustomEnvFile(path.resolve(envDir, ".front-end.env"));
   // Load environment variables from your custom folder
   const env = {
     ...loadEnv(mode, envDir),
-    ...loadCustomEnvFile(path.resolve(envDir, ".front-end.env")),
+    ...customEnv,
+    ...(process.env.VITE_API_URI !== undefined
+      ? { VITE_API_URI: process.env.VITE_API_URI }
+      : {}),
+    ...(process.env.VITE_DEMO_MODE !== undefined
+      ? { VITE_DEMO_MODE: process.env.VITE_DEMO_MODE }
+      : {}),
   };
 
   return {
