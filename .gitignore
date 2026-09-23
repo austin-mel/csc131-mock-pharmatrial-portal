@@ -71,6 +71,8 @@ pids
 coverage/
 *.lcov
 .nyc_output
+playwright-report/
+test-results/
 
 # Grunt / Parcel / Misc
 .grunt

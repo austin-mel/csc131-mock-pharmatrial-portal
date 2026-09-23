@@ -1,181 +1,287 @@
 # Pharmatrial
 
-Pharmatrial is a privacy-aware, role-based clinical trial portal built with Vue 3 and TypeScript. It models blinded collaboration between Jane Hopkins Hospital, Bavaria Pharma, and FDA Administration.
+## Table of Contents
 
-The current application is wired to a live backend by default when `VITE_API_URI` is configured. On login, the frontend authenticates against the backend, hydrates workflow state from the live server, and sends trial, patient, appointment, batch, assignment, disclosure, archive, and delete actions back through the API. If no backend URL is configured, `VITE_DEMO_MODE=true` is set, or the live API becomes unavailable, the app falls back to seeded local data so the full workflow can still be demonstrated.
+- [Project Summary](#project-summary)
+- [Technologies Used](#technologies-used)
+- [Necessary Tools](#necessary-tools)
+- [Application Setup](#application-setup)
+  - [Set Up the Development Environment](#set-up-the-development-environment)
+  - [Front-end Setup](#front-end-setup)
+  - [Back-end Setup](#back-end-setup)
+  - [Project Root Setup](#project-root-setup)
+  - [Verify the Setup](#verify-the-setup)
+- [Demo credentials](#demo-credentials)
+- [Demo walkthrough](#demo-walkthrough)
+- [Development commands](#development-commands)
+- [Data and privacy](#data-and-privacy)
+- [Documentation](#documentation)
+  - [Developer references](#developer-references)
+  - [Role guides](#role-guides)
 
-## Key Features
+## Project Summary
 
-- Role-selected portals for Jane Hopkins Doctor, Jane Hopkins Admin, FDA Administrator, and Bavaria Admin.
-- Live backend data hydration through `/workflow/snapshot`.
-- API-backed workflow actions for approvals, enrollment, CSV import, appointments, batch submission, FDA assignments, notification, disclosure, archive, and deletion.
-- Seeded-data fallback for local demos, offline review, and backend downtime.
-- Patient PII masking for FDA and Bavaria views.
-- CSV patient import with row validation and eligibility checks.
-- Appointment logging and dose tracking for eligible patients.
-- Bavaria batch submission after required approvals.
-- FDA Administrator treatment/placebo assignment and final disclosure.
-- Post-disclosure reporting for treatment outcomes and adverse events.
+Pharmatrial demonstrates a blinded clinical trial workflow across four role-based portals.
 
-## Documentation Map
+The demo supports trial approvals, patient enrollment, CSV import, treatment assignment, dose tracking, and reports. Run it with synthetic seed data or connect the companion backend through `VITE_API_URI`. The `apps.front-end` branch contains the frontend; `apps.back-end` contains the Express API backend.
 
-| Read This | When You Need |
-|---|---|
-| [Jane Hopkins Doctor Guide](docs/JHDOCTOR.md) | Patient management, CSV import, appointments, and dose tracking. |
-| [Jane Hopkins Admin Guide](docs/JHADMIN.md) | JH approval, enrollment review, completion tracking, and FDA notification. |
-| [FDA Administrator Guide](docs/FDA.md) | Trial approval, eligibility rules, assignments, disclosure, and regulatory review. |
-| [Bavaria Guide](docs/BAVARIA.md) | Trial creation, batch submission, non-PII monitoring, reports, and archive actions. |
-| [Architecture Reference](docs/ARCHITECTURE.md) | Frontend architecture, backend API integration, and fallback behavior. |
-| [Backend Architecture Reference](../csc131.mock.back-end/docs/ARCHITECTURE.md) | Server setup, runtime configuration, and endpoint behavior. |
-| [Data Dictionary](docs/DATA_DICTIONARY.md) | Patient, trial, appointment, state, audit, and lifecycle data definitions. |
+## Technologies Used
 
-## System Requirements
 
-| Requirement | Version / Notes |
-|---|---|
-| Node.js | `^20.19.0` or `>=22.12.0` |
-| Package manager | `pnpm` recommended because the repo includes `pnpm-lock.yaml` |
-| Backend API | A running Pharmatrial backend for live data mode |
-| Browser | Current Chrome, Edge, Firefox, or Safari |
-| Editor | VS Code with Volar recommended for Vue SFC support |
+[![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Pinia](https://img.shields.io/badge/Pinia-F7D336?style=for-the-badge&logo=pinia&logoColor=black)](https://pinia.vuejs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
+
+## Necessary Tools
+
+Install the required tools before setting up the application.
+
+| Tool                                                              | Purpose                                                                                             |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [Git](https://git-scm.com/downloads)                              | Clone the project branches.                                                                         |
+| [Node.js](https://nodejs.org/)                                    | Run the application and build tools. Use `^20.19.0` or `>=22.12.0`, as specified in `package.json`. |
+| [pnpm 10](https://pnpm.io/10.x/installation)                      | Install dependencies and run project commands.                                                      |
+| [Visual Studio Code](https://code.visualstudio.com/)   | Edit source and environment files, or use your preferred editor.                                    |
+| [PostgreSQL](https://www.postgresql.org/download/) | Store workflow records. Use a local database or a hosted PostgreSQL connection.                     |
 
 ## Application Setup
 
-Install dependencies:
+Complete the development environment steps, then choose a setup path:
+
+- **Demo:** Complete Front-end Setup to use synthetic data without a backend.
+- **Live API:** Complete Front-end Setup and Back-end Setup, then enable the API connection.
+- **Shared workspace:** Start with Project Root Setup to keep both branches in one parent folder.
+
+### Set Up the Development Environment
+
+1. Install Git and a supported Node.js version from [Necessary Tools](#necessary-tools). Verify both installations:
+
+   ```sh
+   git --version
+   node --version
+   npm --version
+   ```
+
+2. Install pnpm 10 globally and verify it. This version supports the project's Node.js range; see the [pnpm installation guide](https://pnpm.io/10.x/installation).
+
+   ```sh
+   npm install -g pnpm@10
+   pnpm --version
+   ```
+
+3. Open a terminal in the folder where you want to keep the project. Use VS Code or your preferred editor to edit the environment files below.
+
+### Front-end Setup
+
+1. Clone the frontend branch and enter its folder. If you already have this checkout, open its folder and skip cloning.
+
+   ```sh
+   git clone --branch apps.front-end https://github.com/austin-mel/csc131.mock.front-end.git csc131.mock.front-end
+   cd csc131.mock.front-end
+   ```
+
+2. Install dependencies:
+
+   ```sh
+   pnpm install
+   ```
+
+3. Copy the environment template if you have not created a local file.
+
+   PowerShell:
+
+   ```powershell
+   Copy-Item environment/.example.front-end.env environment/.front-end.env
+   ```
+
+   macOS or Linux:
+
+   ```sh
+   cp environment/.example.front-end.env environment/.front-end.env
+   ```
+
+4. Set these values in `environment/.front-end.env` to run the demo:
+
+   ```env
+   VITE_API_URI=
+   VITE_DEMO_MODE=true
+   ```
+
+5. Start the application:
+
+   ```sh
+   pnpm run dev
+   ```
+
+6. Open the local URL Vite prints, usually `http://localhost:5173`. Select a portal and sign in with the [demo credentials](#demo-credentials). Keep the terminal running; press `Ctrl+C` to stop the server.
+
+### Back-end Setup
+
+The backend uses Express, TypeScript, Prisma, and PostgreSQL. Complete these steps to persist workflow data.
+
+1. Open a second terminal in the frontend folder's parent directory. Clone the backend branch into a separate folder:
+
+   ```sh
+   git clone --branch apps.back-end https://github.com/austin-mel/csc131.mock.front-end.git csc131.mock.back-end
+   cd csc131.mock.back-end
+   pnpm install
+   ```
+
+2. Create a PostgreSQL database for development and copy the backend environment template.
+
+   PowerShell:
+
+   ```powershell
+   Copy-Item environment/.example.back-end.env environment/.back-end.env
+   ```
+
+   macOS or Linux:
+
+   ```sh
+   cp environment/.example.back-end.env environment/.back-end.env
+   ```
+
+3. Edit `environment/.back-end.env` with your database connection and a random signing secret:
+
+   ```env
+   PORT=3000
+   CORS_ORIGIN=http://localhost:5173
+   BACK_END_HOST=postgresql://USER:PASSWORD@HOST:5432/DATABASE
+   AUTH_TOKEN_SECRET=replace-with-a-random-secret
+   AUTH_TOKEN_ISSUER=pharmatrial-backend
+   AUTH_TOKEN_AUDIENCE=pharmatrial-frontend
+   AUTH_TOKEN_TTL_SECONDS=28800
+   ```
+
+   Use your database provider's full connection string, including any SSL options. Match `CORS_ORIGIN` to the frontend URL. Generate a signing secret with:
+
+   ```sh
+   node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+   ```
+
+4. Load the custom environment file, generate the Prisma client, and create tables in your development database:
+
+   ```sh
+   pnpm exec dotenv -e environment/.back-end.env -- prisma generate
+   pnpm exec dotenv -e environment/.back-end.env -- prisma db push
+   ```
+
+5. Start the API and keep this terminal running:
+
+   ```sh
+   pnpm run dev
+   ```
+
+6. In the frontend checkout, update `environment/.front-end.env`:
+
+   ```env
+   VITE_API_URI=http://localhost:3000/api
+   VITE_DEMO_MODE=false
+   ```
+
+7. Restart Vite, reload the browser, and sign in. Live mode uses database records; a new database starts with no trials. Sign in as Bavaria Admin to create the first trial.
+
+The API handles login at `POST /api/auth/login` and loads workflow data at `GET /api/workflow/snapshot`. See [Architecture](docs/ARCHITECTURE.md#api-routes) for the endpoint list. [Vue Router](src/router/application-routes.ts) defines page routes; [Vite configuration](vite.config.ts) defines environment loading and the development proxy.
+
+### Project Root Setup
+
+To organize both checkouts together, start in an empty parent folder and clone each branch into its own directory:
 
 ```sh
-pnpm install
+mkdir pharmatrial
+cd pharmatrial
+git clone --branch apps.front-end https://github.com/austin-mel/csc131.mock.front-end.git front-end
+git clone --branch apps.back-end https://github.com/austin-mel/csc131.mock.front-end.git back-end
 ```
 
-Create the frontend environment file from the example:
+Follow [Front-end Setup](#front-end-setup) in `front-end/` and [Back-end Setup](#back-end-setup) in `back-end/`, skipping their clone steps. Keep each environment file in its service's `environment/` directory. The parent folder needs no environment file or dependency installation.
+
+After configuration, run these commands from the parent folder in separate terminals:
 
 ```sh
-Copy-Item environment\.example.front-end.env environment\.front-end.env
+pnpm --dir back-end run dev
 ```
-
-Configure `environment/.front-end.env`:
-
-```env
-VITE_API_URI=http://localhost:3000/api
-VITE_DEMO_MODE=false
-```
-
-Use the backend API base URL, including `/api` and without a trailing slash. The frontend trims a trailing slash if one is provided.
-
-Start the local development server:
 
 ```sh
-pnpm dev
+pnpm --dir front-end run dev
 ```
 
-Build and type-check:
+### Verify the Setup
+
+From the frontend folder, build the application and run the browser tests:
 
 ```sh
 pnpm build
+pnpm exec playwright install chromium
+pnpm test:e2e
 ```
 
-Preview the production build:
+Run `pnpm preview` to inspect the production build. Browser tests use demo mode; verify live login and trial creation separately when you configure the backend. See [Testing](docs/TESTING.md) for test coverage and Windows command alternatives.
 
-```sh
-pnpm preview
-```
+## Demo credentials
 
-## Live Backend Mode
+Select a portal on the login page, then use its credentials.
 
-Live mode is active when `VITE_API_URI` is set and `VITE_DEMO_MODE` is not `true`.
+| Portal              | Demo user       | Email                   | Password         |
+| ------------------- | --------------- | ----------------------- | ---------------- |
+| Jane Hopkins Doctor | Dr. Sarah Chen  | `doctor@jh.example`     | `jh-doctor-demo` |
+| Jane Hopkins Admin  | Emily Rodriguez | `admin@jh.example`      | `jh-admin-demo`  |
+| FDA Admin           | Michael Torres  | `admin@fda.example`     | `fda-demo`       |
+| Bavaria Admin       | Anna Keller     | `admin@bavaria.example` | `bavaria-demo`   |
 
-At runtime:
+## Demo walkthrough
 
-1. Login calls `POST /auth/login` with the selected portal ID, email, and password.
-2. Successful login stores the returned bearer token in memory.
-3. The dashboard loads `GET /workflow/snapshot`.
-4. Workflow actions update local UI state immediately, then call the matching backend endpoint.
-5. Successful backend mutations return or trigger a refreshed workflow snapshot.
+Use demo mode and follow this order. Log out to switch portals in the same browser tab. Refreshing the page resets local changes and login state.
 
-The frontend expects the backend snapshot shape to include:
+1. **Bavaria Admin:** Create a trial.
+2. **FDA Admin:** Set eligibility criteria and approve the trial.
+3. **Jane Hopkins Admin:** Add or import patients, review eligibility, and approve participation. Enroll at least one eligible patient to continue through assignment and dosing.
+4. **Bavaria Admin:** Submit batch metadata.
+5. **FDA Admin:** Randomize and lock assignments for every eligible patient.
+6. **Jane Hopkins Doctor:** Log appointments and record each eligible patient's required doses.
+7. **Jane Hopkins Admin:** Confirm dose completion and notify FDA.
+8. **FDA Admin:** Publish disclosure. Each portal can then review the report.
+9. **Bavaria Admin:** Archive the completed trial. Bavaria can also archive rejected trials and delete them after archiving.
 
-```ts
-{
-  trials: Trial[];
-  patients: Patient[];
-  trialPatients: TrialPatientsByTrial;
-  assignments: Record<string, TrialAssignmentMap>;
-  reports?: Record<string, ReportRow[]>;
-}
-```
+## Development commands
 
-## Seeded-Data Fallback
+| Task                         | Command               |
+| ---------------------------- | --------------------- |
+| Build and type-check         | `pnpm build`          |
+| Type-check only              | `pnpm run type-check` |
+| Preview the production build | `pnpm preview`        |
+| Run browser tests            | `pnpm test:e2e`       |
 
-The app automatically uses seeded local data when any of these are true:
+See [Testing](docs/TESTING.md) for browser installation, test profiles, and coverage.
 
-- `VITE_DEMO_MODE=true`
-- `VITE_API_URI` is empty
-- the API request layer marks the backend unavailable
-- the initial dashboard snapshot does not return before the hydration timeout
+## Data and privacy
 
-Fallback data comes from `src/data` and is loaded into Pinia stores. This mode keeps the demo usable without a server, but changes are browser-local and are not persisted to the backend.
+The demo uses synthetic trial and patient data. Jane Hopkins roles can view personally identifiable information (PII); FDA and Bavaria views mask names and dates of birth. The interface hides treatment assignments from Jane Hopkins and Bavaria until FDA publishes disclosure.
 
-## Demo Portals
+Demo changes stay in memory. Frontend masking controls display only; a production backend must enforce authorization, protect PII, and persist records.
 
-| Portal | Demo User | Main Purpose |
-|---|---|---|
-| Jane Hopkins Doctor | Dr. Sarah Chen | Manage patients, appointments, and doses. |
-| Jane Hopkins Admin | Emily Rodriguez | Approve JH review and notify FDA after dosing completion. |
-| FDA Administrator | Michael Torres | Approve trials, assign treatment groups, and disclose results. |
-| Bavaria Admin | Anna Keller | Create trials, submit batches, monitor status, and archive closed trials. |
+## Documentation
 
-## Demo Login Credentials
+### Developer references
 
-These credentials are also used by seeded fallback mode.
+| Document                                   | Use it to                                                            |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| [Architecture](docs/ARCHITECTURE.md)       | Understand runtime modes, API routes, state, and privacy boundaries. |
+| [Data dictionary](docs/DATA_DICTIONARY.md) | Look up fields, types, and workflow values.                          |
+| [Testing](docs/TESTING.md)                 | Run build checks and browser tests.                                  |
 
-| Portal | Email | Password |
-|---|---|---|
-| Jane Hopkins Doctor | `doctor@jh.example` | `jh-doctor-demo` |
-| Jane Hopkins Admin | `admin@jh.example` | `jh-admin-demo` |
-| FDA Administrator | `admin@fda.example` | `fda-demo` |
-| Bavaria Admin | `admin@bavaria.example` | `bavaria-demo` |
+### Role guides
 
-## Routes
+| Guide                                   | Use it to                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------------- |
+| [Bavaria Admin](docs/BAVARIA.md)        | Create trials, submit batches, and manage closed records.                  |
+| [FDA Administrator](docs/FDA.md)        | Approve trials, set eligibility, lock assignments, and publish disclosure. |
+| [Jane Hopkins Admin](docs/JHADMIN.md)   | Enroll patients, approve participation, monitor dosing, and notify FDA.    |
+| [Jane Hopkins Doctor](docs/JHDOCTOR.md) | Update patient records, log appointments, and record doses.                |
 
-| Route | Access | Description |
-|---|---|---|
-| `/` | Public | Portal selection and login. |
-| `/dashboard` | Authenticated Users | Main trial workspace for the selected role. |
-| `/:pathMatch(.*)*` | Public | Not found page. |
-
-Authenticated routes are protected against direct URL access, and cross-persona access is constrained by the selected portal state, role-scoped tabs, and privacy-aware display rules.
-
-## Privacy Rules
-
-- Jane Hopkins roles can see patient PII for clinical workflows.
-- FDA and Bavaria views mask patient names and DOB values before disclosure.
-- Jane Hopkins and Bavaria cannot see Bavaria/placebo assignments before FDA disclosure.
-- Reports become visible only after FDA publishes final disclosure.
-- The frontend still applies privacy display rules, but live deployments should also enforce authorization and PII restrictions on the backend.
-
-## Project Structure
-
-```text
-environment/   Frontend environment example and local env file location
-src/
-  api/          Backend API client and DTO mapping helpers
-  assets/       Logos, SVG assets, and global Tailwind styles
-  components/   Reusable UI, trial tabs, modals, tables, and navigation
-  composables/  Domain logic for trials, patients, batches, appointments, and reports
-  data/         Seeded fallback portals, trials, patients, ICD codes, and assignments
-  router/       Vue Router routes and route metadata
-  stores/       Pinia stores for auth, UI, trials, and patients
-  types/        TypeScript domain models
-  utils/        CSV parsing and privacy display helpers
-```
-
-## Source References
-
-- Requirements: [docs/REQUIREMENTS.html](docs/REQUIREMENTS.html)
-- API client: `src/api/client.ts`
-- Snapshot DTO mapping: `src/api/dtoMappers.ts`
-- Trial workflow state: `src/stores/trials.store.ts`
-- Auth and portal login: `src/stores/auth.store.ts`, `src/data/seedPortals.ts`
-- Patient workflow: `src/stores/patients.store.ts`, `src/composables/patients`
-- Seeded fallback data: `src/data`
-- Privacy helpers: `src/utils/privacy.ts`
+The [original requirements](docs/REQUIREMENTS.html) preserve historical scope. Use the Markdown guides for current behavior.
