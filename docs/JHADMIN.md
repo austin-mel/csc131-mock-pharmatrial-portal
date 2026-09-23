@@ -1,92 +1,51 @@
-# Jane Hopkins Admin Guide
+# Jane Hopkins Admin guide
 
-## Role Summary
+Use the Jane Hopkins Admin portal (`jh-admin`) to enroll patients, review participation, monitor dosing, and notify FDA. Sign in as Emily Rodriguez with the [demo credentials](../README.md#demo-credentials).
 
-Jane Hopkins Admin is the institutional coordination role for trial approval, enrollment review, dose completion tracking, and FDA notification.
+## Access
 
-| Field | Value |
-|---|---|
-| Portal ID | `jh-admin` |
-| Demo user | Emily Rodriguez |
-| Organization | Jane Hopkins Hospital |
-| Main responsibility | Approve Jane Hopkins participation and notify FDA when dosing is complete. |
+Jane Hopkins Admin can view patient PII, eligibility, dose progress, notification status, and reports. The interface hides treatment groups until FDA publishes disclosure.
 
-## What This Role Can See
+## Enroll patients
 
-- Pending trials awaiting Jane Hopkins review.
-- Enrolled patients and eligibility status.
-- Patient PII for Jane Hopkins clinical coordination.
-- Dose completion status for eligible patients.
-- Notification status and final reports after disclosure.
+1. Open the trial's **Patients** tab.
+2. Select **Add Patient** or **Bulk Upload (CSV)**.
+3. Save patient details or review the CSV preview and confirm import.
+4. Review each patient's eligibility before approving participation.
 
-## What This Role Cannot See
+The app permits entry on visible pending and active trials until FDA notification. Complete enrollment before FDA locks assignments so the roster matches the assignment list.
 
-- Bavaria/placebo treatment assignment before FDA disclosure.
-- FDA-only treatment assignment controls.
-- FDA-only final disclosure controls.
-- Bavaria-only trial creation, batch submission, archive, or deletion controls.
+### CSV format
 
-## Main Actions
+Use **Download Template** in the upload dialog. A minimal example:
 
-| Action | When It Is Available | Result |
-|---|---|---|
-| Review enrolled patients | Pending or active JH-visible trial | Shows patients and eligibility status. |
-| Approve JH review | FDA approved, JH approval pending, enrolled patients exist | Sets Jane Hopkins approval to `approved`. |
-| Reject JH review | JH approval pending | Sets trial status to `rejected`. |
-| Monitor dose completion | Active trial with locked assignments | Shows eligible patient dose progress. |
-| Notify FDA | Assignments locked and all eligible patients fully dosed | Sets `notifiedFDA` to true. |
-| View report | Trial disclosed | Shows final report with Jane Hopkins PII visibility. |
+```csv
+patientId,name,dob,icdCodes
+demo-001,Alex Sample,1985-06-15,B20|Z21
+```
 
-## Workflow: Approve a Trial
+- Supply a name and date of birth for each new patient. Use `YYYY-MM-DD` for dates.
+- Omit `patientId` to generate an ID, or reuse an existing ID to update that patient. An existing patient can supply a missing date of birth.
+- Separate ICD codes with `|`. The template lists optional clinical and demographic fields.
+- Review validation and eligibility separately. Import skips invalid rows but enrolls valid rows even when they fail eligibility criteria.
 
-1. Log in as Jane Hopkins Admin.
-2. Open a trial with FDA approval complete and JH approval pending.
-3. Review enrolled patients.
-4. Confirm that at least one patient is enrolled.
-5. Approve the trial.
-6. The system sets `approvals.jh` to `approved`.
-7. The trial becomes ready for Bavaria batch submission when FDA approval is also approved.
+## Approve or reject participation
 
-## Workflow: Reject a Trial
+**Prerequisites:** FDA must approve the trial, and Jane Hopkins review must remain pending. Enroll at least one patient before approval.
 
-1. Open a trial with JH approval pending.
-2. Review trial and enrollment information.
-3. Reject the trial.
-4. The system sets `approvals.jh` to `rejected`.
-5. The trial status becomes `rejected`.
-6. Rejected trials cannot continue to batch submission, assignment, dosing, notification, or disclosure.
+1. Review trial details and enrolled patients.
+2. Approve or reject Jane Hopkins participation.
 
-## Workflow: Monitor Dose Completion
+Approval enables Bavaria to submit a batch. Rejection sets the trial to `rejected` and stops its workflow.
 
-1. Open an active trial.
-2. Review the dose tracker.
-3. Confirm each eligible patient has reached the required dose count.
-4. The system calculates completion using `dosesPerPatient`.
-5. When every eligible patient is complete, the notify workflow becomes available.
+## Notify FDA
 
-## Workflow: Notify FDA
+**Prerequisites:** FDA must lock assignments, and every eligible patient must reach the trial's required dose count.
 
-1. Open the notify tab for an active trial.
-2. Confirm FDA assignments are locked.
-3. Confirm all eligible patients completed required dosing.
-4. Submit FDA notification.
-5. The system sets `notifiedFDA` to true.
-6. The trial status label changes to `Awaiting FDA Report`.
-7. FDA can now publish final disclosure when disclosure prerequisites are met.
+1. Open **Dose Tracker** and review completion.
+2. Open **Notify FDA** and submit the notification.
+3. Review **Report** after FDA publishes disclosure.
 
-## Privacy and Blinding Rules
+Notification sets `notifiedFDA` to `true` and closes patient entry. FDA controls disclosure.
 
-- Jane Hopkins Admin can see patient PII for institutional trial coordination.
-- Bavaria/placebo assignment remains hidden before FDA disclosure.
-- FDA notification is blocked until assignments are locked and dosing is complete.
-- Jane Hopkins Admin cannot publish final disclosure.
-
-## Related Source Files
-
-| Area | Source |
-|---|---|
-| Approval and notification state | `src/stores/trials.store.ts` |
-| Trial status helpers | `src/composables/trials/useTrialStatus.ts` |
-| Patient and dose calculations | `src/composables/patients/usePatients.ts` |
-| Notify modal | `src/components/Modals/Regulatory/NotifyFdaModal.vue` |
-| Trial dose tab | `src/components/Trials/TrialDoseTrackerTab.vue` |
+See [Architecture](ARCHITECTURE.md) for shared privacy and persistence rules.

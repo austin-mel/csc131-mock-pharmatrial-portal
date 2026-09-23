@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Clinical Trial Data Exchange System — Project Description &amp; Outline</title>
+<title>Clinical Trial Data Exchange System - Original Requirements Artifact</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -597,21 +597,19 @@ body {
 </head>
 <body>
 
-<!-- HERO -->
 <header class="hero">
-  <div class="hero-eyebrow">Project Description &amp; Outline &nbsp;·&nbsp; Dream Team &nbsp;·&nbsp; CSUS CECS</div>
+  <div class="hero-eyebrow">Original Requirements Artifact | Dream Team | CSUS CECS</div>
   <h1>Clinical Trial<br><em>Data Exchange</em><br>System</h1>
   <div class="hero-meta">
     <div class="hero-meta-item"><div class="hm-label">Team</div><div class="hm-value">Dream Team</div></div>
     <div class="hero-meta-item"><div class="hm-label">Client</div><div class="hm-value">Chris Grove</div></div>
     <div class="hero-meta-item"><div class="hm-label">Institution</div><div class="hm-value">California State University, Sacramento</div></div>
     <div class="hero-meta-item"><div class="hm-label">Target Delivery</div><div class="hm-value">April 6, 2023</div></div>
-    <div class="hero-meta-item"><div class="hm-label">Document</div><div class="hm-value">Project Description &amp; Outline v2.0</div></div>
+    <div class="hero-meta-item"><div class="hm-label">Document</div><div class="hm-value">Original Requirements Artifact v2.0</div></div>
   </div>
 </header>
 
 <div class="layout">
-  <!-- SIDEBAR NAV -->
   <aside class="sidebar">
     <div class="nav-label">Contents</div>
     <ul class="nav-list">
@@ -630,36 +628,34 @@ body {
     </ul>
   </aside>
 
-  <!-- MAIN CONTENT -->
   <main class="main">
 
-    <!-- 01 -->
     <section class="section" id="s01">
       <div class="section-header">
         <span class="section-number">01</span>
         <h2>Executive Summary</h2>
       </div>
       <div class="divider"></div>
-      <p class="prose">In the United States, pharmaceutical companies must conduct multi-phase clinical trials before the FDA approves a new medication. These trials require controlled exchange of sensitive data among three parties — the healthcare provider, the pharmaceutical company, and the FDA — while preserving patient privacy and preventing premature access to blinded results.</p>
-      <p class="prose">This project currently delivers a <strong>front-end proof-of-concept portal</strong> for the FDA, Bavaria (a pharmaceutical company), and Jane Hopkins Hospital (a healthcare provider). The app demonstrates the clinical trial lifecycle through role-selected demo portals, seeded trial and patient data, scoped UI permissions, and simulated workflow state managed entirely in the browser.</p>
+      <p class="prose">Clinical trials require controlled data exchange among healthcare providers, pharmaceutical sponsors, and FDA reviewers. The workflow must protect patient privacy and preserve blinded results before disclosure.</p>
+      <p class="prose">The original project requirements artifact remains here for historical scope review. Use the Markdown files for current setup, testing, architecture, and role workflow documentation.</p>
+      <p class="prose">This project delivers a <strong>front-end proof-of-concept portal</strong> for the FDA, Bavaria (a pharmaceutical company), and Jane Hopkins Hospital (a healthcare provider). The app demonstrates the clinical trial lifecycle through role-selected demo portals, seeded trial and patient data, scoped UI permissions, and simulated workflow state managed in the browser.</p>
       <p class="prose">The implementation is built with <strong>Vue 3</strong>, <strong>TypeScript</strong>, <strong>Pinia</strong>, <strong>Vue Router</strong>, <strong>Tailwind CSS</strong>, and <strong>Vite</strong>. It models trial creation, staged approvals, patient enrollment, eligibility checks, appointment and dose logging, Bavaria batch submission, FDA treatment assignment, JH completion notification, final FDA disclosure, and post-trial reporting.</p>
     </section>
 
-    <!-- 02 -->
     <section class="section" id="s02">
       <div class="section-header">
         <span class="section-number">02</span>
         <h2>Project Scope</h2>
       </div>
       <div class="divider"></div>
-      <p class="prose">The current app supports a simulated blinded clinical trial lifecycle: trial creation, approval review, patient enrollment and eligibility verification, appointment and dose tracking, drug batch submission, FDA assignment, completion notification, final disclosure, and reporting across four role-selected demo portals.</p>
+      <p class="prose">The app supports a simulated blinded clinical trial lifecycle: trial creation, approval review, patient enrollment and eligibility verification, appointment and dose tracking, drug batch submission, FDA assignment, completion notification, final disclosure, and reporting across four role-selected demo portals.</p>
 
       <div class="sub-label">In Scope</div>
       <div class="card-grid">
         <div class="card"><div class="card-type">Portal</div><h4>Jane Hopkins Hospital</h4><p>Doctor and Admin role views for patient management, CSV import, appointments, dose tracking, eligibility, and FDA completion notification.</p></div>
         <div class="card"><div class="card-type">Portal</div><h4>FDA Administration</h4><p>Trial approval, eligibility criteria definition, eligible patient review, treatment assignment, and end-of-trial disclosure.</p></div>
         <div class="card"><div class="card-type">Portal</div><h4>Bavaria Pharma</h4><p>Trial creation, batch submission, privacy-preserving trial monitoring, archive review, and post-disclosure reports.</p></div>
-        <div class="card"><div class="card-type">Implementation</div><h4>Vue + Pinia Demo App</h4><p>Single-page Vite application with seeded data, Pinia stores, Vue Router routes, reusable components, and Vitest/Playwright coverage.</p></div>
+        <div class="card"><div class="card-type">Implementation</div><h4>Vue + Pinia Demo App</h4><p>Single-page Vite application with seeded data, Pinia stores, Vue Router routes, reusable components, and Playwright coverage.</p></div>
         <div class="card"><div class="card-type">Feature</div><h4>Seeded Trial Data</h4><p>Multiple synthetic trial states, synthetic patient records, ICD-10 eligibility criteria, assignment maps, and 5-dose progress tracking.</p></div>
         <div class="card"><div class="card-type">Feature</div><h4>Role-Scoped UI Access</h4><p>Portal-specific tabs, actions, and display fields demonstrate how each persona sees only the data needed for their workflow.</p></div>
       </div>
@@ -677,7 +673,6 @@ body {
       </div>
     </section>
 
-    <!-- 03 -->
     <section class="section" id="s03">
       <div class="section-header">
         <span class="section-number">03</span>
@@ -731,28 +726,27 @@ body {
       </div>
     </section>
 
-    <!-- 04 -->
     <section class="section" id="s04">
       <div class="section-header">
         <span class="section-number">04</span>
         <h2>Functional Requirements</h2>
       </div>
       <div class="divider"></div>
-      <p class="prose">Current requirements are derived from the Vue app's implemented views, stores, modals, access helpers, and automated tests.</p>
+      <p class="prose">These requirements describe the Vue app's implemented views, stores, modals, access helpers, and automated tests.</p>
 
       <table class="req-table">
         <thead>
           <tr><th style="width:50px">ID</th><th>Description</th><th style="width:108px">Owner</th></tr>
         </thead>
         <tbody>
-          <tr><td class="req-id">FR1</td><td>Users must be able to select Jane Hopkins Doctor, Jane Hopkins Admin, FDA Admin, or Bavaria Admin and enter the demo workspace through the login screen.</td><td><span class="badge b-all">All</span></td></tr>
+          <tr><td class="req-id">FR1</td><td>Users must be able to select Jane Hopkins Doctor, Jane Hopkins Admin, FDA Administrator, or Bavaria Admin and enter the demo workspace through the login screen.</td><td><span class="badge b-all">All</span></td></tr>
           <tr><td class="req-id">FR2</td><td>Jane Hopkins Doctor must be able to view PII, add/import/edit patients, create appointments, and record dose administrations with running dose counts.</td><td><span class="badge b-jh">JH Doctor</span></td></tr>
           <tr><td class="req-id">FR3</td><td>Jane Hopkins Admin must be able to review enrolled patients, approve eligible trials after patients are assigned, track dose completion, and notify FDA when all eligible patients complete dosing.</td><td><span class="badge b-jh">JH Admin</span></td></tr>
           <tr><td class="req-id">FR4</td><td>Bavaria Admin must be able to create trial drafts and submit batch metadata after FDA and Jane Hopkins approvals are complete.</td><td><span class="badge b-bav">Bavaria</span></td></tr>
           <tr><td class="req-id">FR5</td><td>Bavaria Admin must be able to monitor active trials without patient PII and view archived, rejected, active, and completed trial states.</td><td><span class="badge b-bav">Bavaria</span></td></tr>
           <tr><td class="req-id">FR6</td><td>Bavaria, FDA, and Jane Hopkins users must be able to view post-trial report data after FDA publishes final disclosure.</td><td><span class="badge b-all">All</span></td></tr>
-          <tr><td class="req-id">FR7</td><td>FDA Admin must be able to approve or reject pending trials, define eligibility criteria, and assign Bavaria vs. placebo treatments to eligible patient UUIDs after Bavaria submits a batch.</td><td><span class="badge b-fda">FDA</span></td></tr>
-          <tr><td class="req-id">FR8</td><td>FDA Admin must be able to publish final disclosure only after assignments are locked, Jane Hopkins has notified FDA, and eligible patients have completed the required dose count.</td><td><span class="badge b-fda">FDA</span></td></tr>
+          <tr><td class="req-id">FR7</td><td>FDA Administrator must be able to approve or reject pending trials, define eligibility criteria, and assign Bavaria vs. placebo treatments to eligible patient UUIDs after Bavaria submits a batch.</td><td><span class="badge b-fda">FDA</span></td></tr>
+          <tr><td class="req-id">FR8</td><td>FDA Administrator must be able to publish final disclosure only after assignments are locked, Jane Hopkins has notified FDA, and eligible patients have completed the required dose count.</td><td><span class="badge b-fda">FDA</span></td></tr>
         </tbody>
       </table>
 
@@ -765,7 +759,6 @@ body {
       </div>
     </section>
 
-    <!-- 05 -->
     <section class="section" id="s05">
       <div class="section-header">
         <span class="section-number">05</span>
@@ -775,7 +768,7 @@ body {
 
       <div class="sub-label">Non-Functional Requirements</div>
       <div class="card-grid" style="grid-template-columns: repeat(3,1fr);">
-        <div class="card"><div class="card-type">NFR1</div><h4>Responsiveness &amp; Performance</h4><p>UI must be responsive across device sizes. Demo state updates should reflect immediately in the active workspace.</p></div>
+        <div class="card"><div class="card-type">NFR1</div><h4>Responsiveness &amp; Performance</h4><p>UI must be responsive across device sizes. Workspace updates must appear immediately in the active workspace.</p></div>
         <div class="card"><div class="card-type">NFR2</div><h4>Usability</h4><p>Interfaces must be intuitive for non-technical users. Clear navigation per portal.</p></div>
         <div class="card"><div class="card-type">NFR3</div><h4>Accessibility</h4><p>Meets baseline accessibility standards including readable contrast ratios and semantic HTML.</p></div>
       </div>
@@ -792,7 +785,7 @@ body {
         </div>
         <div class="sec-item">
           <span class="sec-badge">S3</span>
-          <div><div class="sec-title">Role-Based Access Control</div><p class="sec-desc">Jane Hopkins Doctor, Jane Hopkins Admin, FDA Admin, and Bavaria Admin profiles have distinct tab visibility and action availability through the app's access helper logic.</p></div>
+          <div><div class="sec-title">Role-Based Access Control</div><p class="sec-desc">Jane Hopkins Doctor, Jane Hopkins Admin, FDA Administrator, and Bavaria Admin profiles have distinct tab visibility and action availability through the app's access helper logic.</p></div>
         </div>
         <div class="sec-item">
           <span class="sec-badge">S4</span>
@@ -801,7 +794,6 @@ body {
       </div>
     </section>
 
-    <!-- 06 -->
     <section class="section" id="s06">
       <div class="section-header">
         <span class="section-number">06</span>
@@ -845,13 +837,12 @@ body {
         <tbody>
           <tr><td><span class="badge b-jh">JH Doctor</span></td><td>Overview, patients, appointments, dose tracker, and final report after disclosure</td><td>Edit patient info, upload CSV patients, log appointments, record doses</td></tr>
           <tr><td><span class="badge b-jh">JH Admin</span></td><td>Overview, patients during approval, dose tracker, FDA notification, and final report after disclosure</td><td>Approve trials, enroll patients, notify FDA when dosing is complete</td></tr>
-          <tr><td><span class="badge b-fda">FDA Admin</span></td><td>Overview, assignments, disclosure, active patient views, and anonymized report data</td><td>Approve/reject trials, set eligibility, assign treatments, publish disclosure</td></tr>
+          <tr><td><span class="badge b-fda">FDA Administrator</span></td><td>Overview, assignments, disclosure, active patient views, and anonymized report data</td><td>Approve/reject trials, set eligibility, assign treatments, publish disclosure</td></tr>
           <tr><td><span class="badge b-bav">Bavaria Admin</span></td><td>Overview, batch workflow, active trial monitoring, and report after disclosure</td><td>Create trials, submit batches, archive completed/rejected trials</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- 07 -->
     <section class="section" id="s07">
       <div class="section-header">
         <span class="section-number">07</span>
@@ -861,8 +852,8 @@ body {
 
       <div class="sub-label">Patient Record Fields</div>
       <div class="field-legend">
-        <span><span class="ldot" style="background:var(--bav)"></span>PII — Jane Hopkins only</span>
-        <span><span class="ldot" style="background:var(--fda)"></span>Anonymized — shareable</span>
+        <span><span class="ldot" style="background:var(--bav)"></span>PII, Jane Hopkins only</span>
+        <span><span class="ldot" style="background:var(--fda)"></span>Anonymized, shareable</span>
         <span><span class="ldot" style="background:var(--jh)"></span>Trial data</span>
       </div>
       <div class="field-grid">
@@ -909,7 +900,6 @@ body {
       </div>
     </section>
 
-    <!-- 08 -->
     <section class="section" id="s08">
       <div class="section-header">
         <span class="section-number">08</span>
@@ -928,13 +918,12 @@ body {
           <tr><td class="req-id">US4</td><td>As a Jane Hopkins doctor, I want to create and log appointments so that I can track scheduled visits and dose administrations.</td><td><span class="badge b-jh">JH Doctor</span></td></tr>
           <tr><td class="req-id">US5</td><td>As a Jane Hopkins admin, I want to see which patients are eligible to receive drugs so that I can confirm trial participation counts.</td><td><span class="badge b-jh">JH Admin</span></td></tr>
           <tr><td class="req-id">US6</td><td>As a Jane Hopkins admin, I want to notify FDA after all eligible patients complete dosing so that the final review can proceed.</td><td><span class="badge b-jh">JH Admin</span></td></tr>
-          <tr><td class="req-id">US7</td><td>As an FDA user, I want to approve or reject trials and assign treatment groups so that the blinded workflow can progress.</td><td><span class="badge b-fda">FDA Admin</span></td></tr>
+          <tr><td class="req-id">US7</td><td>As an FDA user, I want to approve or reject trials and assign treatment groups so that the blinded workflow can progress.</td><td><span class="badge b-fda">FDA Administrator</span></td></tr>
           <tr><td class="req-id">US8</td><td>As a Bavaria user, I want to create trials, submit batches, and view post-disclosure reports so that I can follow the study without accessing PII.</td><td><span class="badge b-bav">Bavaria</span></td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- 09 -->
     <section class="section" id="s09">
       <div class="section-header">
         <span class="section-number">09</span>
@@ -949,13 +938,12 @@ body {
           <tr><td class="s-layer">State</td><td class="s-tech">Pinia</td><td class="s-desc">Holds auth, selected portal, trial state, patients, assignments, UI modals, toasts, pagination, archive filters, and workflow transitions.</td></tr>
           <tr><td class="s-layer">Styling</td><td class="s-tech">Tailwind CSS</td><td class="s-desc">Utility-first CSS with custom theme values for FDA, Jane Hopkins, and Bavaria visual roles.</td></tr>
           <tr><td class="s-layer">Build Tool</td><td class="s-tech">Vite</td><td class="s-desc">Development server and production build pipeline for the Vue application.</td></tr>
-          <tr><td class="s-layer">Testing</td><td class="s-tech">Vitest + Playwright</td><td class="s-desc">Unit tests cover stores, access rules, reports, appointments, dose tracking, CSV behavior, and modals; Playwright covers representative portal flows.</td></tr>
+          <tr><td class="s-layer">Testing</td><td class="s-tech">Playwright</td><td class="s-desc">End-to-end tests cover login, credential handling, protected routes, logout behavior, and responsive layouts.</td></tr>
           <tr><td class="s-layer">Data</td><td class="s-tech">Seed Modules</td><td class="s-desc">In-memory seed files provide portals, trials, patients, ICD codes, and assignments for the proof-of-concept demo.</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- 10 -->
     <section class="section" id="s10">
       <div class="section-header">
         <span class="section-number">10</span>
@@ -975,15 +963,14 @@ body {
       <div class="tag-row">
         <span class="tag">All members new to Vue 3</span>
         <span class="tag">All members new to Tailwind CSS</span>
-        <span class="tag">No backend API in current implementation</span>
+        <span class="tag">Backend source omitted from this repository</span>
         <span class="tag">No production database persistence</span>
-        <span class="tag">Demo login does not validate credentials</span>
+        <span class="tag">Seeded demo credentials for local review</span>
         <span class="tag">Trial and error learning approach</span>
-        <span class="tag">Proof-of-concept only — not production-ready</span>
+        <span class="tag">Proof-of-concept only, not production-ready</span>
       </div>
     </section>
 
-    <!-- 11 -->
     <section class="section" id="s11">
       <div class="section-header">
         <span class="section-number">11</span>
@@ -997,7 +984,7 @@ body {
         <div class="team-card"><div class="team-role">Member</div><div class="team-name">Matthew Ryan</div><div class="team-skills">Java, C++, HTML, CSS, Node.js</div></div>
         <div class="team-card"><div class="team-role">Member</div><div class="team-name">Danny Phan</div><div class="team-skills">C++, Java, JS, HTML, CSS, PHP, MS SQL, Git</div></div>
         <div class="team-card"><div class="team-role">Member</div><div class="team-name">Joshua Langley</div><div class="team-skills">Java, C++, HTML, CSS (4+ years)</div></div>
-        <div class="team-card"><div class="team-role">Member</div><div class="team-name">Nonika Kathyal</div><div class="team-skills">Java, C++, JS; Agile/Kanban experience</div></div>
+        <div class="team-card"><div class="team-role">Member</div><div class="team-name">Nonika Kathyal</div><div class="team-skills">Java, C++, JS, Agile/Kanban experience</div></div>
         <div class="team-card"><div class="team-role">Member</div><div class="team-name">Warisara Lee</div><div class="team-skills">Java, C++, Python, NetBeans</div></div>
       </div>
 
@@ -1012,13 +999,12 @@ body {
       <div class="milestone-bar">
         <div>
           <div class="mb-label">Personal Team Deadline</div>
-          <div class="mb-title">Full feature-complete build — all portals functional, security demonstrations ready</div>
+          <div class="mb-title">Full feature-complete build with all portals functional and security demonstrations ready</div>
         </div>
         <div class="mb-date">Apr 6, 2023</div>
       </div>
     </section>
 
-    <!-- 12 -->
     <section class="section" id="s12">
       <div class="section-header">
         <span class="section-number">12</span>
@@ -1037,8 +1023,8 @@ body {
 
 <footer class="site-footer">
   <span>Clinical Trial Data Exchange System</span>
-  <span>Dream Team &nbsp;·&nbsp; CSUS College of Engineering &amp; Computer Science</span>
-  <span>Project Description &amp; Outline v2.0</span>
+  <span>Dream Team | CSUS College of Engineering and Computer Science</span>
+  <span>Original Requirements Artifact v2.0</span>
 </footer>
 
 </body>
