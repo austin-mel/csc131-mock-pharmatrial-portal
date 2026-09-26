@@ -25,7 +25,7 @@ Pharmatrial demonstrates a blinded clinical trial workflow across four role-base
 
 The demo supports trial approvals, patient enrollment, CSV import, treatment assignment, dose tracking, and reports. Run it with synthetic seed data or connect the companion backend through `VITE_API_URI`. The `apps.front-end` branch contains the frontend; `apps.back-end` contains the Express API backend.
 
-_This project has been adapted from a Computer Science Software Engineering Semester Project with real world stakeholder **Vendia**._ 
+_This project has been adapted from a Computer Science Software Engineering Semester Project with real world stakeholder [**Vendia**](https://www.vendia.com/)._ 
 _Original project files can be found [here](https://github.com/austin-mel-edu/csc131-semester-project)._
 
 ## Technologies Use
