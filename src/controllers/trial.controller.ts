@@ -9,7 +9,7 @@ export const getTrials = async (_req: Request, res: Response) => {
 export const getTrialById = async (req: Request, res: Response) => {
   const trial = await prisma.trial.findUnique({
     where: { id: req.params.id },
-    include: { patients: true },
+    include: { enrollments: { include: { patient: true } } },
   });
   if (!trial) return res.status(404).json({ message: 'Trial not found' });
   res.json(trial);

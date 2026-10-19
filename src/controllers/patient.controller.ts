@@ -3,7 +3,7 @@ import { prisma } from '../prisma/client';
 
 export const getPatients = async (_req: Request, res: Response) => {
   const patients = await prisma.patient.findMany({
-    include: { trial: true },
+    include: { enrollments: { include: { trial: true } } },
   });
   res.json(patients);
 };
@@ -11,7 +11,7 @@ export const getPatients = async (_req: Request, res: Response) => {
 export const getPatientById = async (req: Request, res: Response) => {
   const patient = await prisma.patient.findUnique({
     where: { id: req.params.id },
-    include: { allergies: true, medications: true, history:true, appointments: true, trial: true },
+    include: { enrollments: { include: { trial: true, appointments: true } } },
   });
   if (!patient) return res.status(404).json({ message: 'Patient not found' });
   res.json(patient);
