@@ -32,6 +32,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+        env:
+          VITE_API_URI: ${{ vars.VITE_API_URI }}
+          VITE_DEMO_MODE: ${{ vars.VITE_DEMO_MODE }}
 
       - uses: actions/configure-pages@v5
 
