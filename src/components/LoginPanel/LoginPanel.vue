@@ -17,7 +17,9 @@ watch(
     (portalId) => {
         email.value = demoCredentials[portalId].email;
         password.value = demoCredentials[portalId].password;
+        auth.error = null;
     },
+    { immediate: true },
 );
 async function signIn() {
     if (signingIn.value) return;
@@ -85,6 +87,7 @@ async function signIn() {
             />
             <p
                 v-if="auth.error"
+                role="alert"
                 class="mb-3 text-center text-xs font-semibold text-bav"
             >
                 {{ auth.error }}
@@ -98,6 +101,9 @@ async function signIn() {
             >
                 {{ signingIn ? "Signing in…" : "Sign In" }}
             </ActionButton>
+            <p v-if="signingIn" role="status" class="mt-3 text-center text-[11px] text-muted">
+                Waiting for the server. This may take up to a minute.
+            </p>
             <p class="mt-3 text-center text-[11px] text-muted">
                 Use the provided portal demo credentials to login.
             </p>

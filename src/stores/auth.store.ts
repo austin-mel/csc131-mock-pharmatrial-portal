@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { pharmatrialApi, setAuthToken } from "@/api";
+import { ApiConnectionError, ApiError, pharmatrialApi, setAuthToken } from "@/api";
 import { seedPortals } from "@/data";
 import type { Portal, PortalId } from "@/types";
 
@@ -37,7 +37,7 @@ export const useAuthStore = defineStore("auth", () => {
         password = demoCredentials[selectedPortalId.value].password,
     ) {
         const credentials = demoCredentials[selectedPortalId.value];
-        if (!pharmatrialApi.fallbackActive) {
+        if (!pharmatrialApi.demoLoginEnabled) {
             try {
                 await pharmatrialApi.login(
                     selectedPortalId.value,
@@ -47,13 +47,21 @@ export const useAuthStore = defineStore("auth", () => {
                 loggedIn.value = true;
                 error.value = null;
                 return true;
-            } catch {
+            } catch (cause) {
                 setAuthToken(null);
-                if (!pharmatrialApi.fallbackActive) {
-                    loggedIn.value = false;
-                    error.value = "Invalid email or password for selected portal!";
+                loggedIn.value = false;
+                if (cause instanceof ApiError) {
+                    error.value = cause.status === 401
+                        ? "Invalid email or password for selected portal!"
+                        : "The sign-in service returned an error. Please try again.";
+                    return false;
+                } else if (!(cause instanceof ApiConnectionError)) {
+                    error.value = cause instanceof Error
+                        ? cause.message
+                        : "Could not connect to the sign-in service. Please try again.";
                     return false;
                 }
+                // Connection failures continue through the normal demo credential check.
             }
         }
 

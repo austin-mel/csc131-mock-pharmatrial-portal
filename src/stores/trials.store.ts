@@ -108,6 +108,7 @@ export const useTrialsStore = defineStore("trials", () => {
         trial: Trial,
         portalId: PortalId = auth.selectedPortalId,
     ): boolean {
+        if (trial.status === "rejected") return portalId === "bavaria";
         if (portalId !== "jh-doctor") return true;
         return (
             trial.status === "active" ||

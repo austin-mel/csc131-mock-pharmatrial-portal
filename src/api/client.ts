@@ -9,10 +9,21 @@ import type {
 
 const apiUri = (import.meta.env.VITE_API_URI ?? "").replace(/\/$/, "");
 const demoMode = String(import.meta.env.VITE_DEMO_MODE ?? "false") === "true";
-const LOGIN_TIMEOUT_MS = 3000;
+const LOGIN_TIMEOUT_MS = 60_000;
 
 let authToken: string | null = null;
 let apiUnavailable = false;
+
+export class ApiError extends Error {
+    constructor(public readonly status: number, message: string) {
+        super(message);
+        this.name = "ApiError";
+    }
+}
+
+export class ApiConnectionError extends Error {
+    name = "ApiConnectionError";
+}
 
 export function isDemoMode() {
     return demoMode || !apiUri || apiUnavailable;
@@ -22,8 +33,14 @@ export function setAuthToken(token: string | null) {
     authToken = token;
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    if (isDemoMode()) throw new Error("API fallback mode is enabled.");
+async function request<T>(
+    path: string,
+    init: RequestInit = {},
+    allowFallback = true,
+): Promise<T> {
+    if (demoMode || !apiUri || (allowFallback && apiUnavailable)) {
+        throw new Error("API fallback mode is enabled.");
+    }
 
     const response = await fetch(`${apiUri}${path}`, {
         ...init,
@@ -33,13 +50,14 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
             ...init.headers,
         },
     }).catch((error) => {
-        apiUnavailable = true;
-        throw error;
+        if (allowFallback) apiUnavailable = true;
+        if (allowFallback) throw error;
+        throw new ApiConnectionError("Could not connect to the sign-in service.");
     });
 
     if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.message ?? "API request failed.");
+        throw new ApiError(response.status, body?.message ?? "API request failed.");
     }
 
     if (response.status === 204) return undefined as T;
@@ -47,6 +65,10 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 export const pharmatrialApi = {
+    get demoLoginEnabled() {
+        return demoMode || !apiUri;
+    },
+
     get fallbackActive() {
         return isDemoMode();
     },
@@ -63,13 +85,22 @@ export const pharmatrialApi = {
                 method: "POST",
                 body: JSON.stringify({ portalId, email, password }),
                 signal: controller.signal,
-            });
+            }, false);
+            apiUnavailable = false;
             setAuthToken(result.token);
             return result;
         } catch (error) {
-            // A sleeping backend should use the existing local demo fallback.
-            if (controller.signal.aborted) apiUnavailable = true;
-            throw error;
+            // Only transport failures permit demo login; HTTP rejections do not.
+            if (controller.signal.aborted) {
+                apiUnavailable = true;
+                throw new ApiConnectionError("Sign-in timed out after 60 seconds.");
+            }
+            if (error instanceof ApiConnectionError) {
+                apiUnavailable = true;
+                throw error;
+            }
+            if (error instanceof ApiError) throw error;
+            throw new Error("Could not connect to the sign-in service. Please try again.");
         } finally {
             clearTimeout(timeout);
         }
