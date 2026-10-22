@@ -176,7 +176,7 @@ export function usePatientCsvUpload(trial: () => Trial) {
     function downloadTemplate() {
         const csv = [
             "patientId,name,dob,icdCodes,bloodType,meds,allergy,height,weight,bp,oxygen,temperature,address,insuranceId,employment",
-            "a3f9-2c11,Maria Johnson,1978-03-14,B20|Z21,O+,None,Penicillin,163,58,118/76,98,98.4F,1420 Elm St,INS-447821093,Employed",
+            "UI-PAT-013,Rowan Hayes,1987-05-16,J45|I10,O+,None,None,172,73,136/84,98,98.4F,494 Demo Garden Lane,UI-DEMO-INS-713,Employed",
         ].join("\n");
         const blob = new Blob([csv], { type: "text/csv" });
         const link = document.createElement("a");

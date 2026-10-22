@@ -92,8 +92,8 @@ test.describe("responsive authenticated shell", () => {
             await expect(page.getByPlaceholder("Search trials...")).toBeVisible();
             await expect(page.getByPlaceholder("Search trials...")).toBeInViewport();
 
-            await page.getByPlaceholder("Search trials...").fill("neurology");
-            await expect(page.getByText(/neurology/i).first()).toBeVisible();
+            await page.getByPlaceholder("Search trials...").fill("aspen");
+            await expect(page.getByText(/aspen/i).first()).toBeVisible();
             await page
                 .getByRole("button", { name: "Close clinical trials menu" })
                 .click();

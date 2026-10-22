@@ -241,6 +241,19 @@ Select a portal on the login page, then use its credentials.
 
 Use demo mode and follow this order. Log out to switch portals in the same browser tab. Refreshing the page resets local changes and login state.
 
+The frontend starts with six distinct scenarios. These use new trial IDs, `Demo` names, `DEMO-` drugs and batches, and 12 synthetic `UI-PAT-` patients, separate from the backend SQL snapshot in `docs/sql/seed-trial-scenarios.sql`.
+
+| Trial ID | Demo trial | Starting state |
+| --- | --- | --- |
+| `TRL-2026-901` | Cedar Kidney | Pending FDA approval |
+| `TRL-2026-902` | Willow Asthma | Pending JH approval; two eligible patients |
+| `TRL-2026-903` | Juniper Arthritis | Completed; four patients fully dosed and results disclosed |
+| `TRL-2026-904` | Aspen Glucose | Active; four assigned patients with dosing in progress |
+| `TRL-2026-905` | Sequoia Oncology | Rejected by FDA before enrollment |
+| `TRL-2026-906` | Maple Blood Pressure | Both approvals complete; awaiting batch for two eligible patients |
+
+The active and completed trials each have a 50/50 treatment/placebo split. Patient conditions, visit histories, and dose totals match their cohorts. The completed trial is available in the completed/archive view for JH and FDA; Bavaria can still archive it.
+
 1. **Bavaria Admin:** Create a trial.
 2. **FDA Admin:** Set eligibility criteria and approve the trial.
 3. **Jane Hopkins Admin:** Add or import patients, review eligibility, and approve participation. Enroll at least one eligible patient to continue through assignment and dosing.

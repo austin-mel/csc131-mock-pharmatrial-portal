@@ -1,40 +1,49 @@
 import type { TrialAssignmentMap } from "@/types";
 
+// Only the completed Juniper and active Aspen cohorts have locked assignments.
 export const seedAssignments: Record<string, TrialAssignmentMap> = {
-    "TRL-2023-004": {
-        "a3f9-2c11": {
-            patientId: "a3f9-2c11",
+    "TRL-2026-903": {
+        "UI-PAT-003": {
+            patientId: "UI-PAT-003",
             drug: "bavaria",
-            trackingId: "BAV-004-A",
+            trackingId: "UI-JUNIPER-001",
         },
-        "c1a8-5f90": {
-            patientId: "c1a8-5f90",
+        "UI-PAT-004": {
+            patientId: "UI-PAT-004",
+            drug: "bavaria",
+            trackingId: "UI-JUNIPER-002",
+        },
+        "UI-PAT-005": {
+            patientId: "UI-PAT-005",
             drug: "placebo",
-            trackingId: "BAV-004-B",
+            trackingId: "UI-JUNIPER-003",
+        },
+        "UI-PAT-006": {
+            patientId: "UI-PAT-006",
+            drug: "placebo",
+            trackingId: "UI-JUNIPER-004",
         },
     },
-    "TRL-2023-007": {
-        "a3f9-2c11": {
-            patientId: "a3f9-2c11",
+    "TRL-2026-904": {
+        "UI-PAT-007": {
+            patientId: "UI-PAT-007",
             drug: "bavaria",
-            trackingId: "BAV-007-A",
+            trackingId: "UI-ASPEN-001",
         },
-        "b7d2-8e44": {
-            patientId: "b7d2-8e44",
-            drug: "placebo",
-            trackingId: "BAV-007-B",
-        },
-    },
-    "TRL-2022-014": {
-        "a3f9-2c11": {
-            patientId: "a3f9-2c11",
+        "UI-PAT-008": {
+            patientId: "UI-PAT-008",
             drug: "bavaria",
-            trackingId: "BAV-014-A",
+            trackingId: "UI-ASPEN-002",
         },
-        "d4e6-1b72": {
-            patientId: "d4e6-1b72",
+        "UI-PAT-009": {
+            patientId: "UI-PAT-009",
             drug: "placebo",
-            trackingId: "BAV-014-B",
+            trackingId: "UI-ASPEN-003",
+        },
+        "UI-PAT-010": {
+            patientId: "UI-PAT-010",
+            drug: "placebo",
+            trackingId: "UI-ASPEN-004",
         },
     },
 };
