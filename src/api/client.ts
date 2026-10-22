@@ -9,6 +9,7 @@ import type {
 
 const apiUri = (import.meta.env.VITE_API_URI ?? "").replace(/\/$/, "");
 const demoMode = String(import.meta.env.VITE_DEMO_MODE ?? "false") === "true";
+const LOGIN_TIMEOUT_MS = 3000;
 
 let authToken: string | null = null;
 let apiUnavailable = false;
@@ -51,15 +52,27 @@ export const pharmatrialApi = {
     },
 
     async login(portalId: PortalId, email: string, password: string) {
-        const result = await request<{
-            token: string;
-            user: { portalId: PortalId; email: string; role: string };
-        }>("/auth/login", {
-            method: "POST",
-            body: JSON.stringify({ portalId, email, password }),
-        });
-        setAuthToken(result.token);
-        return result;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), LOGIN_TIMEOUT_MS);
+
+        try {
+            const result = await request<{
+                token: string;
+                user: { portalId: PortalId; email: string; role: string };
+            }>("/auth/login", {
+                method: "POST",
+                body: JSON.stringify({ portalId, email, password }),
+                signal: controller.signal,
+            });
+            setAuthToken(result.token);
+            return result;
+        } catch (error) {
+            // A sleeping backend should use the existing local demo fallback.
+            if (controller.signal.aborted) apiUnavailable = true;
+            throw error;
+        } finally {
+            clearTimeout(timeout);
+        }
     },
 
     async snapshot() {

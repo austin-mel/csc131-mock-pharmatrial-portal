@@ -2,6 +2,7 @@
 import {
     RejectedTrialBanner,
     TrialHeader,
+    TrialSourceBanner,
     TrialTabBar,
     TrialTabContent,
     TrialWorkspaceModals,
@@ -172,6 +173,7 @@ function deletePatient(id: string) {
 </script>
 
 <template>
+    <TrialSourceBanner />
     <div v-if="trial" class="flex min-h-0 flex-1 flex-col">
         <TrialHeader
             :trial="trial"

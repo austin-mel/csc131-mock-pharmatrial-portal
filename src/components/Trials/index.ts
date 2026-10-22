@@ -4,6 +4,7 @@ export { default as TrialAppointmentsTabLogTable } from "./TrialAppointmentsTabL
 export { default as TrialAppointmentsTab } from "./TrialAppointmentsTab.vue";
 export { default as TrialApprovalStatusCard } from "./TrialApprovalStatusCard.vue";
 export { default as TrialHeader } from "./TrialHeader.vue";
+export { default as TrialSourceBanner } from "./TrialSourceBanner.vue";
 export { default as TrialWorkspaceModals } from "./TrialWorkspaceModals.vue";
 export { default as TrialAssignmentsTab } from "./TrialAssignmentsTab.vue";
 export { default as TrialBatchTab } from "./TrialBatchTab.vue";

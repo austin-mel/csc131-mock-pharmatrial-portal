@@ -7,6 +7,8 @@ export default {
         ink: '#1a1714',
         muted: '#6b6560',
         rule: '#dedad3',
+        line: '#dedad3',
+        porcelain: '#f5f2ec',
         jh: '#1e7e4e',
         fda: '#2a5c8f',
         bav: '#c0392b',

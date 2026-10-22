@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores";
 const auth = useAuthStore();
 const email = ref("doctor@jh.example");
 const password = ref("jh-doctor-demo");
+const signingIn = ref(false);
 const demoCredentials = {
     "jh-doctor": { email: "doctor@jh.example", password: "jh-doctor-demo" },
     "jh-admin": { email: "admin@jh.example", password: "jh-admin-demo" },
@@ -19,7 +20,14 @@ watch(
     },
 );
 async function signIn() {
-    await auth.login(email.value, password.value);
+    if (signingIn.value) return;
+    signingIn.value = true;
+    auth.error = null;
+    try {
+        await auth.login(email.value, password.value);
+    } finally {
+        signingIn.value = false;
+    }
 }
 </script>
 
@@ -47,6 +55,7 @@ async function signIn() {
                     :key="portal.id"
                     :portal="portal"
                     :selected="portal.id === auth.selectedPortalId"
+                    :disabled="signingIn"
                     @select="auth.selectPortal"
                 />
             </div>
@@ -57,6 +66,7 @@ async function signIn() {
             </label>
             <input
                 v-model="email"
+                :disabled="signingIn"
                 class="mb-3.5 min-h-10 w-full rounded-[5px] border-[1.5px] border-rule bg-bg px-[13px] py-2.5 text-base text-ink focus:border-fda focus:bg-surface focus:outline-none sm:text-sm"
                 type="email"
                 placeholder="username@institution.org"
@@ -68,6 +78,7 @@ async function signIn() {
             </label>
             <input
                 v-model="password"
+                :disabled="signingIn"
                 class="mb-3.5 min-h-10 w-full rounded-[5px] border-[1.5px] border-rule bg-bg px-[13px] py-2.5 text-base text-ink focus:border-fda focus:bg-surface focus:outline-none sm:text-sm"
                 type="password"
                 placeholder="password"
@@ -78,8 +89,14 @@ async function signIn() {
             >
                 {{ auth.error }}
             </p>
-            <ActionButton variant="primary" block @click="signIn">
-                Sign In
+            <ActionButton
+                variant="primary"
+                block
+                :disabled="signingIn"
+                :aria-busy="signingIn"
+                @click="signIn"
+            >
+                {{ signingIn ? "Signing in…" : "Sign In" }}
             </ActionButton>
             <p class="mt-3 text-center text-[11px] text-muted">
                 Use the provided portal demo credentials to login.
