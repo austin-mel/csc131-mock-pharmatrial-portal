@@ -39,7 +39,7 @@ function reconnect() {
         <button
             v-if="source.kind === 'seeded' && source.reason === 'backend-unavailable'"
             type="button"
-            class="ui-button"
+            class="inline-flex items-center justify-center gap-2 rounded-[5px] border border-line bg-surface px-3 py-2 font-semibold hover:bg-porcelain"
             @click="reconnect"
         >
             <SVGIcons name="refresh" class="size-4" />
@@ -47,21 +47,3 @@ function reconnect() {
         </button>
     </div>
 </template>
-
-<style scoped>
-.ui-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border: 1px solid #dedad3;
-    border-radius: 5px;
-    background: #fff;
-    padding: 0.5rem 0.75rem;
-    font-weight: 600;
-}
-
-.ui-button:hover {
-    background: #f5f2ec;
-}
-</style>

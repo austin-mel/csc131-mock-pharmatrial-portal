@@ -84,7 +84,7 @@ export function expectNoBackendRequests(page: Page) {
 }
 
 export async function expectLoginPage(page: Page) {
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL(/#\/$/);
     await expect(page).toHaveTitle("Pharmatrial | Sign In");
     await expect(page.locator("section")).toContainText("Clinical Trial");
     await expect(page.locator("section")).toContainText("Data Exchange");
@@ -113,7 +113,7 @@ export async function signIn(
 }
 
 export async function expectDashboardFor(page: Page, portal: DemoPortal) {
-    await expect(page).toHaveURL("/dashboard");
+    await expect(page).toHaveURL(/#\/dashboard$/);
     await expect(page).toHaveTitle("Dashboard");
 
     const nav = page.getByRole("navigation");

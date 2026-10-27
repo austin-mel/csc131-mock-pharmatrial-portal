@@ -216,12 +216,12 @@ pnpm --dir front-end run dev
 
 ### Verify the Setup
 
-From the frontend folder, build the application and run the browser tests:
+From the frontend folder, build the application and run both test suites:
 
 ```sh
 pnpm build
 pnpm exec playwright install chromium
-pnpm test:e2e
+pnpm test
 ```
 
 Run `pnpm preview` to inspect the production build. Browser tests use demo mode; verify live login and trial creation separately when you configure the backend. See [Testing](docs/TESTING.md) for test coverage and Windows command alternatives.
@@ -268,10 +268,13 @@ The active and completed trials each have a 50/50 treatment/placebo split. Patie
 
 | Task                         | Command               |
 | ---------------------------- | --------------------- |
-| Build and type-check         | `pnpm build`          |
-| Type-check only              | `pnpm run type-check` |
+| Build                        | `pnpm build`          |
+| Type-check app and config    | `pnpm exec vue-tsc --build` |
+| Type-check tests             | `pnpm exec vue-tsc --noEmit -p tsconfig.test.json` |
 | Preview the production build | `pnpm preview`        |
+| Run unit tests               | `pnpm test:unit`      |
 | Run browser tests            | `pnpm test:e2e`       |
+| Run both test suites         | `pnpm test`           |
 
 See [Testing](docs/TESTING.md) for browser installation, test profiles, and coverage.
 

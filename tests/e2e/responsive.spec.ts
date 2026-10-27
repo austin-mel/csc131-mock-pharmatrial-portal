@@ -22,7 +22,8 @@ async function expectNoHorizontalOverflow(page: Page) {
                     Math.max(
                         document.documentElement.scrollWidth,
                         document.body.scrollWidth,
-                    ) <= window.innerWidth + 1,
+                    ) <=
+                    window.innerWidth + 1,
             ),
         )
         .toBe(true);
@@ -51,7 +52,7 @@ test.describe("responsive login experience", () => {
     test("keeps the login card and controls usable in every viewport", async ({
         page,
     }) => {
-        await page.goto("/");
+        await page.goto("./");
 
         await expectLoginPage(page);
         await expectNoHorizontalOverflow(page);
@@ -62,7 +63,9 @@ test.describe("responsive login experience", () => {
         if (!box) throw new Error("Expected login panel to be visible.");
 
         expect(box.width).toBeLessThanOrEqual(viewport(page).width);
-        await expect(page.getByRole("button", { name: "Sign In" })).toBeInViewport();
+        await expect(
+            page.getByRole("button", { name: "Sign In" }),
+        ).toBeInViewport();
     });
 });
 
@@ -70,13 +73,15 @@ test.describe("responsive authenticated shell", () => {
     test("keeps core dashboard functionality available in every viewport", async ({
         page,
     }) => {
-        await page.goto("/");
+        await page.goto("./");
         await signIn(page, defaultPortal);
         await expectDashboardFor(page, defaultPortal);
 
         await expectNoHorizontalOverflow(page);
         await expect(page.getByText("Trial Overview")).toBeVisible();
-        await expect(page.getByRole("button", { name: "Logout" })).toBeInViewport();
+        await expect(
+            page.getByRole("button", { name: "Logout" }),
+        ).toBeInViewport();
 
         const menuButton = page.getByRole("button", {
             name: "Open clinical trials menu",
@@ -87,10 +92,16 @@ test.describe("responsive authenticated shell", () => {
             await menuButton.click();
 
             await expect(
-                page.getByRole("button", { name: "Close clinical trials menu" }),
+                page.getByRole("button", {
+                    name: "Close clinical trials menu",
+                }),
             ).toBeVisible();
-            await expect(page.getByPlaceholder("Search trials...")).toBeVisible();
-            await expect(page.getByPlaceholder("Search trials...")).toBeInViewport();
+            await expect(
+                page.getByPlaceholder("Search trials..."),
+            ).toBeVisible();
+            await expect(
+                page.getByPlaceholder("Search trials..."),
+            ).toBeInViewport();
 
             await page.getByPlaceholder("Search trials...").fill("aspen");
             await expect(page.getByText(/aspen/i).first()).toBeVisible();
@@ -99,15 +110,19 @@ test.describe("responsive authenticated shell", () => {
                 .click();
         } else {
             await expect(menuButton).toBeHidden();
-            await expect(page.getByPlaceholder("Search trials...")).toBeVisible();
-            await expect(page.getByPlaceholder("Search trials...")).toBeInViewport();
+            await expect(
+                page.getByPlaceholder("Search trials..."),
+            ).toBeVisible();
+            await expect(
+                page.getByPlaceholder("Search trials..."),
+            ).toBeInViewport();
         }
     });
 
     test("allows horizontal tab access without page-level overflow", async ({
         page,
     }) => {
-        await page.goto("/");
+        await page.goto("./");
         await signIn(page, defaultPortal);
 
         const overviewTab = page.getByRole("button", { name: "Overview" });
@@ -116,7 +131,8 @@ test.describe("responsive authenticated shell", () => {
 
         await overviewTab.evaluate((element) => {
             const tabBar = element.parentElement;
-            if (!tabBar) throw new Error("Expected overview tab to have a parent.");
+            if (!tabBar)
+                throw new Error("Expected overview tab to have a parent.");
             tabBar.scrollLeft = tabBar.scrollWidth;
         });
 

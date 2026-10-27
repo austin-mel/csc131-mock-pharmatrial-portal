@@ -7,6 +7,9 @@ const chromiumChannel = browserChannel ? { channel: browserChannel } : {};
 export default defineConfig({
     testDir: "./tests/e2e",
     fullyParallel: true,
+    forbidOnly: Boolean(process.env.CI),
+    retries: process.env.CI ? 2 : 0,
+    workers: process.env.CI ? 2 : 4,
     reporter: [["list"], ["html", { open: "never" }]],
     outputDir: "test-results",
     timeout: 30_000,
@@ -14,14 +17,14 @@ export default defineConfig({
         timeout: 5_000,
     },
     use: {
-        baseURL: `http://127.0.0.1:${port}`,
+        baseURL: `http://127.0.0.1:${port}/pharmatrial-portal/`,
         trace: "retain-on-failure",
         screenshot: "only-on-failure",
         video: "retain-on-failure",
     },
     webServer: {
-        command: `node ./node_modules/vite/bin/vite.js --mode e2e --host 127.0.0.1 --port ${port}`,
-        url: `http://127.0.0.1:${port}`,
+        command: `node ./node_modules/vite/bin/vite.js --mode e2e --host 127.0.0.1 --port ${port} --strictPort`,
+        url: `http://127.0.0.1:${port}/pharmatrial-portal/`,
         reuseExistingServer: false,
         timeout: 60_000,
         env: {
